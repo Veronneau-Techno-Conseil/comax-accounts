@@ -1,0 +1,30 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Profile.ProfilePictureEditViewModel;
+
+@{
+    ViewBag.Title = "Update Profile";
+}
+
+
+<form enctype="multipart/form-data" method="post" action="/Profile/ProfilePicture">
+    <label style="width: 100%;"> Choose File</label>
+    <div>
+        @if (Model.ProfilePicture != null)
+        {
+            <img id="profilePicture" style="width:350px;height:350px;object-fit:cover; border-radius: 60px" src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfilePicture))">
+        }
+        else
+        {
+            <img id="profilePicture" style="width:350px;height:350px;object-fit:cover; border-radius: 60px" src="">
+        }
+        <input type="file" name="file"
+               accept=".png,.jpg,.jpeg,.gif,.tif"
+               class="form-control"
+               style="border:0px!important;padding: 0px;padding-top: 10px;padding-bottom: 30px;" 
+               onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
+    </div>
+    <div>
+        <input type="submit" asp-route-Id="@Model.Id" class="btn btn-primary" />
+        <button asp-controller="Home" asp-action="Index" class="btn">Cancel</button>
+    </div>
+
+</form>
