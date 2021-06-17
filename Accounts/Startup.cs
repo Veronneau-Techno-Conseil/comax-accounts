@@ -135,6 +135,9 @@ namespace CommunAxiom.Accounts
                 options.MapDefaultControllerRoute();
             });
 
+            if (1 == 1)
+                Console.WriteLine("Catched at startup");
+
         }
     }
 }

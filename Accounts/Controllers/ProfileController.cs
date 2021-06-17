@@ -38,7 +38,7 @@ namespace CommunAxiom.Accounts.Controllers
                 return NotFound();
             }
 
-            var model = new ProfileEditViewModel
+            var model = new EditViewModel
             {
                 Id = user.Id,
                 UserName = user.UserName,
@@ -52,7 +52,7 @@ namespace CommunAxiom.Accounts.Controllers
 
         //Post - EDIT
         [HttpPost]
-        public async Task<IActionResult> Edit(ProfileEditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user == null)
@@ -90,7 +90,7 @@ namespace CommunAxiom.Accounts.Controllers
                 return NotFound();
             }
 
-            var model = new ProfilePictureEditViewModel
+            var model = new ProfilePictureViewModel
             {
                 Id = user.Id,
                 ProfilePicture = user.ProfilePicture

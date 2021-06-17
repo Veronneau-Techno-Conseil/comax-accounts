@@ -21,6 +21,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.6" />
     <PackageReference Include="Openiddict.AspNetCore" Version="3.0.0-beta3.20403.69" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="3.0.0-beta3.20403.69" />
+    <PackageReference Include="RandomDataGenerator.Net" Version="1.0.12" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
   </ItemGroup>
 

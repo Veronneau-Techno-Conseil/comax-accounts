@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CommunAxiom.Accounts.ViewModels.Profile
 {
-    public class ProfileEditViewModel
+    public class EditViewModel
     {
         public string Id { get; set; }
         [Required]
