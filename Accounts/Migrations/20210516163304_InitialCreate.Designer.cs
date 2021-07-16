@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CommunAxiom.Accounts.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    [Migration("20210716163304_InitialCreate")]
+    [Migration("20210516163304_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
