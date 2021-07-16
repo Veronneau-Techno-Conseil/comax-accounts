@@ -15,6 +15,15 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<User>()
                 .Property(x => x.AccountTypeId)
                 .IsRequired();
+
+            //This was added to set composite keys for the ApplicationTypeMaps and UserApplicationMap
+            builder.Entity<ApplicationTypeMap>()
+                .HasKey(x => new { x.ApplicationId, x.ApplicationTypeId });
+            builder.Entity<UserApplicationMap>()
+                .HasKey(x => new { x.UserId, x.ApplicationId });
+
+            //TODO: Add unique index on ApplicationId in UserApplicationMap as this wants to describe ownership  
+            //TODO: Add unique index on ApplicationId in ApplicationTypeMaps, the application can only have one type  
         }
 
         public void SetupRelationships(ModelBuilder builder)
@@ -23,14 +32,17 @@ namespace CommunAxiom.Accounts.Models.Configurations
                 .HasOne(x => x.AccountType)
                 .WithMany()
                 .HasForeignKey(x => x.AccountTypeId);
+
+            //TODO: Add Foreign keys for ApplicationTypeMap and UserApplicationMap
+
         }
 
         public void SetupTables(ModelBuilder builder)
         {
-            builder.Entity<AccountType>()
+            builder.Entity<Models.AccountType>()
                 .ToTable("AccountTypes");
 
-            builder.Entity<User>()
+            builder.Entity<Models.User>()
                 .ToTable("Users");
 
             builder.Entity<IdentityRoleClaim<string>>()
@@ -62,6 +74,15 @@ namespace CommunAxiom.Accounts.Models.Configurations
 
             builder.Entity<Models.Token>()
                 .ToTable("Tokens");
+
+            builder.Entity<Models.ApplicationType>()
+                .ToTable("ApplicationTypes");
+            
+            builder.Entity<Models.ApplicationTypeMap>()
+                .ToTable("ApplicationTypeMaps");
+            
+            builder.Entity<Models.UserApplicationMap>()
+                .ToTable("UserApplicationMap");
 
         }
     }

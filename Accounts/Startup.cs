@@ -154,7 +154,7 @@ namespace CommunAxiom.Accounts
                 options.MapControllers();
                 options.MapDefaultControllerRoute();
             });
-
+                        
         }
     }
 }

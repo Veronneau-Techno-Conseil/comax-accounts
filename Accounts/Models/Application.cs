@@ -7,5 +7,6 @@ namespace CommunAxiom.Accounts.Models
 {
     public class Application: OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication<string, Models.Authorization, Models.Token>
     {
+        //TODO: Add soft delete fields
     }
 }

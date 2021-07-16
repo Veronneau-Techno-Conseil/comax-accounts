@@ -42,6 +42,8 @@ namespace CommunAxiom.Accounts.Models
 
                 await ctxt.SaveChangesAsync();
             }
+
+            //TODO: Add ApplicationTypes initial data (name = Commons)
         }
     }
 }
