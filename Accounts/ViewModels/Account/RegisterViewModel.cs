@@ -21,8 +21,5 @@ namespace CommunAxiom.Accounts.ViewModels.Account
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        [Required]
-        [Display(Name = "Account Type")]
-        public AccountType AccountType { get; set; }
     }
 }

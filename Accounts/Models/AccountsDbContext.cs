@@ -10,10 +10,6 @@ namespace CommunAxiom.Accounts.Models
 {
     public class AccountsDbContext : IdentityDbContext<User>
     {
-        static AccountsDbContext()
-        {
-            Npgsql.NpgsqlConnection.GlobalTypeMapper.MapEnum<AccountType>("public.account_type");
-        }
         public AccountsDbContext(): base()
         {
 

@@ -13,18 +13,22 @@ namespace CommunAxiom.Accounts.Models.Configurations
         {
 
             builder.Entity<User>()
-                .Property(x => x.AccountType)
-                .HasColumnType<AccountType>("public.account_type")
+                .Property(x => x.AccountTypeId)
                 .IsRequired();
         }
 
         public void SetupRelationships(ModelBuilder builder)
         {
+            builder.Entity<User>()
+                .HasOne(x => x.AccountType)
+                .WithMany()
+                .HasForeignKey(x => x.AccountTypeId);
         }
 
         public void SetupTables(ModelBuilder builder)
         {
-            builder.HasPostgresEnum<AccountType>();
+            builder.Entity<AccountType>()
+                .ToTable("AccountTypes");
 
             builder.Entity<User>()
                 .ToTable("Users");
@@ -47,16 +51,16 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<IdentityUserToken<string>>()
                 .ToTable("UserTokens");
 
-            builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication>()
+            builder.Entity<Models.Application>()
                 .ToTable("Applications");
 
-            builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization>()
+            builder.Entity<Models.Authorization>()
                 .ToTable("Authorizations");
 
             builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreScope>()
                 .ToTable("Scopes");
 
-            builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreToken>()
+            builder.Entity<Models.Token>()
                 .ToTable("Tokens");
 
         }

@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunAxiom.Accounts.AppModels;
+using CommunAxiom.Accounts.Cache;
 using CommunAxiom.Accounts.Contracts;
 using CommunAxiom.Accounts.Models;
+using CommunAxiom.Accounts.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -41,6 +44,8 @@ namespace CommunAxiom.Accounts
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<AccountsDbContext>();
 
+            
+
             // Configure Identity to use the same JWT claims as OpenIddict instead
             // of the legacy WS-Federation claims it uses by default (ClaimTypes),
             // which saves you from doing the mapping in your authorization controller.
@@ -51,15 +56,27 @@ namespace CommunAxiom.Accounts
                 options.ClaimsIdentity.RoleClaimType = Claims.Role;
             });
 
+            services.AddAuthentication();
+        //.AddGoogle("Google", options =>
+        //{
+        //    options.CallbackPath = "/signin-google";
+        //    options.ClientId = "0000000000000-redacted.apps.googleusercontent.com";
+        //    options.ClientSecret = "redacted";
+        //    options.SignInScheme = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme;
+        //});
+
             services.AddOpenIddict()
 
                 // Register the OpenIddict core components.
                 .AddCore(options =>
                 {
+
                     // Configure OpenIddict to use the Entity Framework Core stores and models.
                     // Note: call ReplaceDefaultEntities() to replace the default OpenIddict entities.
                     options.UseEntityFrameworkCore()
                            .UseDbContext<AccountsDbContext>();
+
+                    options.AddApplicationStore<ApplicationStore>();
                 })
 
                 // Register the OpenIddict server components.
@@ -84,7 +101,7 @@ namespace CommunAxiom.Accounts
                     // Register the signing and encryption credentials.
                     options.AddDevelopmentEncryptionCertificate()
                            .AddDevelopmentSigningCertificate();
-
+                    
                     // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
                     options.UseAspNetCore()
                            .EnableAuthorizationEndpointPassthrough()
@@ -109,8 +126,11 @@ namespace CommunAxiom.Accounts
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISmsSender, SmsSender>();
-
-            services.AddHostedService<Initializer>();
+            if (Configuration.GetValue<bool>("Initialize"))
+            {
+                services.AddHostedService<Initializer>();
+            }
+            services.AddScoped<IAccountTypeCache, AccountTypeCache>();
 
         }
 
