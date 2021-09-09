@@ -22,8 +22,12 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<UserApplicationMap>()
                 .HasKey(x => new { x.UserId, x.ApplicationId });
 
-            //TODO: Add unique index on ApplicationId in UserApplicationMap as this wants to describe ownership  
+            //TODO: Add unique index on ApplicationId in UserApplicationMap as this wants to describe ownership
+            builder.Entity<UserApplicationMap>()
+               .HasKey(x => new { x.ApplicationId });
             //TODO: Add unique index on ApplicationId in ApplicationTypeMaps, the application can only have one type  
+            builder.Entity<ApplicationTypeMap>()
+                .HasKey(x => new { x.ApplicationId });
         }
 
         public void SetupRelationships(ModelBuilder builder)
@@ -34,7 +38,15 @@ namespace CommunAxiom.Accounts.Models.Configurations
                 .HasForeignKey(x => x.AccountTypeId);
 
             //TODO: Add Foreign keys for ApplicationTypeMap and UserApplicationMap
+            builder.Entity<ApplicationTypeMap>()
+                .HasOne(x => x.ApplicationType)
+                .WithMany()
+                .HasForeignKey(x => x.ApplicationTypeId);
 
+            builder.Entity<UserApplicationMap>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId);
         }
 
         public void SetupTables(ModelBuilder builder)
@@ -57,7 +69,7 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<IdentityUserLogin<string>>()
                 .ToTable("UserLogins");
 
-            builder.Entity<IdentityUserRole<string>> ()
+            builder.Entity<IdentityUserRole<string>>()
                 .ToTable("UserRoles");
 
             builder.Entity<IdentityUserToken<string>>()
@@ -77,10 +89,10 @@ namespace CommunAxiom.Accounts.Models.Configurations
 
             builder.Entity<Models.ApplicationType>()
                 .ToTable("ApplicationTypes");
-            
+
             builder.Entity<Models.ApplicationTypeMap>()
                 .ToTable("ApplicationTypeMaps");
-            
+
             builder.Entity<Models.UserApplicationMap>()
                 .ToTable("UserApplicationMap");
 

@@ -11,7 +11,8 @@ namespace CommunAxiom.Accounts.Models
     {
         public static async Task SeedData(Models.AccountsDbContext ctxt)
         {
-            var set = ctxt.Set<Models.AccountType>();          
+            var set = ctxt.Set<Models.AccountType>();
+            var ApplicationTypes = ctxt.Set<Models.ApplicationType>();
 
             if(!set.Any(x=>x.Code == Models.AccountType.USER))
             {
@@ -44,6 +45,16 @@ namespace CommunAxiom.Accounts.Models
             }
 
             //TODO: Add ApplicationTypes initial data (name = Commons)
+            if (!ApplicationTypes.Any())
+            {
+                ApplicationTypes.Add(new ApplicationType
+                {
+                    Name = Models.ApplicationType.COMMONS
+                });
+
+                await ctxt.SaveChangesAsync();
+            }
+            
         }
     }
 }

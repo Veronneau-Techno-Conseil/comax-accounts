@@ -27,44 +27,40 @@ namespace CommunAxiom.Accounts.Controllers
             return View();
         }
 
-        //GET - EDIT
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
             //TODO ensure current user is the owner of the data
             //At the moment only the owner of the account can modify their data. 
             var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
+            if (user != null && user.UserName == HttpContext.User.Identity.Name)
+            {
+                var model = new EditViewModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    ProfilePicture = user.ProfilePicture
+                };
+
+                return View(model);
+
+            }
+            else
             {
                 ViewBag.ErrorMessage = "User cannot be found";
                 return NotFound();
             }
-
-            var model = new EditViewModel
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                ProfilePicture = user.ProfilePicture
-            };
-
-            return View(model);
         }
 
-        //Post - EDIT
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
             //TODO ensure current user is the owner of the data
             //At the moment only the owner of the account can modify their data. 
             var user = await _userManager.FindByIdAsync(model.Id);
-            if (user == null)
-            {
-                ViewBag.ErrorMessage = "User cannot be found";
-                return NotFound();
-            }
-            else
+            if (user != null && user.UserName == HttpContext.User.Identity.Name)
             {
                 user.Email = model.Email;
                 user.PhoneNumber = model.PhoneNumber;
@@ -81,6 +77,11 @@ namespace CommunAxiom.Accounts.Controllers
                     ModelState.AddModelError("", error.Description);
                 }
                 return View(model);
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "User cannot be found";
+                return NotFound();
             }
         }
 
@@ -109,7 +110,7 @@ namespace CommunAxiom.Accounts.Controllers
             //TODO ensure current user is the owner of the data
             //At the moment only the owner of the account can modify their data. 
             var user = await _userManager.FindByIdAsync(Id);
-            if (user != null)
+            if (user != null && user.UserName == HttpContext.User.Identity.Name)
             {
                 if (file != null)
                 {
@@ -120,8 +121,13 @@ namespace CommunAxiom.Accounts.Controllers
                     }
                     await _userManager.UpdateAsync(user);
                 }
+                return RedirectToAction("Index", "Home");
             }
-            return RedirectToAction("Index","Home");
+            else
+            {
+                ViewBag.ErrorMessage = "User cannot be found";
+                return NotFound();
+            }
         }
     }
 }

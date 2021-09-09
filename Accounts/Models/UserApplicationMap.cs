@@ -9,6 +9,7 @@ namespace CommunAxiom.Accounts.Models
 {
     public class UserApplicationMap
     {
+        public User User { get; set; }
         public string UserId { get; set; }
         public string ApplicationId { get; set; }
     }

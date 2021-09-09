@@ -1,0 +1,38 @@
+﻿@model ManageViewModel
+@{
+    ViewData["Title"] = "Manage Applications";
+}
+
+<h1>Manage</h1>
+
+<table id="ApplicationsTable" class="table" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                "Display Name"
+            </th>
+            <th>
+                Regenerate Secret
+            </th>
+            <th>
+                Delete App
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @await foreach (var item in Model.Applications)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DisplayName)
+                </td>
+                <td>
+                    @Html.ActionLink("Regenerate", "Regenerate", "Applications", new { id = item.Id })
+                </td>
+                <td>
+                    @Html.ActionLink("Delete", "Delete", "Applications", new { id = item.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

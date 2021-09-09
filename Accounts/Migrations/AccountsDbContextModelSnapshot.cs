@@ -15,10 +15,76 @@ namespace CommunAxiom.Accounts.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasPostgresEnum(null, "account_type", new[] { "user", "organisation" })
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.AccountType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountTypes");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Application", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConsentType")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("DeletedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Permissions")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PostLogoutRedirectUris")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RedirectUris")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Requirements")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Applications");
+                });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.ApplicationType", b =>
                 {
@@ -43,9 +109,91 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("ApplicationTypeId")
                         .HasColumnType("integer");
 
-                    b.HasKey("ApplicationId", "ApplicationTypeId");
+                    b.HasKey("ApplicationId");
+
+                    b.HasIndex("ApplicationTypeId");
 
                     b.ToTable("ApplicationTypeMaps");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Authorization", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApplicationId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Scopes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("Authorizations");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Token", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApplicationId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AuthorizationId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Payload")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReferenceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.HasIndex("AuthorizationId");
+
+                    b.ToTable("Tokens");
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.User", b =>
@@ -56,8 +204,8 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<AccountType>("AccountType")
-                        .HasColumnType("public.account_type");
+                    b.Property<int>("AccountTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -108,6 +256,8 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountTypeId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -120,13 +270,16 @@ namespace CommunAxiom.Accounts.Migrations
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.UserApplicationMap", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.Property<string>("ApplicationId")
                         .HasColumnType("text");
 
-                    b.HasKey("UserId", "ApplicationId");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ApplicationId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserApplicationMap");
                 });
@@ -312,7 +465,7 @@ namespace CommunAxiom.Accounts.Migrations
                     b.HasIndex("ClientId")
                         .IsUnique();
 
-                    b.ToTable("Applications");
+                    b.ToTable("OpenIddictApplications");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", b =>
@@ -351,7 +504,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("ApplicationId", "Status", "Subject", "Type");
 
-                    b.ToTable("Authorizations");
+                    b.ToTable("OpenIddictAuthorizations");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreScope", b =>
@@ -449,7 +602,64 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("ApplicationId", "Status", "Subject", "Type");
 
-                    b.ToTable("Tokens");
+                    b.ToTable("OpenIddictTokens");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.ApplicationTypeMap", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.ApplicationType", "ApplicationType")
+                        .WithMany()
+                        .HasForeignKey("ApplicationTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationType");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Authorization", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.Application", "Application")
+                        .WithMany("Authorizations")
+                        .HasForeignKey("ApplicationId");
+
+                    b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Token", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.Application", "Application")
+                        .WithMany("Tokens")
+                        .HasForeignKey("ApplicationId");
+
+                    b.HasOne("CommunAxiom.Accounts.Models.Authorization", "Authorization")
+                        .WithMany("Tokens")
+                        .HasForeignKey("AuthorizationId");
+
+                    b.Navigation("Application");
+
+                    b.Navigation("Authorization");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.User", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.AccountType", "AccountType")
+                        .WithMany()
+                        .HasForeignKey("AccountTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccountType");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.UserApplicationMap", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -525,6 +735,18 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Navigation("Application");
 
                     b.Navigation("Authorization");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Application", b =>
+                {
+                    b.Navigation("Authorizations");
+
+                    b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Authorization", b =>
+                {
+                    b.Navigation("Tokens");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>

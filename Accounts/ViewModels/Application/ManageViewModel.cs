@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace CommunAxiom.Accounts.ViewModels.Application
 {
-    public class EditViewModel
+    public class ManageViewModel
     {
-        public string Id { get; set; } 
-        public string ClientId { get; set; }
-        public string DisplayName { get; set; }
+      public IAsyncEnumerable<Models.Application> Applications { get; set; }
     }
 }

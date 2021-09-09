@@ -10,6 +10,7 @@ namespace CommunAxiom.Accounts.Models
 {
     public class AccountsDbContext : IdentityDbContext<User>
     {
+
         public AccountsDbContext() : base()
         {
 
@@ -26,10 +27,16 @@ namespace CommunAxiom.Accounts.Models
         }
 
 
-        //TODO: This is redundant with builder.Entity declaration in the initial config
-        public virtual DbSet<ApplicationType> ApplicationTypes { get; set; }
-        public virtual DbSet<ApplicationTypeMap> ApplicationTypeMaps { get; set; }
-        public virtual DbSet<UserApplicationMap> UserApplicationMaps { get; set; }
+        //Those lines were added to be able to access the database entities, to be validated
+        public DbSet<ApplicationType> ApplicationTypes { get; set; }
+        public DbSet<ApplicationTypeMap> ApplicationTypeMaps { get; set; }
+        public DbSet<UserApplicationMap> UserApplicationMaps { get; set; }
+        public DbSet<Application> Applications { get; set; }
+
+        //the below line was added because accessing the dbsets from controllers where not working
+        //when added, everything worked well.. to be validated
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=accounts;User Id=postgres;Password=123456;");
 
     }
 }
