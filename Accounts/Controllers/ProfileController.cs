@@ -30,7 +30,7 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            //TODO ensure current user is the owner of the data
+            //Ensure current user is the owner of the data
             //At the moment only the owner of the account can modify their data. 
             var user = await _userManager.FindByIdAsync(id);
             if (user != null && user.UserName == HttpContext.User.Identity.Name)
@@ -57,7 +57,7 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
-            //TODO ensure current user is the owner of the data
+            //Ensure current user is the owner of the data
             //At the moment only the owner of the account can modify their data. 
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user != null && user.UserName == HttpContext.User.Identity.Name)
@@ -107,7 +107,7 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpPost]
         public async Task<IActionResult> ProfilePictureAsync(IFormFile file, string Id)
         {
-            //TODO ensure current user is the owner of the data
+            //Ensure current user is the owner of the data
             //At the moment only the owner of the account can modify their data. 
             var user = await _userManager.FindByIdAsync(Id);
             if (user != null && user.UserName == HttpContext.User.Identity.Name)

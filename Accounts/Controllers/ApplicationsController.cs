@@ -14,7 +14,7 @@ using RandomDataGenerator.Randomizers;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-
+using OpenIddict.Abstractions;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -54,29 +54,29 @@ namespace CommunAxiom.Accounts.Controllers
             }
 
             //Create the application
-            var application = new Application
+            var application = new OpenIddictApplicationDescriptor
             {
-                Id = Guid.NewGuid().ToString(),
                 ClientId = RandomWord,
+                ClientSecret = Guid.NewGuid().ToString(),
                 DisplayName = model.DisplayName,
                 Type = ClientTypes.Public,
-                //The below propoerties are causing an internal sever error (http500) when creating application
-                //PostLogoutRedirectUris = new Uri("https://localhost:5001/authentication/logout-callback").ToString(),
-                //RedirectUris = new Uri("https://localhost:5001/authentication/login-callback").ToString(),
-                //Permissions =
-                //{
-                //    Permissions.Endpoints.Authorization,
-                //    Permissions.Endpoints.Logout,
-                //    Permissions.Endpoints.Token,
-                //    Permissions.GrantTypes.AuthorizationCode,
-                //    Permissions.GrantTypes.RefreshToken,
-                //    Permissions.ResponseTypes.Code,
-                //    Permissions.Scopes.Email,
-                //    Permissions.Scopes.Profile,
-                //    Permissions.Scopes.Roles
-                //},
-                Requirements = Requirements.Features.ProofKeyForCodeExchange
+                Permissions =
+                {
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Logout,
+                    Permissions.Endpoints.Token,
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.RefreshToken,
+                    Permissions.GrantTypes.DeviceCode,
+                    Permissions.Scopes.Email,
+                    Permissions.Scopes.Profile,
+                    Permissions.Scopes.Roles
+                }
             };
+                        
+            application.PostLogoutRedirectUris.Add(new Uri("https://localhost:5001/authentication/logout-callback"));
+            application.RedirectUris.Add(new Uri("https://localhost:5001/authentication/login-callback"));
+            application.Requirements.Add(Requirements.Features.ProofKeyForCodeExchange);
 
             await _applicationManager.CreateAsync(application);
 
@@ -85,7 +85,7 @@ namespace CommunAxiom.Accounts.Controllers
             //Create the ApplicationTypeMaps & UserApplicationsMap Record
             if (CreatedApplication != null)
             {
-                var CommonsApp = _context.ApplicationTypes.Where(x => x.Name == "Commons").FirstOrDefault();
+                var CommonsApp = _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == "Commons").FirstOrDefault();
 
                 var ApplicationTypeMap = new ApplicationTypeMap
                 {
@@ -100,15 +100,15 @@ namespace CommunAxiom.Accounts.Controllers
                     ApplicationId = CreatedApplication.Id
                 };
 
-                await _context.ApplicationTypeMaps.AddAsync(ApplicationTypeMap);
-                await _context.UserApplicationMaps.AddAsync(UserApplicationMap);
+                await _context.Set<ApplicationTypeMap>().AddAsync(ApplicationTypeMap);
+                await _context.Set<UserApplicationMap>().AddAsync(UserApplicationMap);
                 await _context.SaveChangesAsync();
             }
 
+            //TODO: This should return a restul view, not the list. you want to display the secret to the client
+            //and explain that the user must keep a local copy safe to use with the application
             return RedirectToAction("Manage", "Applications");
         }
-
-
 
         [HttpGet]
         public IActionResult Manage()
@@ -123,8 +123,11 @@ namespace CommunAxiom.Accounts.Controllers
             return View(model);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Regenerate(string id)
         {
+            //TODO: Any server interaction that has side effects (i.e. that modifies a table) should never happen using HttpGet,
+            // either user Post for creation and Put for updates or Patch for partial updates 
             var application = _applicationManager.FindByIdAsync(id).Result;
             var RandomWord = BitConverter.ToString(RandomizerFactory.GetRandomizer(new FieldOptionsBytes { Min = 32, Max = 32 }).Generate()).Replace("-", "");
             if (application == null)
@@ -135,15 +138,18 @@ namespace CommunAxiom.Accounts.Controllers
             else
             {
                 application.ClientSecret = RandomWord;
-
                 await _applicationManager.UpdateAsync(application);
+                //TODO: try this instead? haven't tested but seems to be made specifically for that
+                //await _applicationManager.UpdateAsync(application, RandomWord);
             }
-            return Ok();
+            //
+            return View(application);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-
+            //TODO: A delete action should always be done through a post action on a standard website 
             var application = await _applicationManager.FindByIdAsync(id);
             if (application == null)
             {

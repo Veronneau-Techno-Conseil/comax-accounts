@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using SendGridProvider;
 using TwilioSmsProvider;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -34,12 +35,9 @@ namespace CommunAxiom.Accounts
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
 
-            services.AddDbContext<AccountsDbContext>(options =>
-            {
-                options.UseNpgsql(Configuration.GetConnectionString("npg"));
-                options.UseOpenIddict();
-            });
+            services.AddDbContext<AccountsDbContext>();
 
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<AccountsDbContext>();
@@ -126,12 +124,33 @@ namespace CommunAxiom.Accounts
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISmsSender, SmsSender>();
-            if (Configuration.GetValue<bool>("Initialize"))
-            {
-                services.AddHostedService<Initializer>();
-            }
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
 
+            MigrateDb(services);
+        }
+
+        static void MigrateDb(IServiceCollection services)
+        {
+            var sp = services.BuildServiceProvider();
+            using var scope = sp.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
+
+            var serviceProvider = scope.ServiceProvider;
+
+
+            var dbConf = serviceProvider.GetService<IOptionsMonitor<DbConf>>().CurrentValue;
+            if (dbConf.MemoryDb)
+                return;
+
+            var dbcontext = serviceProvider.GetService<AccountsDbContext>();
+
+            if (dbConf.ShouldDrop)
+            {
+                dbcontext.Database.EnsureDeleted();
+            }
+            
+            dbcontext.Database.Migrate();
+            Seed.SeedData(dbcontext);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

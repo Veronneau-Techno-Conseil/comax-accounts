@@ -1,6 +1,7 @@
 ﻿using CommunAxiom.Accounts.Models.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,33 +11,35 @@ namespace CommunAxiom.Accounts.Models
 {
     public class AccountsDbContext : IdentityDbContext<User>
     {
+        internal readonly DbConf configs;
 
-        public AccountsDbContext() : base()
+        public AccountsDbContext(IOptionsMonitor<DbConf> options) : base()
         {
-
+            configs = options.CurrentValue;
         }
 
-        public AccountsDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
-        {
-
-        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             DbConfiguration.Setup(builder);
         }
 
-
-        //Those lines were added to be able to access the database entities, to be validated
-        public DbSet<ApplicationType> ApplicationTypes { get; set; }
-        public DbSet<ApplicationTypeMap> ApplicationTypeMaps { get; set; }
-        public DbSet<UserApplicationMap> UserApplicationMaps { get; set; }
-        public DbSet<Application> Applications { get; set; }
-
         //the below line was added because accessing the dbsets from controllers where not working
         //when added, everything worked well.. to be validated
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=accounts;User Id=postgres;Password=123456;");
+        {
+            base.OnConfiguring(optionsBuilder);
 
+            optionsBuilder.UseOpenIddict();
+
+            if (configs.MemoryDb)
+            {
+                optionsBuilder.UseInMemoryDatabase("AccountsDb");
+            }
+            else
+            {
+                optionsBuilder.UseNpgsql(configs.ConnectionString);
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace CommunAxiom.Accounts.Models
 {
     public static class Seed
     {
-        public static async Task SeedData(Models.AccountsDbContext ctxt)
+        public static void SeedData(Models.AccountsDbContext ctxt)
         {
             var set = ctxt.Set<Models.AccountType>();
             var ApplicationTypes = ctxt.Set<Models.ApplicationType>();
@@ -21,7 +21,7 @@ namespace CommunAxiom.Accounts.Models
                     Code = Models.AccountType.USER
                 });
 
-                await ctxt.SaveChangesAsync();
+                ctxt.SaveChanges();
             }
 
             if (!set.Any(x => x.Code == Models.AccountType.ORG))
@@ -31,7 +31,7 @@ namespace CommunAxiom.Accounts.Models
                     Code = Models.AccountType.ORG
                 });
 
-                await ctxt.SaveChangesAsync();
+                ctxt.SaveChanges();
             }
 
             if (!set.Any(x => x.Code == Models.AccountType.GROUP))
@@ -41,10 +41,9 @@ namespace CommunAxiom.Accounts.Models
                     Code = Models.AccountType.GROUP
                 });
 
-                await ctxt.SaveChangesAsync();
+                ctxt.SaveChanges();
             }
 
-            //TODO: Add ApplicationTypes initial data (name = Commons)
             if (!ApplicationTypes.Any())
             {
                 ApplicationTypes.Add(new ApplicationType
@@ -52,7 +51,7 @@ namespace CommunAxiom.Accounts.Models
                     Name = Models.ApplicationType.COMMONS
                 });
 
-                await ctxt.SaveChangesAsync();
+                ctxt.SaveChanges();
             }
             
         }

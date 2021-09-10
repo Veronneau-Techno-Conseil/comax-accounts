@@ -22,10 +22,8 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<UserApplicationMap>()
                 .HasKey(x => new { x.UserId, x.ApplicationId });
 
-            //TODO: Add unique index on ApplicationId in UserApplicationMap as this wants to describe ownership
             builder.Entity<UserApplicationMap>()
                .HasKey(x => new { x.ApplicationId });
-            //TODO: Add unique index on ApplicationId in ApplicationTypeMaps, the application can only have one type  
             builder.Entity<ApplicationTypeMap>()
                 .HasKey(x => new { x.ApplicationId });
         }
@@ -37,7 +35,6 @@ namespace CommunAxiom.Accounts.Models.Configurations
                 .WithMany()
                 .HasForeignKey(x => x.AccountTypeId);
 
-            //TODO: Add Foreign keys for ApplicationTypeMap and UserApplicationMap
             builder.Entity<ApplicationTypeMap>()
                 .HasOne(x => x.ApplicationType)
                 .WithMany()
