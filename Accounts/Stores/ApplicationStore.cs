@@ -16,6 +16,7 @@ namespace CommunAxiom.Accounts.Stores
                                                 Models.Token,
                                                 Models.AccountsDbContext,
                                                 string>
+
     {
         public ApplicationStore(IMemoryCache cache, Models.AccountsDbContext context, IOptionsMonitor<OpenIddictEntityFrameworkCoreOptions> options) :
             base(cache, context, options)
@@ -26,7 +27,6 @@ namespace CommunAxiom.Accounts.Stores
         public override ValueTask<long> CountAsync<TResult>(System.Func<IQueryable<Application>, IQueryable<TResult>> query, CancellationToken cancellationToken)
         {
             return base.CountAsync(q => query(q.Where(x => x.Deleted != true)), cancellationToken);
-
         }
 
         public override ValueTask DeleteAsync(Application application, CancellationToken cancellationToken)
@@ -39,35 +39,47 @@ namespace CommunAxiom.Accounts.Stores
 
         public override async ValueTask<Application> FindByClientIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            var res = await base.FindByClientIdAsync(identifier, cancellationToken);
-            if (res.Deleted)
-                return null;
-            return res;    
+            var result = await base.FindByClientIdAsync(identifier, cancellationToken);
+            if (result != null)
+                if (result.Deleted)
+                    return null;
+            return result;
         }
 
         public override ValueTask<Application> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            //TODO: Add condition to filter out softdeleted
-            return base.FindByIdAsync(identifier, cancellationToken);
+            //TODO: add condition to filter out softdeleted
+            //return base.FindByIdAsync(identifier, cancellationToken);
+
+            var result = base.FindByIdAsync(identifier, cancellationToken);
+            if (result.Result != null)
+            {
+                if (!result.Result.Deleted)
+                    return result;
+                else
+                    return ValueTask.FromResult<Application>(null);
+            }
+            else
+                return ValueTask.FromResult<Application>(null);
         }
 
         public override IAsyncEnumerable<Application> FindByPostLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
             //TODO: Add filter to async enumerable
-            //return this.Context.Set<Application>().AsAsyncEnumerable().Where(x=>x.PostLogoutRedirectUris.Contains(address))
-            return base.FindByPostLogoutRedirectUriAsync(address, cancellationToken);
+            return Context.Set<Application>().AsAsyncEnumerable().Where(x => x.PostLogoutRedirectUris.Contains(address));
+            //return base.FindByPostLogoutRedirectUriAsync(address, cancellationToken);
         }
 
         public override IAsyncEnumerable<Application> FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
             //TODO: Add filter to async enumerable
-            return base.FindByRedirectUriAsync(address, cancellationToken);
+            return Context.Set<Application>().AsAsyncEnumerable().Where(x => x.RedirectUris.Contains(address));
+            //return base.FindByRedirectUriAsync(address, cancellationToken);
         }
 
         public override IAsyncEnumerable<Application> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            var Applications = Context.Set<Application>().AsAsyncEnumerable().Where(x => x.Deleted == false);
-            return (IAsyncEnumerable<Application>)Applications;
+            return Context.Set<Application>().AsAsyncEnumerable().Where(x => x.Deleted == false);
         }
 
         public override IAsyncEnumerable<TResult> ListAsync<TState, TResult>(System.Func<IQueryable<Application>, TState, IQueryable<TResult>> query, TState state, CancellationToken cancellationToken)

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CommunAxiom.Accounts.Helpers;
 using CommunAxiom.Accounts.Models;
+using CommunAxiom.Accounts.Stores;
 using CommunAxiom.Accounts.ViewModels.Authorization;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -26,24 +27,20 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly OpenIddictScopeManager<OpenIddictEntityFrameworkCoreScope> _scopeManager;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
-        //the below line has been changed to deal with the updated Application Model
-        //private readonly OpenIddictApplicationManager<OpenIddictEntityFrameworkCoreApplication> _openIddictApplicationManager;
-        private readonly OpenIddictApplicationManager<Application> _openIddictApplicationManager;
+        private readonly OpenIddictApplicationManager<Application> _applicationManager;
         private readonly IOpenIddictAuthorizationManager _authorizationManager;
 
         public AuthorizationController(
             OpenIddictScopeManager<OpenIddictEntityFrameworkCoreScope> scopeManager,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
-            //changed to deal with Application Model too
-            //OpenIddictApplicationManager<OpenIddictEntityFrameworkCoreApplication> openIddictApplicationManager)
-            OpenIddictApplicationManager<Application> openIddictApplicationManager,
+            OpenIddictApplicationManager<Application> applicationManager,
             IOpenIddictAuthorizationManager authorizationManager)
         {
             _scopeManager = scopeManager;
             _signInManager = signInManager;
             _userManager = userManager;
-            _openIddictApplicationManager = openIddictApplicationManager;
+            _applicationManager = applicationManager;
             _authorizationManager = authorizationManager;
         }
 
@@ -304,18 +301,18 @@ namespace CommunAxiom.Accounts.Controllers
                 throw new InvalidOperationException("The user details cannot be retrieved.");
 
             // Retrieve the application details from the database.
-            var application = await _openIddictApplicationManager.FindByClientIdAsync(request.ClientId) ??
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
                 throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
 
             // Retrieve the permanent authorizations associated with the user and the calling client application.
             var authorizations = await _authorizationManager.FindAsync(
                 subject: await _userManager.GetUserIdAsync(user),
-                client: await _openIddictApplicationManager.GetIdAsync(application),
+                client: await _applicationManager.GetIdAsync(application),
                 status: Statuses.Valid,
                 type: AuthorizationTypes.Permanent,
                 scopes: request.GetScopes()).ToListAsync();
 
-            switch (await _openIddictApplicationManager.GetConsentTypeAsync(application))
+            switch (await _applicationManager.GetConsentTypeAsync(application))
             {
                 // If the consent is external (e.g when authorizations are granted by a sysadmin),
                 // immediately return an error if no authorization can be found in the database.
@@ -350,7 +347,7 @@ namespace CommunAxiom.Accounts.Controllers
                         authorization = await _authorizationManager.CreateAsync(
                             principal: principal,
                             subject: await _userManager.GetUserIdAsync(user),
-                            client: await _openIddictApplicationManager.GetIdAsync(application),
+                            client: await _applicationManager.GetIdAsync(application),
                             type: AuthorizationTypes.Permanent,
                             scopes: principal.GetScopes());
                     }
@@ -381,7 +378,7 @@ namespace CommunAxiom.Accounts.Controllers
                 default:
                     return View(new AuthorizeViewModel
                     {
-                        DisplayName = await _openIddictApplicationManager.GetDisplayNameAsync(application),
+                        DisplayName = await _applicationManager.GetDisplayNameAsync(application),
                         Scope = request.Scope
                     });
             }
@@ -399,13 +396,13 @@ namespace CommunAxiom.Accounts.Controllers
                 throw new InvalidOperationException("The user details cannot be retrieved.");
 
             // Retrieve the application details from the database.
-            var application = await _openIddictApplicationManager.FindByClientIdAsync(request.ClientId) ??
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
                 throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
 
             // Retrieve the permanent authorizations associated with the user and the calling client application.
             var authorizations = await _authorizationManager.FindAsync(
                 subject: await _userManager.GetUserIdAsync(user),
-                client: await _openIddictApplicationManager.GetIdAsync(application),
+                client: await _applicationManager.GetIdAsync(application),
                 status: Statuses.Valid,
                 type: AuthorizationTypes.Permanent,
                 scopes: request.GetScopes()).ToListAsync();
@@ -413,7 +410,7 @@ namespace CommunAxiom.Accounts.Controllers
             // Note: the same check is already made in the other action but is repeated
             // here to ensure a malicious user can't abuse this POST-only endpoint and
             // force it to return a valid response without the external authorization.
-            if (!authorizations.Any() && await _openIddictApplicationManager.HasConsentTypeAsync(application, ConsentTypes.External))
+            if (!authorizations.Any() && await _applicationManager.HasConsentTypeAsync(application, ConsentTypes.External))
             {
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
@@ -441,7 +438,7 @@ namespace CommunAxiom.Accounts.Controllers
                 authorization = await _authorizationManager.CreateAsync(
                     principal: principal,
                     subject: await _userManager.GetUserIdAsync(user),
-                    client: await _openIddictApplicationManager.GetIdAsync(application),
+                    client: await _applicationManager.GetIdAsync(application),
                     type: AuthorizationTypes.Permanent,
                     scopes: principal.GetScopes());
             }

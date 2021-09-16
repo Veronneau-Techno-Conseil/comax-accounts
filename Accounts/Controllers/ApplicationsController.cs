@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunAxiom.Accounts.Models;
 using CommunAxiom.Accounts.ViewModels.Application;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Core;
 using RandomDataGenerator.FieldOptions;
 using RandomDataGenerator.Randomizers;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using OpenIddict.Abstractions;
+using System.Text.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -46,7 +44,8 @@ namespace CommunAxiom.Accounts.Controllers
             var RandomWord = RandomizerFactory.GetRandomizer(new FieldOptionsTextWords { Min = 4, Max = 5 }).Generate().ToString().Replace(" ", "_");
 
             //Validate its uniqueness in the database
-            if (_applicationManager.FindByClientIdAsync(RandomWord).Result != null)
+            var apps = _applicationManager.FindByClientIdAsync(RandomWord).Result;
+            if (apps != null)
             {
                 do
                     RandomWord = RandomizerFactory.GetRandomizer(new FieldOptionsTextWords { Min = 4, Max = 5 }).Generate().ToString().Replace(" ", "_");
@@ -54,13 +53,16 @@ namespace CommunAxiom.Accounts.Controllers
             }
 
             //Create the application
-            var application = new OpenIddictApplicationDescriptor
+            //var application = new OpenIddictApplicationDescriptor
+            var application = new Application
             {
+                Id = Guid.NewGuid().ToString(),
                 ClientId = RandomWord,
-                ClientSecret = Guid.NewGuid().ToString(),
+                Deleted = false,
+                DeletedDate = DateTime.Parse("01-01-1900"),
                 DisplayName = model.DisplayName,
-                Type = ClientTypes.Public,
-                Permissions =
+                Type = ClientTypes.Confidential,
+                Permissions = new
                 {
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
@@ -71,14 +73,13 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles
-                }
+                }.ToString(),
+                PostLogoutRedirectUris = "http://localhost:5001/authentication/logout-callback",
+                RedirectUris ="http://localhost:5001/authentication/login-callback",
+                Requirements = Requirements.Features.ProofKeyForCodeExchange
             };
-                        
-            application.PostLogoutRedirectUris.Add(new Uri("https://localhost:5001/authentication/logout-callback"));
-            application.RedirectUris.Add(new Uri("https://localhost:5001/authentication/login-callback"));
-            application.Requirements.Add(Requirements.Features.ProofKeyForCodeExchange);
 
-            await _applicationManager.CreateAsync(application);
+            await _applicationManager.CreateAsync(application, Guid.NewGuid().ToString());
 
             var CreatedApplication = _applicationManager.FindByClientIdAsync(RandomWord).Result;
 
@@ -107,7 +108,7 @@ namespace CommunAxiom.Accounts.Controllers
 
             //TODO: This should return a restul view, not the list. you want to display the secret to the client
             //and explain that the user must keep a local copy safe to use with the application
-            return RedirectToAction("Manage", "Applications");
+            return RedirectToAction("Details", new { Id = CreatedApplication.Id });
         }
 
         [HttpGet]
@@ -123,13 +124,28 @@ namespace CommunAxiom.Accounts.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Details(string Id)
+        {
+            var Application = _applicationManager.FindByIdAsync(Id).Result;
+            var ApplicationDetails = new DetailsViewModel
+            {
+                Id = Application.Id,
+                DisplayName = Application.DisplayName,
+                ClientId = Application.ClientId,
+                ClientSecret = Application.ClientSecret
+            };
+
+            return View(ApplicationDetails);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Regenerate(string id)
+        public async Task<IActionResult> Details(Application model)
         {
             //TODO: Any server interaction that has side effects (i.e. that modifies a table) should never happen using HttpGet,
             // either user Post for creation and Put for updates or Patch for partial updates 
-            var application = _applicationManager.FindByIdAsync(id).Result;
             var RandomWord = BitConverter.ToString(RandomizerFactory.GetRandomizer(new FieldOptionsBytes { Min = 32, Max = 32 }).Generate()).Replace("-", "");
+            var application = _applicationManager.FindByIdAsync(model.Id).Result;
             if (application == null)
             {
                 ViewBag.ErrorMessage = "Application cannot be found";
@@ -137,13 +153,10 @@ namespace CommunAxiom.Accounts.Controllers
             }
             else
             {
-                application.ClientSecret = RandomWord;
-                await _applicationManager.UpdateAsync(application);
-                //TODO: try this instead? haven't tested but seems to be made specifically for that
-                //await _applicationManager.UpdateAsync(application, RandomWord);
+                await _applicationManager.UpdateAsync(application, RandomWord);
             }
-            //
-            return View(application);
+
+            return RedirectToAction("Details", new { id = application.Id });
         }
 
         [HttpPost]

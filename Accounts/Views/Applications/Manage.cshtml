@@ -9,10 +9,7 @@
     <thead>
         <tr>
             <th>
-                "Display Name"
-            </th>
-            <th>
-                Regenerate Secret
+                Display Name
             </th>
             <th>
                 Delete App
@@ -24,13 +21,13 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.DisplayName)
+                    <a asp-controller="Applications" asp-action="Details" asp-route-Id="@item.Id">@Html.DisplayFor(modelItem => item.DisplayName)</a>
                 </td>
                 <td>
-                    @Html.ActionLink("Regenerate", "Regenerate", "Applications", new { id = item.Id })
-                </td>
-                <td>
-                    @Html.ActionLink("Delete", "Delete", "Applications", new { id = item.Id })
+                    <form asp-action="Delete" asp-controller="Applications" asp-route-id="@item.Id">
+                        <button class="" type="submit">Submit</button>
+                    </form>
+
                 </td>
             </tr>
         }

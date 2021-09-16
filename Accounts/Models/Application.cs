@@ -12,5 +12,7 @@ namespace CommunAxiom.Accounts.Models
         public override string Id { get; set; }
         public bool Deleted { get; set; }
         public DateTime DeletedDate { get; set; }
+        public new string PostLogoutRedirectUris { get; set; }
+        public new string RedirectUris { get; set; }
     }
 }

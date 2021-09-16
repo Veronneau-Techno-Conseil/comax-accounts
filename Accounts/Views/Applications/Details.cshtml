@@ -1,0 +1,40 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Application.DetailsViewModel
+@{
+    ViewData["Title"] = "Application Details";
+}
+
+<h2>@ViewData["Title"].</h2>
+
+
+<h4>Application Details Shown Here</h4>
+<hr />
+<div>
+    <div>
+        <label asp-for="DisplayName"></label>
+        <div>
+            @Model.DisplayName
+        </div>
+    </div>
+
+    <div>
+        <label asp-for="ClientId"></label>
+        <div>
+            @Model.ClientId
+        </div>
+    </div>
+
+    <div>
+        <label asp-for="ClientSecret"></label>
+        <p>Make sure to copy your client secret now and keep a local copy safe to use it with the application </p>
+        <div>
+            @Model.ClientSecret
+        </div>
+        <form method="post">
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Regenerate Secret" class="btn btn-primary" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
