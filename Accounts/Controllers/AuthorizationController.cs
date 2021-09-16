@@ -23,7 +23,7 @@ namespace CommunAxiom.Accounts.Controllers
 {
     public class AuthorizationController : Controller
     {
-        private readonly OpenIddictScopeManager<OpenIddictEntityFrameworkCoreScope> _scopeManager;
+        private readonly OpenIddictScopeManager<Models.Scope> _scopeManager;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         //the below line has been changed to deal with the updated Application Model
@@ -32,7 +32,7 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly IOpenIddictAuthorizationManager _authorizationManager;
 
         public AuthorizationController(
-            OpenIddictScopeManager<OpenIddictEntityFrameworkCoreScope> scopeManager,
+            OpenIddictScopeManager<Models.Scope> scopeManager,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             //changed to deal with Application Model too
