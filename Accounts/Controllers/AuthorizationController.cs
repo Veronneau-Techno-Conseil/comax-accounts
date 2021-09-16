@@ -24,14 +24,14 @@ namespace CommunAxiom.Accounts.Controllers
 {
     public class AuthorizationController : Controller
     {
-        private readonly OpenIddictScopeManager<OpenIddictEntityFrameworkCoreScope> _scopeManager;
+        private readonly OpenIddictScopeManager<Models.Scope> _scopeManager;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly OpenIddictApplicationManager<Application> _applicationManager;
         private readonly IOpenIddictAuthorizationManager _authorizationManager;
 
         public AuthorizationController(
-            OpenIddictScopeManager<OpenIddictEntityFrameworkCoreScope> scopeManager,
+            OpenIddictScopeManager<Models.Scope> scopeManager,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             OpenIddictApplicationManager<Application> applicationManager,

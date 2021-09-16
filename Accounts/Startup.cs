@@ -42,8 +42,6 @@ namespace CommunAxiom.Accounts
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<AccountsDbContext>();
 
-            
-
             // Configure Identity to use the same JWT claims as OpenIddict instead
             // of the legacy WS-Federation claims it uses by default (ClaimTypes),
             // which saves you from doing the mapping in your authorization controller.
@@ -64,14 +62,19 @@ namespace CommunAxiom.Accounts
         //});
 
             services.AddOpenIddict()
-
                 // Register the OpenIddict core components.
                 .AddCore(options =>
                 {
-
+                    
                     // Configure OpenIddict to use the Entity Framework Core stores and models.
                     // Note: call ReplaceDefaultEntities() to replace the default OpenIddict entities.
                     options.UseEntityFrameworkCore()
+                           .ReplaceDefaultEntities<
+                               Models.Application, 
+                               Models.Authorization, 
+                               Models.Scope, 
+                               Models.Token, 
+                               string>()
                            .UseDbContext<AccountsDbContext>();
 
                     options.AddApplicationStore<ApplicationStore>();
@@ -133,14 +136,16 @@ namespace CommunAxiom.Accounts
         {
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
 
             var serviceProvider = scope.ServiceProvider;
 
 
             var dbConf = serviceProvider.GetService<IOptionsMonitor<DbConf>>().CurrentValue;
-            if (dbConf.MemoryDb)
+            
+            if (dbConf.MemoryDb || !dbConf.ShouldMigrate)
                 return;
+            
+            var context = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
 
             var dbcontext = serviceProvider.GetService<AccountsDbContext>();
 

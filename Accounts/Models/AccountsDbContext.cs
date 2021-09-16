@@ -30,15 +30,15 @@ namespace CommunAxiom.Accounts.Models
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseOpenIddict();
+            var opts = optionsBuilder.UseOpenIddict<Models.Application, Models.Authorization, Models.Scope, Models.Token, string>();
 
             if (configs.MemoryDb)
             {
-                optionsBuilder.UseInMemoryDatabase("AccountsDb");
+                opts.UseInMemoryDatabase("AccountsDb");
             }
             else
             {
-                optionsBuilder.UseNpgsql(configs.ConnectionString);
+                opts.UseNpgsql(configs.ConnectionString);
             }
         }
     }

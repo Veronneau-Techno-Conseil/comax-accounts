@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace CommunAxiom.Accounts.Models.Configurations
 {
+    /// <summary>
+    /// Initial configuration for any extensions added to the default AspNet and openiddict authentication system
+    /// </summary>
     public class InitialConfig : IModelConfig
     {
         public void SetupFields(ModelBuilder builder)
@@ -50,39 +53,6 @@ namespace CommunAxiom.Accounts.Models.Configurations
         {
             builder.Entity<Models.AccountType>()
                 .ToTable("AccountTypes");
-
-            builder.Entity<Models.User>()
-                .ToTable("Users");
-
-            builder.Entity<IdentityRoleClaim<string>>()
-                .ToTable("RoleClaims");
-
-            builder.Entity<IdentityRole>()
-                .ToTable("Roles");
-
-            builder.Entity<IdentityUserClaim<string>>()
-                .ToTable("UserClaims");
-
-            builder.Entity<IdentityUserLogin<string>>()
-                .ToTable("UserLogins");
-
-            builder.Entity<IdentityUserRole<string>>()
-                .ToTable("UserRoles");
-
-            builder.Entity<IdentityUserToken<string>>()
-                .ToTable("UserTokens");
-
-            builder.Entity<Models.Application>()
-                .ToTable("Applications");
-
-            builder.Entity<Models.Authorization>()
-                .ToTable("Authorizations");
-
-            builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreScope>()
-                .ToTable("Scopes");
-
-            builder.Entity<Models.Token>()
-                .ToTable("Tokens");
 
             builder.Entity<Models.ApplicationType>()
                 .ToTable("ApplicationTypes");
