@@ -65,17 +65,17 @@ namespace CommunAxiom.Accounts
                 // Register the OpenIddict core components.
                 .AddCore(options =>
                 {
-
+                    
                     // Configure OpenIddict to use the Entity Framework Core stores and models.
                     // Note: call ReplaceDefaultEntities() to replace the default OpenIddict entities.
                     options.UseEntityFrameworkCore()
-                           .UseDbContext<AccountsDbContext>()
                            .ReplaceDefaultEntities<
                                Models.Application, 
                                Models.Authorization, 
                                Models.Scope, 
                                Models.Token, 
-                               string>();
+                               string>()
+                           .UseDbContext<AccountsDbContext>();
 
                     options.AddApplicationStore<ApplicationStore>();
                 })
