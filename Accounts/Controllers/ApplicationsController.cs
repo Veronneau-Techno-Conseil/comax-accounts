@@ -11,8 +11,7 @@ using RandomDataGenerator.Randomizers;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using OpenIddict.Abstractions;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -52,6 +51,10 @@ namespace CommunAxiom.Accounts.Controllers
                 while (_applicationManager.FindByClientIdAsync(RandomWord).Result == null);
             }
 
+            var PostLogoutRedirectUri = new Uri("http://localhost:5001/authentication/logout-callback");
+            var RedirectUri = new Uri("http://localhost:5001/authentication/login-callback");
+
+
             //Create the application
             //var application = new OpenIddictApplicationDescriptor
             var application = new Application
@@ -61,8 +64,13 @@ namespace CommunAxiom.Accounts.Controllers
                 Deleted = false,
                 DeletedDate = DateTime.Parse("01-01-1900"),
                 DisplayName = model.DisplayName,
+                DisplayNames = JsonSerializer.Serialize(new
+                {
+                    model.DisplayName
+                }),
                 Type = ClientTypes.Confidential,
-                Permissions = new
+                ConsentType = ConsentTypes.Explicit,
+                Permissions = JsonSerializer.Serialize(new
                 {
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
@@ -73,13 +81,26 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles
-                }.ToString(),
-                PostLogoutRedirectUris = "http://localhost:5001/authentication/logout-callback",
-                RedirectUris ="http://localhost:5001/authentication/login-callback",
-                Requirements = Requirements.Features.ProofKeyForCodeExchange
+                }),
+                PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
+                {
+                    PostLogoutRedirectUri
+                }),
+                RedirectUris = JsonSerializer.Serialize(new[]
+                {
+                    RedirectUri
+                }),
+                //Properties = JsonSerializer.Serialize(new
+                //{
+                //    OpenIddictConstants.Properties.Destinations
+                //}),
+                Requirements = JsonSerializer.Serialize(new
+                {
+                    Requirements.Features.ProofKeyForCodeExchange
+                })
             };
-
-            await _applicationManager.CreateAsync(application, Guid.NewGuid().ToString());
+            var secret = Guid.NewGuid().ToString();
+            await _applicationManager.CreateAsync(application, secret);
 
             var CreatedApplication = _applicationManager.FindByClientIdAsync(RandomWord).Result;
 
@@ -108,7 +129,7 @@ namespace CommunAxiom.Accounts.Controllers
 
             //TODO: This should return a restul view, not the list. you want to display the secret to the client
             //and explain that the user must keep a local copy safe to use with the application
-            return RedirectToAction("Details", new { Id = CreatedApplication.Id });
+            return RedirectToAction("Details", new { Id = CreatedApplication.Id, secret = secret });
         }
 
         [HttpGet]
@@ -125,7 +146,7 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(string Id)
+        public IActionResult Details(string Id, string secret)
         {
             var Application = _applicationManager.FindByIdAsync(Id).Result;
             var ApplicationDetails = new DetailsViewModel
@@ -133,7 +154,7 @@ namespace CommunAxiom.Accounts.Controllers
                 Id = Application.Id,
                 DisplayName = Application.DisplayName,
                 ClientId = Application.ClientId,
-                ClientSecret = Application.ClientSecret
+                ClientSecret = secret
             };
 
             return View(ApplicationDetails);

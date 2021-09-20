@@ -9,10 +9,8 @@ namespace CommunAxiom.Accounts.Models
     {
         //The Id Property has been added since it was not identified without being added here
         //to make sure if any actions are required
-        public override string Id { get; set; }
+        public override string Id { get => base.Id; set => base.Id = value; }
         public bool Deleted { get; set; }
         public DateTime DeletedDate { get; set; }
-        public new string PostLogoutRedirectUris { get; set; }
-        public new string RedirectUris { get; set; }
     }
 }
