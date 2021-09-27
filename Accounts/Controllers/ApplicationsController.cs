@@ -70,7 +70,7 @@ namespace CommunAxiom.Accounts.Controllers
                 }),
                 Type = ClientTypes.Confidential,
                 ConsentType = ConsentTypes.Explicit,
-                Permissions = JsonSerializer.Serialize(new
+                Permissions = JsonSerializer.Serialize(new[]
                 {
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
@@ -78,6 +78,7 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.GrantTypes.AuthorizationCode,
                     Permissions.GrantTypes.RefreshToken,
                     Permissions.GrantTypes.DeviceCode,
+                    Permissions.GrantTypes.Implicit,
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles
@@ -90,10 +91,6 @@ namespace CommunAxiom.Accounts.Controllers
                 {
                     RedirectUri
                 }),
-                //Properties = JsonSerializer.Serialize(new
-                //{
-                //    OpenIddictConstants.Properties.Destinations
-                //}),
                 Requirements = JsonSerializer.Serialize(new
                 {
                     Requirements.Features.ProofKeyForCodeExchange
@@ -129,7 +126,7 @@ namespace CommunAxiom.Accounts.Controllers
 
             //TODO: This should return a restul view, not the list. you want to display the secret to the client
             //and explain that the user must keep a local copy safe to use with the application
-            return RedirectToAction("Details", new { Id = CreatedApplication.Id, secret = secret });
+            return RedirectToAction("Details", new { Id = CreatedApplication.Id, secret = secret, showSecret = true });
         }
 
         [HttpGet]
@@ -146,7 +143,7 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(string Id, string secret)
+        public IActionResult Details(string Id, string secret, bool showSecret)
         {
             var Application = _applicationManager.FindByIdAsync(Id).Result;
             var ApplicationDetails = new DetailsViewModel
@@ -154,7 +151,8 @@ namespace CommunAxiom.Accounts.Controllers
                 Id = Application.Id,
                 DisplayName = Application.DisplayName,
                 ClientId = Application.ClientId,
-                ClientSecret = secret
+                ClientSecret = secret,
+                ShowSecret = showSecret
             };
 
             return View(ApplicationDetails);
@@ -165,7 +163,7 @@ namespace CommunAxiom.Accounts.Controllers
         {
             //TODO: Any server interaction that has side effects (i.e. that modifies a table) should never happen using HttpGet,
             // either user Post for creation and Put for updates or Patch for partial updates 
-            var RandomWord = BitConverter.ToString(RandomizerFactory.GetRandomizer(new FieldOptionsBytes { Min = 32, Max = 32 }).Generate()).Replace("-", "");
+            var secret = Guid.NewGuid().ToString();
             var application = _applicationManager.FindByIdAsync(model.Id).Result;
             if (application == null)
             {
@@ -174,10 +172,10 @@ namespace CommunAxiom.Accounts.Controllers
             }
             else
             {
-                await _applicationManager.UpdateAsync(application, RandomWord);
+                await _applicationManager.UpdateAsync(application, secret);
             }
 
-            return RedirectToAction("Details", new { id = application.Id });
+            return RedirectToAction("Details", new { id = application.Id, secret = secret, showSecret = true });
         }
 
         [HttpPost]

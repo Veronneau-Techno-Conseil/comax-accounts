@@ -16,5 +16,6 @@ namespace CommunAxiom.Accounts.ViewModels.Application
         public string ClientId { get; set; }
         [Display(Name = "Client Secret")]
         public string ClientSecret { get; set; }
+        public bool ShowSecret { get; set; }
     }
 }

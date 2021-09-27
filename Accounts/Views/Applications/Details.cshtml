@@ -23,12 +23,15 @@
         </div>
     </div>
 
-    <div>
+    <div style="@(Model.ShowSecret ? "display:block" : "display:none")">
         <label asp-for="ClientSecret"></label>
-        <p>Make sure to copy your client secret now and keep a local copy safe to use it with the application </p>
+        <p>Make sure to copy your client secret now and keep a local copy safe to use it with the application. 
+        You Wouldnt be able to see this secret again</p>
         <div>
             @Model.ClientSecret
         </div>
+    </div>
+    <div>
         <form method="post">
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
