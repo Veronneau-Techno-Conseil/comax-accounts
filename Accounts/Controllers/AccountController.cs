@@ -105,7 +105,11 @@ namespace CommunAxiom.Accounts.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Email = model.Email, AccountType = model.AccountType };
+                //The AccountType was hardcoded based on the JiraTicket COM26-COM(149) Task https://vertechcon.atlassian.net/browse/COM-149
+                //The below line code was replaced based on the task
+                //var user = new User { UserName = model.Email, Email = model.Email, AccountType = model.AccountType};
+                
+                var user = new User { UserName = model.Email, Email = model.Email, AccountType = (AccountType)Enum.Parse(typeof(AccountType), "User") };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

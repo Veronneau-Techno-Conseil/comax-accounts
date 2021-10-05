@@ -58,6 +58,13 @@ namespace CommunAxiom.Accounts.Models.Configurations
 
             builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreToken>()
                 .ToTable("Tokens");
+            //Should we include an entity for ApplicationType and ApplicationTypeMaps
+            builder.Entity<ApplicationType>()
+                .ToTable("ApplicationTypes");
+            builder.Entity<ApplicationTypeMap>()
+                .ToTable("ApplicationTypeMaps");
+            builder.Entity<UserApplicationMap>()
+                .ToTable("UserApplicationMap");
 
         }
     }

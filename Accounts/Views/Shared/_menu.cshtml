@@ -1,0 +1,44 @@
+﻿@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<div>
+    <div>
+        <ul class="nav navbar-nav ml-auto">
+            <li><a asp-controller="Home" asp-action="Index" title="Home">Home</a></li>
+        </ul>
+    </div>
+    <div>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a asp-controller="Profile" asp-action="Edit" asp-route-Id="@UserManager.GetUserId(User)" title="Profile">
+                        @if (UserManager.GetUserAsync(User).Result.ProfilePicture != null)
+                        {
+                            <img style="float:right; width:40px; height: 40px; object-fit: cover; border-radius: 30px" src="data:image/*;base64,@(Convert.ToBase64String(UserManager.GetUserAsync(User).Result.ProfilePicture))">
+                        }
+                        else
+                        {
+                            <img style="float:right; width:40px; height: 40px; object-fit: cover; border-radius: 30px" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" />
+                        }
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <form method="post" asp-action="LogOff" asp-controller="Account">
+                        <button type="submit" class="nav-link btn btn-link"
+                                style="width:auto">
+                            LogOff @User.Identity.Name
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        }
+        else
+        {
+            <ul class="nav navbar-nav navbar-right">
+                <li><a asp-controller="Account" asp-action="Register">Register</a></li>
+                <li><a asp-controller="Account" asp-action="Login">Log in</a></li>
+            </ul>
+        }
+    </div>
+</div>
