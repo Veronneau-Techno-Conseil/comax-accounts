@@ -51,8 +51,8 @@ namespace CommunAxiom.Accounts.Controllers
                 while (_applicationManager.FindByClientIdAsync(RandomWord).Result == null);
             }
 
-            var PostLogoutRedirectUri = new Uri("http://localhost:5001/authentication/logout-callback");
-            var RedirectUri = new Uri("http://localhost:5001/authentication/login-callback");
+           // var PostLogoutRedirectUri = new Uri("http://localhost:5001/authentication/logout-callback");
+           // var RedirectUri = new Uri("http://localhost:5001/authentication/login-callback");
 
 
             //Create the application
@@ -72,29 +72,31 @@ namespace CommunAxiom.Accounts.Controllers
                 ConsentType = ConsentTypes.Explicit,
                 Permissions = JsonSerializer.Serialize(new[]
                 {
+                   Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.RefreshToken,
+                    
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
                     Permissions.Endpoints.Token,
-                    Permissions.GrantTypes.AuthorizationCode,
-                    Permissions.GrantTypes.RefreshToken,
-                    Permissions.GrantTypes.DeviceCode,
-                    Permissions.GrantTypes.Implicit,
+                    
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
-                    Permissions.Scopes.Roles
+                    Permissions.Scopes.Roles,
+                    
+                    Permissions.ResponseTypes.Code
                 }),
                 PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
                 {
-                    PostLogoutRedirectUri
+                    model.PostLogoutRedirectURI
                 }),
                 RedirectUris = JsonSerializer.Serialize(new[]
                 {
-                    RedirectUri
+                    model.RedirectURI
                 }),
-                Requirements = JsonSerializer.Serialize(new
-                {
-                    Requirements.Features.ProofKeyForCodeExchange
-                })
+                //Requirements = JsonSerializer.Serialize(new[]
+                //{
+                //    Requirements.Features.ProofKeyForCodeExchange
+                //})
             };
             var secret = Guid.NewGuid().ToString();
             await _applicationManager.CreateAsync(application, secret);

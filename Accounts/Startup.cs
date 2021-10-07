@@ -98,6 +98,7 @@ namespace CommunAxiom.Accounts
                     options.AllowImplicitFlow();
                     options.AllowPasswordFlow();
                     options.AllowClientCredentialsFlow();
+                    options.AllowAuthorizationCodeFlow();
                     
                     // Register the signing and encryption credentials.
                     options.AddDevelopmentEncryptionCertificate()
