@@ -51,10 +51,6 @@ namespace CommunAxiom.Accounts.Controllers
                 while (_applicationManager.FindByClientIdAsync(RandomWord).Result == null);
             }
 
-           // var PostLogoutRedirectUri = new Uri("http://localhost:5001/authentication/logout-callback");
-           // var RedirectUri = new Uri("http://localhost:5001/authentication/login-callback");
-
-
             //Create the application
             //var application = new OpenIddictApplicationDescriptor
             var application = new Application
@@ -64,17 +60,19 @@ namespace CommunAxiom.Accounts.Controllers
                 Deleted = false,
                 DeletedDate = DateTime.Parse("01-01-1900"),
                 DisplayName = model.DisplayName,
-                DisplayNames = JsonSerializer.Serialize(new
+                DisplayNames = Newtonsoft.Json.JsonConvert.SerializeObject(new System.Collections.Generic.Dictionary<string,string>
                 {
-                    model.DisplayName
+                    { "en-CA", model.DisplayName }
                 }),
                 Type = ClientTypes.Confidential,
                 ConsentType = ConsentTypes.Explicit,
                 Permissions = JsonSerializer.Serialize(new[]
                 {
-                   Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.AuthorizationCode,
                     Permissions.GrantTypes.RefreshToken,
-                    
+                    Permissions.GrantTypes.DeviceCode,
+
+                    Permissions.Endpoints.Device,
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
                     Permissions.Endpoints.Token,
@@ -93,10 +91,10 @@ namespace CommunAxiom.Accounts.Controllers
                 {
                     model.RedirectURI
                 }),
-                //Requirements = JsonSerializer.Serialize(new[]
-                //{
-                //    Requirements.Features.ProofKeyForCodeExchange
-                //})
+                Requirements = JsonSerializer.Serialize(new[]
+                {
+                    Requirements.Features.ProofKeyForCodeExchange
+                })
             };
             var secret = Guid.NewGuid().ToString();
             await _applicationManager.CreateAsync(application, secret);

@@ -85,10 +85,12 @@ namespace CommunAxiom.Accounts
                 {
                     // Enable the authorization, logout, userinfo, and introspection endpoints.
                     options.SetAuthorizationEndpointUris("/connect/authorize")
+                            .SetDeviceEndpointUris("/connect/device")
                            .SetLogoutEndpointUris("/connect/logout")
                            .SetIntrospectionEndpointUris("/connect/introspect")
                            .SetUserinfoEndpointUris("/connect/userinfo")
-                           .SetTokenEndpointUris("/connect/token");
+                           .SetTokenEndpointUris("/connect/token")
+                           .SetVerificationEndpointUris("/connect/verify");
 
                     // Mark the "email", "profile" and "roles" scopes as supported scopes.
                     options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles, Scopes.OfflineAccess);
@@ -97,6 +99,8 @@ namespace CommunAxiom.Accounts
                     // the other flows if you need to support implicit, password or client credentials.
                     options.AllowImplicitFlow();
                     options.AllowPasswordFlow();
+                    options.AllowRefreshTokenFlow();
+                    options.AllowDeviceCodeFlow();
                     options.AllowClientCredentialsFlow();
                     options.AllowAuthorizationCodeFlow();
                     
@@ -109,6 +113,7 @@ namespace CommunAxiom.Accounts
                            .EnableAuthorizationEndpointPassthrough()
                            .EnableUserinfoEndpointPassthrough()
                            .EnableTokenEndpointPassthrough()
+                           .EnableVerificationEndpointPassthrough()
                            .EnableStatusCodePagesIntegration()
                            .DisableTransportSecurityRequirement(); // During development, you can disable the HTTPS requirement.
                 })

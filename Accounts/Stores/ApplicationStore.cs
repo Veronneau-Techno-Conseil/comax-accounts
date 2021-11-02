@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using OpenIddict.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -92,6 +93,11 @@ namespace CommunAxiom.Accounts.Stores
         {
             var Applications = Context.Set<Application>().ToList().Where(x => x.Deleted == false).Count();
             return ValueTask.FromResult((long)Applications);
+        }
+
+        public override ValueTask<System.Collections.Immutable.ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(Application application, CancellationToken cancellationToken)
+        {
+            return base.GetDisplayNamesAsync(application, cancellationToken);
         }
     }
 }
