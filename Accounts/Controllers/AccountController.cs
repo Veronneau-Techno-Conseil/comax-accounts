@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CommunAxiom.Accounts.AppModels;
 using CommunAxiom.Accounts.Contracts;
 using CommunAxiom.Accounts.Models;
 using CommunAxiom.Accounts.ViewModels.Account;
@@ -22,19 +21,22 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly ISmsSender _smsSender;
         private readonly AccountsDbContext _applicationDbContext;
         private static bool _databaseChecked;
+        private readonly IAccountTypeCache _accountTypeCache;
 
         public AccountController(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            AccountsDbContext applicationDbContext)
+            AccountsDbContext applicationDbContext,
+            IAccountTypeCache accountTypeCache)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _applicationDbContext = applicationDbContext;
+            _accountTypeCache = accountTypeCache;
         }
 
         //
@@ -109,7 +111,7 @@ namespace CommunAxiom.Accounts.Controllers
                 //The below line code was replaced based on the task
                 //var user = new User { UserName = model.Email, Email = model.Email, AccountType = model.AccountType};
                 
-                var user = new User { UserName = model.Email, Email = model.Email, AccountType = (AccountType)Enum.Parse(typeof(AccountType), "User") };
+                var user = new User { UserName = model.Email, Email = model.Email, AccountTypeId = this._accountTypeCache.GetId(AccountType.USER) };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -204,7 +206,7 @@ namespace CommunAxiom.Accounts.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new User { UserName = model.Email, Email = model.Email, AccountType = AccountType.User };
+                var user = new User { UserName = model.Email, Email = model.Email, AccountTypeId = this._accountTypeCache.GetId(AccountType.USER)};
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

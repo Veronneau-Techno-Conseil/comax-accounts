@@ -9,6 +9,7 @@ namespace CommunAxiom.Accounts.Models
 {
     public class User : IdentityUser
     {
+        public int AccountTypeId { get; set; }
         public AccountType AccountType { get; set; }
         public byte[] ProfilePicture { get; set; }
     }

@@ -1,138 +1,198 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using CommunAxiom.Accounts.Models;
-//using CommunAxiom.Accounts.ViewModels.Application;
-//using Microsoft.AspNetCore.Mvc;
-//using OpenIddict.Core;
-//using RandomDataGenerator.FieldOptions;
-//using RandomDataGenerator.Randomizers;
-//using static OpenIddict.Abstractions.OpenIddictConstants;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using CommunAxiom.Accounts.Models;
+using CommunAxiom.Accounts.ViewModels.Application;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OpenIddict.Core;
+using RandomDataGenerator.FieldOptions;
+using RandomDataGenerator.Randomizers;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
+using OpenIddict.Abstractions;
 
-//namespace CommunAxiom.Accounts.Controllers
-//{
-//    public class ApplicationsController : Controller
-//    {
-//        private readonly OpenIddictApplicationManager<Application> _applicationManager;
+namespace CommunAxiom.Accounts.Controllers
+{
+    public class ApplicationsController : Controller
+    {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly OpenIddictApplicationManager<Application> _applicationManager;
+        private readonly UserManager<User> _userManager;
+        private readonly AccountsDbContext _context;
 
-//        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager)
-//        {
-//            _applicationManager = ApplicationManager;
-//        }
+        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context)
+        {
+            _applicationManager = ApplicationManager;
+            _serviceProvider = serviceProvider;
+            _userManager = userManager;
+            _context = context;
+        }
 
-//        public IActionResult Index()
-//        {
-//            return View();
-//        }
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
 
-//        [HttpGet]
-//        public async Task<IActionResult> Create()
-//        {
-//            return View();
-//        }
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            //Create the RandomWord
+            var RandomWord = RandomizerFactory.GetRandomizer(new FieldOptionsTextWords { Min = 4, Max = 5 }).Generate().ToString().Replace(" ", "_");
 
-//        public async Task<IActionResult> Create(CreateViewModel model)
-//        {
-//            //var TempClientId = "";
-//            //var result = false;
-//            //while(result == true)
-//            //{
-//            //    TempClientId = RandomizerFactory.GetRandomizer(new FieldOptionsTextWords { Min = 4, Max = 5 }).ToString(;
-//            //    foreach(item in Application)
-//            //    {
+            //Validate its uniqueness in the database
+            var apps = _applicationManager.FindByClientIdAsync(RandomWord).Result;
+            if (apps != null)
+            {
+                do
+                    RandomWord = RandomizerFactory.GetRandomizer(new FieldOptionsTextWords { Min = 4, Max = 5 }).Generate().ToString().Replace(" ", "_");
+                while (_applicationManager.FindByClientIdAsync(RandomWord).Result == null);
+            }
 
-//            //    }
-//            //}
+            //Create the application
+            //var application = new OpenIddictApplicationDescriptor
+            var application = new Application
+            {
+                Id = Guid.NewGuid().ToString(),
+                ClientId = RandomWord,
+                Deleted = false,
+                DeletedDate = DateTime.Parse("01-01-1900"),
+                DisplayName = model.DisplayName,
+                DisplayNames = Newtonsoft.Json.JsonConvert.SerializeObject(new System.Collections.Generic.Dictionary<string,string>
+                {
+                    { "en-CA", model.DisplayName }
+                }),
+                Type = ClientTypes.Confidential,
+                ConsentType = ConsentTypes.Explicit,
+                Permissions = JsonSerializer.Serialize(new[]
+                {
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.RefreshToken,
+                    Permissions.GrantTypes.DeviceCode,
 
+                    Permissions.Endpoints.Device,
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Logout,
+                    Permissions.Endpoints.Token,
+                    
+                    Permissions.Scopes.Email,
+                    Permissions.Scopes.Profile,
+                    Permissions.Scopes.Roles,
+                    
+                    Permissions.ResponseTypes.Code
+                }),
+                PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
+                {
+                    model.PostLogoutRedirectURI
+                }),
+                RedirectUris = JsonSerializer.Serialize(new[]
+                {
+                    model.RedirectURI
+                }),
+                Requirements = JsonSerializer.Serialize(new[]
+                {
+                    Requirements.Features.ProofKeyForCodeExchange
+                })
+            };
+            var secret = Guid.NewGuid().ToString();
+            await _applicationManager.CreateAsync(application, secret);
 
-//            var application = new Application
-//            {
-//                //ClientId = TempClientId,
-//                ClientSecret = RandomizerFactory.GetRandomizer(new FieldOptionsBytes { Min = 32, Max = 32 }).ToString(),
-//                DisplayName = model.DisplayName,
-//                Deleted = false,
-//                DeletedDate = DateTime.Parse("01-01-1900"),
-//                ConsentType = ConsentTypes.Explicit,
-//                Type = ClientTypes.Public,
-//                PostLogoutRedirectUris =
-//                    {
-//                        new Uri("https://localhost:44310/authentication/logout-callback")
-//                    },
-//                RedirectUris =
-//                    {
-//                        new Uri("https://localhost:44310/authentication/login-callback")
-//                    },
-//                Permissions =
-//                    {
-//                        Permissions.Endpoints.Authorization,
-//                        Permissions.Endpoints.Logout,
-//                        Permissions.Endpoints.Token,
-//                        Permissions.GrantTypes.AuthorizationCode,
-//                        Permissions.GrantTypes.RefreshToken,
-//                        //the below permission does not exist, to be checked !!
-//                        //Permissions.ResponseTypes.Code,
-//                        Permissions.Scopes.Email,
-//                        Permissions.Scopes.Profile,
-//                        Permissions.Scopes.Roles
-//                    },
-//                Requirements =
-//                    {
-//                        Requirements.Features.ProofKeyForCodeExchange
-//                    }
-//            };
+            var CreatedApplication = _applicationManager.FindByClientIdAsync(RandomWord).Result;
 
-//            if (_applicationManager.CreateAsync(application).IsCompletedSuccessfully)
-//            {
-//                return View(model);
-//            }
-//            else
-//            {
-//                ViewBag.ErrorMessage = "Failed to add application";
-//                return NotFound();
-//            }
-//        }
+            //Create the ApplicationTypeMaps & UserApplicationsMap Record
+            if (CreatedApplication != null)
+            {
+                var CommonsApp = _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == "Commons").FirstOrDefault();
 
+                var ApplicationTypeMap = new ApplicationTypeMap
+                {
+                    ApplicationId = CreatedApplication.Id,
+                    ApplicationTypeId = CommonsApp.Id
+                };
 
-//        [HttpGet]
-//        public async Task<IActionResult> Delete(string id)
-//        {
-//            var application = await _applicationManager.FindByIdAsync(id);
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                var UserApplicationMap = new UserApplicationMap
+                {
+                    UserId = user.Id,
+                    ApplicationId = CreatedApplication.Id
+                };
 
-//            var model = new EditViewModel
-//            {
-//                ClientId = application.ClientId,
-//                DisplayName = application.DisplayName
-//            };
+                await _context.Set<ApplicationTypeMap>().AddAsync(ApplicationTypeMap);
+                await _context.Set<UserApplicationMap>().AddAsync(UserApplicationMap);
+                await _context.SaveChangesAsync();
+            }
 
-//            return View(model);
-//        }
+            //TODO: This should return a restul view, not the list. you want to display the secret to the client
+            //and explain that the user must keep a local copy safe to use with the application
+            return RedirectToAction("Details", new { Id = CreatedApplication.Id, secret = secret, showSecret = true });
+        }
 
-//        [HttpPost]
-//        public async Task<IActionResult> Delete(EditViewModel model)
-//        {
+        [HttpGet]
+        public IActionResult Manage()
+        {
+            var Applications = _applicationManager.ListAsync();
 
-//            var application = await _applicationManager.FindByIdAsync(model.Id);
-//            if (model == null)
-//            {
-//                ViewBag.ErrorMessage = "User cannot be found";
-//                return NotFound();
-//            }
-//            else
-//            {
-//                application.Deleted = true;
-//                application.DeletedDate = DateTime.Now;
+            var model = new ManageViewModel
+            {
+                Applications = Applications
+            };
 
-//                if (_applicationManager.UpdateAsync(application).IsCompletedSuccessfully)
-//                {
-//                    return RedirectToAction("Index", "Application");
-//                }
-//                else
-//                {
-//                    ViewBag.ErrorMessage = "Failed to delete application";
-//                    return NotFound();
-//                }
-//            }
-//        }
-//    }
-//}
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Details(string Id, string secret, bool showSecret)
+        {
+            var Application = _applicationManager.FindByIdAsync(Id).Result;
+            var ApplicationDetails = new DetailsViewModel
+            {
+                Id = Application.Id,
+                DisplayName = Application.DisplayName,
+                ClientId = Application.ClientId,
+                ClientSecret = secret,
+                ShowSecret = showSecret
+            };
+
+            return View(ApplicationDetails);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Details(Application model)
+        {
+            //TODO: Any server interaction that has side effects (i.e. that modifies a table) should never happen using HttpGet,
+            // either user Post for creation and Put for updates or Patch for partial updates 
+            var secret = Guid.NewGuid().ToString();
+            var application = _applicationManager.FindByIdAsync(model.Id).Result;
+            if (application == null)
+            {
+                ViewBag.ErrorMessage = "Application cannot be found";
+                return RedirectToAction("Manage", "Applications");
+            }
+            else
+            {
+                await _applicationManager.UpdateAsync(application, secret);
+            }
+
+            return RedirectToAction("Details", new { id = application.Id, secret = secret, showSecret = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            //TODO: A delete action should always be done through a post action on a standard website 
+            var application = await _applicationManager.FindByIdAsync(id);
+            if (application == null)
+            {
+                ViewBag.ErrorMessage = "Application cannot be found";
+                return NotFound();
+            }
+            else
+            {
+                await _applicationManager.DeleteAsync(application, default);
+                return RedirectToAction("Manage", "Applications");
+            }
+        }
+    }
+}

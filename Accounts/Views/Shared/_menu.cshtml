@@ -13,7 +13,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <li>
                     <a asp-controller="Profile" asp-action="Edit" asp-route-Id="@UserManager.GetUserId(User)" title="Profile">
-                        @if (UserManager.GetUserAsync(User).Result.ProfilePicture != null)
+                        @if (UserManager.GetUserAsync(User).Result?.ProfilePicture != null)
                         {
                             <img style="float:right; width:40px; height: 40px; object-fit: cover; border-radius: 30px" src="data:image/*;base64,@(Convert.ToBase64String(UserManager.GetUserAsync(User).Result.ProfilePicture))">
                         }
@@ -32,6 +32,13 @@
                     </form>
                 </li>
             </ul>
+
+            <div>
+                <ul>
+                    <li> <a asp-controller="Applications" asp-action="Register"> Register Application </a> </li>
+                    <li> <a asp-controller="Applications" asp-action="Manage"> Manage Applications </a> </li>
+                </ul>
+            </div>
         }
         else
         {

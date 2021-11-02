@@ -7,63 +7,60 @@ using System.Threading.Tasks;
 
 namespace CommunAxiom.Accounts.Models.Configurations
 {
+    /// <summary>
+    /// Initial configuration for any extensions added to the default AspNet and openiddict authentication system
+    /// </summary>
     public class InitialConfig : IModelConfig
     {
         public void SetupFields(ModelBuilder builder)
         {
 
             builder.Entity<User>()
-                .Property(x => x.AccountType)
-                .HasColumnType<AccountType>("public.account_type")
+                .Property(x => x.AccountTypeId)
                 .IsRequired();
+
+            //This was added to set composite keys for the ApplicationTypeMaps and UserApplicationMap
+            builder.Entity<ApplicationTypeMap>()
+                .HasKey(x => new { x.ApplicationId, x.ApplicationTypeId });
+            builder.Entity<UserApplicationMap>()
+                .HasKey(x => new { x.UserId, x.ApplicationId });
+
+            builder.Entity<UserApplicationMap>()
+               .HasKey(x => new { x.ApplicationId });
+            builder.Entity<ApplicationTypeMap>()
+                .HasKey(x => new { x.ApplicationId });
         }
 
         public void SetupRelationships(ModelBuilder builder)
         {
+            builder.Entity<User>()
+                .HasOne(x => x.AccountType)
+                .WithMany()
+                .HasForeignKey(x => x.AccountTypeId);
+
+            builder.Entity<ApplicationTypeMap>()
+                .HasOne(x => x.ApplicationType)
+                .WithMany()
+                .HasForeignKey(x => x.ApplicationTypeId);
+
+            builder.Entity<UserApplicationMap>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId);
         }
 
         public void SetupTables(ModelBuilder builder)
         {
-            builder.HasPostgresEnum<AccountType>();
+            builder.Entity<Models.AccountType>()
+                .ToTable("AccountTypes");
 
-            builder.Entity<User>()
-                .ToTable("Users");
-
-            builder.Entity<IdentityRoleClaim<string>>()
-                .ToTable("RoleClaims");
-
-            builder.Entity<IdentityRole>()
-                .ToTable("Roles");
-
-            builder.Entity<IdentityUserClaim<string>>()
-                .ToTable("UserClaims");
-
-            builder.Entity<IdentityUserLogin<string>>()
-                .ToTable("UserLogins");
-
-            builder.Entity<IdentityUserRole<string>> ()
-                .ToTable("UserRoles");
-
-            builder.Entity<IdentityUserToken<string>>()
-                .ToTable("UserTokens");
-
-            builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication>()
-                .ToTable("Applications");
-
-            builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization>()
-                .ToTable("Authorizations");
-
-            builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreScope>()
-                .ToTable("Scopes");
-
-            builder.Entity<OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreToken>()
-                .ToTable("Tokens");
-            //Should we include an entity for ApplicationType and ApplicationTypeMaps
-            builder.Entity<ApplicationType>()
+            builder.Entity<Models.ApplicationType>()
                 .ToTable("ApplicationTypes");
-            builder.Entity<ApplicationTypeMap>()
+
+            builder.Entity<Models.ApplicationTypeMap>()
                 .ToTable("ApplicationTypeMaps");
-            builder.Entity<UserApplicationMap>()
+
+            builder.Entity<Models.UserApplicationMap>()
                 .ToTable("UserApplicationMap");
 
         }

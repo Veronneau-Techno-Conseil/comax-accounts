@@ -10,6 +10,7 @@ namespace CommunAxiom.Accounts.Models
     public class ApplicationTypeMap
     {
         public string ApplicationId { get; set; }
+        public ApplicationType ApplicationType {get; set;}
         public int ApplicationTypeId { get; set; }
     }
 }

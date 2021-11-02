@@ -1,4 +1,4 @@
-﻿@model RegisterViewModel
+﻿@model CommunAxiom.Accounts.ViewModels.Account.RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
@@ -14,14 +14,6 @@
         <div class="col-md-10">
             <input asp-for="Email" class="form-control" />
             <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="AccountType" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            @Html.DropDownListFor(x=>x.AccountType,
-                            new SelectList(Values.AccountTypes(), "Value", "Name") , new { @class = "form-control" })
-            <span asp-validation-for="AccountType" class="text-danger"></span>
         </div>
     </div>
     <div class="form-group">
