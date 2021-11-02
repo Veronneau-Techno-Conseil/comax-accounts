@@ -11,5 +11,9 @@ namespace CommunAxiom.Accounts.ViewModels.Application
     {
         [Display(Name = "Display Name")]
         public string DisplayName { get; set; }
+        [Display(Name ="Post Logout Redirect URI")]
+        public string PostLogoutRedirectURI { get; set; }
+        [Display(Name ="Redirect URI")]
+        public string RedirectURI { get; set; }
     }
 }
