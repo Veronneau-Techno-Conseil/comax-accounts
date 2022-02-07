@@ -43,6 +43,7 @@ namespace CommunAxiom.Accounts.Controllers
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
+            string name = "test for checkin"
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
