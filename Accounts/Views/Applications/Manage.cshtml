@@ -1,0 +1,38 @@
+﻿@model ManageViewModel
+@{
+    ViewData["Title"] = "Manage Applications";
+}
+
+<h1>Manage</h1>
+
+
+<a asp-controller="Applications" class="navbar-item" asp-action="Register">Register Application</a>
+
+<table id="ApplicationsTable" class="table" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                Display Name
+            </th>
+            <th>
+                Delete App
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @await foreach (var item in Model.Applications)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Applications" asp-action="Details" asp-route-Id="@item.Id">@Html.DisplayFor(modelItem => item.DisplayName)</a>
+                </td>
+                <td>
+                    <form asp-action="Delete" asp-controller="Applications" asp-route-id="@item.Id">
+                        <button class="" type="submit">Submit</button>
+                    </form>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

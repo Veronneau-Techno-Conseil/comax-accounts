@@ -5,11 +5,17 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accounts", "Accounts\Accounts.csproj", "{1898B475-4E2D-4958-ACB5-43496398B155}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{E63345A8-CFA4-44EE-8068-2879BD014E96}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{E63345A8-CFA4-44EE-8068-2879BD014E96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwilioSmsProvider", "TwilioSmsProvider\TwilioSmsProvider.csproj", "{276B35FC-5AE6-4B71-A38F-40C8D829E3AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwilioSmsProvider", "TwilioSmsProvider\TwilioSmsProvider.csproj", "{276B35FC-5AE6-4B71-A38F-40C8D829E3AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendGridProvider", "SendGridProvider\SendGridProvider.csproj", "{D14A1F33-D903-4D26-B542-91FB589E22A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendGridProvider", "SendGridProvider\SendGridProvider.csproj", "{D14A1F33-D903-4D26-B542-91FB589E22A7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8E91AF9A-9ED3-4EAE-8B58-7508E8F05553}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OIDCClient", "OIDCClient\OIDCClient.csproj", "{87012043-619B-48EE-8608-C53C028485F5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestClient", "TestClient\TestClient.csproj", "{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,9 +75,37 @@ Global
 		{D14A1F33-D903-4D26-B542-91FB589E22A7}.Release|x64.Build.0 = Release|Any CPU
 		{D14A1F33-D903-4D26-B542-91FB589E22A7}.Release|x86.ActiveCfg = Release|Any CPU
 		{D14A1F33-D903-4D26-B542-91FB589E22A7}.Release|x86.Build.0 = Release|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Debug|x64.Build.0 = Debug|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Debug|x86.Build.0 = Debug|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Release|x64.ActiveCfg = Release|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Release|x64.Build.0 = Release|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Release|x86.ActiveCfg = Release|Any CPU
+		{87012043-619B-48EE-8608-C53C028485F5}.Release|x86.Build.0 = Release|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Debug|x64.Build.0 = Debug|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Debug|x86.Build.0 = Debug|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|x64.ActiveCfg = Release|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|x64.Build.0 = Release|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|x86.ActiveCfg = Release|Any CPU
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{87012043-619B-48EE-8608-C53C028485F5} = {8E91AF9A-9ED3-4EAE-8B58-7508E8F05553}
+		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1} = {8E91AF9A-9ED3-4EAE-8B58-7508E8F05553}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {29EFC4DD-17B8-4837-8B65-C65509CEB711}

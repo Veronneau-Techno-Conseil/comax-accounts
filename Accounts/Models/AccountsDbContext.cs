@@ -1,6 +1,7 @@
 ﻿using CommunAxiom.Accounts.Models.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,23 +11,35 @@ namespace CommunAxiom.Accounts.Models
 {
     public class AccountsDbContext : IdentityDbContext<User>
     {
-        static AccountsDbContext()
-        {
-            Npgsql.NpgsqlConnection.GlobalTypeMapper.MapEnum<AccountType>("public.account_type");
-        }
-        public AccountsDbContext(): base()
-        {
+        internal readonly DbConf configs;
 
+        public AccountsDbContext(IOptionsMonitor<DbConf> options) : base()
+        {
+            configs = options.CurrentValue;
         }
 
-        public AccountsDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
-        {
-     
-        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             DbConfiguration.Setup(builder);
+        }
+
+        //the below line was added because accessing the dbsets from controllers where not working
+        //when added, everything worked well.. to be validated
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+
+            var opts = optionsBuilder.UseOpenIddict<Models.Application, Models.Authorization, Models.Scope, Models.Token, string>();
+
+            if (configs.MemoryDb)
+            {
+                opts.UseInMemoryDatabase("AccountsDb");
+            }
+            else
+            {
+                opts.UseNpgsql(configs.ConnectionString);
+            }
         }
     }
 }

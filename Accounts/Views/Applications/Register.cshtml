@@ -1,0 +1,43 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Application.RegisterViewModel
+@{
+    ViewData["Title"] = "Register A New Application";
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-controller="Applications" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="DisplayName" class="label"></label>
+                        <input asp-for="DisplayName" class="input is-primary" />
+                        <span asp-validation-for="DisplayName" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="PostLogoutRedirectURI" class="label"></label>
+                        <input asp-for="PostLogoutRedirectURI" class="input is-primary" />
+                        <span asp-validation-for="PostLogoutRedirectURI" class="help is-danger"></span>
+                    </div>
+                     <div class="field">
+                        <label asp-for="RedirectURI" class="label"></label>
+                        <input asp-for="RedirectURI" class="input is-primary" />
+                        <span asp-validation-for="RedirectURI" class="help is-danger"></span>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">Register</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

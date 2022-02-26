@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CommunAxiom.Accounts.AppModels;
 using CommunAxiom.Accounts.Contracts;
+using CommunAxiom.Accounts.Helpers;
 using CommunAxiom.Accounts.Models;
 using CommunAxiom.Accounts.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
@@ -22,19 +22,22 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly ISmsSender _smsSender;
         private readonly AccountsDbContext _applicationDbContext;
         private static bool _databaseChecked;
+        private readonly IAccountTypeCache _accountTypeCache;
 
         public AccountController(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            AccountsDbContext applicationDbContext)
+            AccountsDbContext applicationDbContext,
+            IAccountTypeCache accountTypeCache)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _applicationDbContext = applicationDbContext;
+            _accountTypeCache = accountTypeCache;
         }
 
         //
@@ -88,8 +91,12 @@ namespace CommunAxiom.Accounts.Controllers
         // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public IActionResult Register([FromServices] ReCaptcha reCaptcha, string returnUrl = null)
         {
+            if (reCaptcha.UseCaptcha)
+            {
+                ViewData["PubCaptcha"] = reCaptcha.PubCaptcha;
+            }
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -99,13 +106,23 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register([FromServices]ReCaptcha reCaptcha, RegisterViewModel model, string returnUrl = null)
         {
             EnsureDatabaseCreated(_applicationDbContext);
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Email = model.Email, AccountType = model.AccountType };
+                if (reCaptcha != null && reCaptcha.UseCaptcha)
+                {
+                    if (!Request.Form.ContainsKey("g-recaptcha-response")) return View();
+                    var captcha = Request.Form["g-recaptcha-response"].ToString();
+                    if (!await reCaptcha.IsValid(captcha)) return View();
+                }
+                //The AccountType was hardcoded based on the JiraTicket COM26-COM(149) Task https://vertechcon.atlassian.net/browse/COM-149
+                //The below line code was replaced based on the task
+                //var user = new User { UserName = model.Email, Email = model.Email, AccountType = model.AccountType};
+
+                var user = new User { UserName = model.Email, Email = model.Email, AccountTypeId = this._accountTypeCache.GetId(AccountType.USER) };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -128,7 +145,7 @@ namespace CommunAxiom.Accounts.Controllers
         //
         // POST: /Account/LogOff
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
@@ -200,7 +217,7 @@ namespace CommunAxiom.Accounts.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new User { UserName = model.Email, Email = model.Email, AccountType = AccountType.User };
+                var user = new User { UserName = model.Email, Email = model.Email, AccountTypeId = this._accountTypeCache.GetId(AccountType.USER)};
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

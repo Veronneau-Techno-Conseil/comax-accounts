@@ -1,0 +1,21 @@
+﻿@model TokenViewModel
+
+<form method="post">
+    <div>
+        <label asp-for="clientId" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="clientId" class="form-control" />
+        </div>
+
+        <label asp-for="secret" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="secret" class="form-control" />
+        </div>
+
+        <label asp-for="code" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="code" class="form-control" />
+            <input type="submit" value="Request Token" class="submit" />
+        </div>
+    </div>
+</form>

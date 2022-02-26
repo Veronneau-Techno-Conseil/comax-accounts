@@ -7,4 +7,6 @@ namespace CommunAxiom.Accounts.Contracts
     {
         Task SendEmailAsync(string email, string subject, string message);
     }
+
+    
 }
