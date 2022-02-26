@@ -1,51 +1,54 @@
-﻿@inject SignInManager<User> SignInManager
+﻿@inject SignInManager<User> SIManager
 @inject UserManager<User> UserManager
 
-<div>
-    <div>
-        <ul class="nav navbar-nav ml-auto">
-            <li><a asp-controller="Home" asp-action="Index" title="Home">Home</a></li>
-        </ul>
-    </div>
-    <div>
-        @if (SignInManager.IsSignedIn(User))
-        {
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a asp-controller="Profile" asp-action="Edit" asp-route-Id="@UserManager.GetUserId(User)" title="Profile">
-                        @if (UserManager.GetUserAsync(User).Result?.ProfilePicture != null)
-                        {
-                            <img style="float:right; width:40px; height: 40px; object-fit: cover; border-radius: 30px" src="data:image/*;base64,@(Convert.ToBase64String(UserManager.GetUserAsync(User).Result.ProfilePicture))">
-                        }
-                        else
-                        {
-                            <img style="float:right; width:40px; height: 40px; object-fit: cover; border-radius: 30px" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" />
-                        }
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <form method="post" asp-action="LogOff" asp-controller="Account">
-                        <button type="submit" class="nav-link btn btn-link"
-                                style="width:auto">
-                            LogOff @User.Identity.Name
-                        </button>
-                    </form>
-                </li>
-            </ul>
+    
+<nav class="navbar is-white" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a asp-controller="Home" class="navbar-item" asp-action="Index" title="Home">
+                <img src="~/Images/Profiles.png" />
+                <strong>Profiles</strong>
+            </a>
+            <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navMenuIndex">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
 
-            <div>
-                <ul>
-                    <li> <a asp-controller="Applications" asp-action="Register"> Register Application </a> </li>
-                    <li> <a asp-controller="Applications" asp-action="Manage"> Manage Applications </a> </li>
-                </ul>
+        <div id="navMenuIndex" class="navbar-menu">
+            <div class="navbar-start">
+                <a asp-controller="Home" class="navbar-item" asp-action="Index" title="Home">
+                    Home
+                </a>
+
+                @if (SIManager.IsSignedIn(User))
+                {
+                <a asp-controller="Applications" class="navbar-item" asp-action="Manage">Manage Applications</a>
+                }
+
+                <a class="navbar-item">
+                    About
+                </a>
             </div>
-        }
-        else
-        {
-            <ul class="nav navbar-nav navbar-right">
-                <li><a asp-controller="Account" asp-action="Register">Register</a></li>
-                <li><a asp-controller="Account" asp-action="Login">Log in</a></li>
-            </ul>
-        }
+                
+            <div class="navbar-end">
+                @if (SIManager.IsSignedIn(User))
+                {
+                <a class="navbar-item" asp-controller="Profile" asp-action="Edit" asp-route-Id="@UserManager.GetUserId(User)" title="Profile">
+                    @Html.Partial("./Menu/_avatar.cshtml", UserManager.GetUserAsync(User).Result?.ProfilePicture)
+                </a>
+                <a asp-controller="Account" class="navbar-item" asp-action="LogOff">
+                    <img alt="Log off" class="image is-32x32" src="https://djp65hxq6jm81.cloudfront.net/uploads/735de877-33df-42ce-a423-af091d396e7c/Logout.png" />
+                </a>
+                }
+                else
+                {
+                <a class="navbar-item" asp-controller="Account" asp-action="Register">Register</a>
+                <a class="navbar-item" asp-controller="Account" asp-action="Login">Log in</a>
+                }
+            </div>
+        </div> 
     </div>
-</div>
+</nav>
+    

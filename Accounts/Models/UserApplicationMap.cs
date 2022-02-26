@@ -12,5 +12,7 @@ namespace CommunAxiom.Accounts.Models
         public User User { get; set; }
         public string UserId { get; set; }
         public string ApplicationId { get; set; }
+        public Application Application { get; set; }
+
     }
 }

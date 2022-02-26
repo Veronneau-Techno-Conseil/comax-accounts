@@ -14,6 +14,12 @@ namespace CommunAxiom.Accounts.ViewModels.Application
         public string DisplayName { get; set; }
         [Display(Name = "Client Id")]
         public string ClientId { get; set; }
+
+        [Display(Name = "Post Logout Redirect URI")]
+        public string PostLogoutRedirectURI { get; set; }
+        [Display(Name = "Redirect URI")]
+        public string RedirectURI { get; set; }
+
         [Display(Name = "Client Secret")]
         public string ClientSecret { get; set; }
         public bool ShowSecret { get; set; }

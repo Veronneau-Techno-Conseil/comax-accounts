@@ -3,35 +3,41 @@
     ViewData["Title"] = "Register A New Application";
 }
 
-<h2>@ViewData["Title"].</h2>
-
-<form asp-controller="Applications" asp-action="Register" method="post" class="form-horizontal" role="form">
-    <h4>Create a new account.</h4>
-    <hr />
-    <div class="form-group">
-        <label asp-for="DisplayName" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="DisplayName" class="form-control" />
-            <span asp-validation-for="DisplayName" class="text-danger"></span>
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-controller="Applications" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="DisplayName" class="label"></label>
+                        <input asp-for="DisplayName" class="input is-primary" />
+                        <span asp-validation-for="DisplayName" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="PostLogoutRedirectURI" class="label"></label>
+                        <input asp-for="PostLogoutRedirectURI" class="input is-primary" />
+                        <span asp-validation-for="PostLogoutRedirectURI" class="help is-danger"></span>
+                    </div>
+                     <div class="field">
+                        <label asp-for="RedirectURI" class="label"></label>
+                        <input asp-for="RedirectURI" class="input is-primary" />
+                        <span asp-validation-for="RedirectURI" class="help is-danger"></span>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">Register</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        <label asp-for="PostLogoutRedirectURI" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="PostLogoutRedirectURI" class="form-control" />
-            <span asp-validation-for="PostLogoutRedirectURI" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="RedirectURI" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="RedirectURI" class="form-control" />
-            <span asp-validation-for="RedirectURI" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-default">Register</button>
-        </div>
-    </div>
-</form>
+</div>

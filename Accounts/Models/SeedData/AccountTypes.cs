@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
 
-namespace CommunAxiom.Accounts.Models
+namespace CommunAxiom.Accounts.Models.SeedData
 {
-    public static class Seed
+    public static class AccountTypes
     {
         public static void SeedData(Models.AccountsDbContext ctxt)
         {
             var set = ctxt.Set<Models.AccountType>();
-            var ApplicationTypes = ctxt.Set<Models.ApplicationType>();
 
-            if(!set.Any(x=>x.Code == Models.AccountType.USER))
+            if (!set.Any(x => x.Code == Models.AccountType.USER))
             {
                 set.Add(new Models.AccountType
                 {
@@ -43,17 +37,6 @@ namespace CommunAxiom.Accounts.Models
 
                 ctxt.SaveChanges();
             }
-
-            if (!ApplicationTypes.Any())
-            {
-                ApplicationTypes.Add(new ApplicationType
-                {
-                    Name = Models.ApplicationType.COMMONS
-                });
-
-                ctxt.SaveChanges();
-            }
-            
         }
     }
 }

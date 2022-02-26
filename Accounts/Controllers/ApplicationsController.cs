@@ -12,9 +12,11 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using OpenIddict.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CommunAxiom.Accounts.Controllers
 {
+    [Authorize]
     public class ApplicationsController : Controller
     {
         private readonly IServiceProvider _serviceProvider;
@@ -71,7 +73,8 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.GrantTypes.AuthorizationCode,
                     Permissions.GrantTypes.RefreshToken,
                     Permissions.GrantTypes.DeviceCode,
-
+                    Permissions.GrantTypes.ClientCredentials,
+                    
                     Permissions.Endpoints.Device,
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
@@ -152,7 +155,9 @@ namespace CommunAxiom.Accounts.Controllers
                 DisplayName = Application.DisplayName,
                 ClientId = Application.ClientId,
                 ClientSecret = secret,
-                ShowSecret = showSecret
+                ShowSecret = showSecret,
+                PostLogoutRedirectURI = Application.PostLogoutRedirectUris,
+                RedirectURI = Application.RedirectUris
             };
 
             return View(ApplicationDetails);
@@ -161,8 +166,7 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpPost]
         public async Task<IActionResult> Details(Application model)
         {
-            //TODO: Any server interaction that has side effects (i.e. that modifies a table) should never happen using HttpGet,
-            // either user Post for creation and Put for updates or Patch for partial updates 
+            
             var secret = Guid.NewGuid().ToString();
             var application = _applicationManager.FindByIdAsync(model.Id).Result;
             if (application == null)

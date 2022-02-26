@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using CommunAxiom.Accounts.AppModels;
 using CommunAxiom.Accounts.Cache;
 using CommunAxiom.Accounts.Contracts;
+using CommunAxiom.Accounts.Helpers;
 using CommunAxiom.Accounts.Models;
 using CommunAxiom.Accounts.Stores;
 using Microsoft.AspNetCore.Builder;
@@ -36,6 +39,11 @@ namespace CommunAxiom.Accounts
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
+
+            services.AddHttpClient<ReCaptcha>(x =>
+            {
+                x.BaseAddress = new Uri("https://www.google.com/recaptcha/api/siteverify");
+            });
 
             services.AddDbContext<AccountsDbContext>();
 
@@ -103,10 +111,16 @@ namespace CommunAxiom.Accounts
                     options.AllowDeviceCodeFlow();
                     options.AllowClientCredentialsFlow();
                     options.AllowAuthorizationCodeFlow();
-                    
+
+                    //TODO: refactor to provision from configuration specific to oidc (not ssl)
+                    var certPem = File.ReadAllText(Configuration["AuthCert"]);
+                    var eccPem = File.ReadAllText(Configuration["AuthKey"]);
+
+                    var cert = X509Certificate2.CreateFromPem(certPem, eccPem);
+                    cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(cert.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Pkcs12));
                     // Register the signing and encryption credentials.
-                    options.AddDevelopmentEncryptionCertificate()
-                           .AddDevelopmentSigningCertificate();
+                    options.AddEncryptionCertificate(cert)
+                           .AddSigningCertificate(cert);
                     
                     // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
                     options.UseAspNetCore()
@@ -147,10 +161,12 @@ namespace CommunAxiom.Accounts
 
 
             var dbConf = serviceProvider.GetService<IOptionsMonitor<DbConf>>().CurrentValue;
-            
-            if (dbConf.MemoryDb || !dbConf.ShouldMigrate)
+
+            if (dbConf.MemoryDb || !dbConf.ShouldMigrate)
+            {
                 return;
-            
+            }
+
             var context = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
 
             var dbcontext = serviceProvider.GetService<AccountsDbContext>();
@@ -161,12 +177,13 @@ namespace CommunAxiom.Accounts
             }
             
             dbcontext.Database.Migrate();
-            Seed.SeedData(dbcontext);
+            //Seed.SeedData(dbcontext);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseCors(builder =>

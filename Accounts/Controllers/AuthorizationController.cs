@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
 using OpenIddict.Core;
@@ -29,74 +30,25 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly UserManager<User> _userManager;
         private readonly OpenIddictApplicationManager<Application> _applicationManager;
         private readonly IOpenIddictAuthorizationManager _authorizationManager;
+        private readonly IConfiguration _configuration;
 
         public AuthorizationController(
             OpenIddictScopeManager<Models.Scope> scopeManager,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             OpenIddictApplicationManager<Application> applicationManager,
-            IOpenIddictAuthorizationManager authorizationManager)
+            IOpenIddictAuthorizationManager authorizationManager,
+            IConfiguration configuration)
         {
             _scopeManager = scopeManager;
             _signInManager = signInManager;
             _userManager = userManager;
             _applicationManager = applicationManager;
             _authorizationManager = authorizationManager;
+            _configuration = configuration;
         }
 
-        //The functions below (Authorize, and Exchange) were commented to implement the changes
-        //taken from Balosar's OpenIDdict implementation based on the Jira task "COM-26 / COM-153"
-
-
-
-        //[HttpGet("~/connect/authorize")]
-        //public async Task<IActionResult> Authorize()
-        //{
-        //    var request = HttpContext.GetOpenIddictServerRequest() ??
-        //        throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
-
-        //    if (!User.Identity.IsAuthenticated)
-        //    {
-        //        // If the client application request promptless authentication,
-        //        // return an error indicating that the user is not logged in.
-        //        if (request.HasPrompt(Prompts.None))
-        //        {
-        //            var properties = new AuthenticationProperties(new Dictionary<string, string>
-        //            {
-        //                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
-        //                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-        //                    "The user is not logged in."
-        //            });
-
-        //            // Ask OpenIddict to return a login_required error to the client application.
-        //            return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-        //        }
-
-        //        return Challenge();
-        //    }
-
-        //    // Retrieve the profile of the logged in user.
-        //    var user = await _userManager.GetUserAsync(User) ??
-        //        throw new InvalidOperationException("The user details cannot be retrieved.");
-
-        //    // Create a new ClaimsPrincipal containing the claims that
-        //    // will be used to create an id_token, a token or a code.
-        //    var principal = await _signInManager.CreateUserPrincipalAsync(user);
-
-        //    // Set the list of scopes granted to the client application.
-        //    var scopes = request.GetScopes();
-
-        //    principal.SetScopes(request.GetScopes());
-        //    principal.SetResources(await _scopeManager.ListResourcesAsync(scopes).ToListAsync());
-
-        //    foreach (var claim in principal.Claims)
-        //    {
-        //        claim.SetDestinations(GetDestinations(claim, principal));
-        //    }
-
-        //    // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
-        //    return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-        //}
+        
 
         [HttpGet("~/connect/logout")]
         public async Task<IActionResult> Logout()
@@ -151,92 +103,7 @@ namespace CommunAxiom.Accounts.Controllers
                     yield break;
             }
         }
-
-        //[HttpPost("~/connect/token"), Produces("application/json")]
-        //public async Task<IActionResult> Exchange()
-        //{
-        //    var request = HttpContext.GetOpenIddictServerRequest();
-        //    if (request.IsPasswordGrantType())
-        //    {
-        //        var user = await _userManager.FindByNameAsync(request.Username);
-        //        if (user == null)
-        //        {
-        //            var properties = new AuthenticationProperties(new Dictionary<string, string>
-        //            {
-        //                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-        //                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-        //                    "The username/password couple is invalid."
-        //            });
-
-        //            return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-        //        }
-
-        //        // Validate the username/password parameters and ensure the account is not locked out.
-        //        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
-        //        if (!result.Succeeded)
-        //        {
-        //            var properties = new AuthenticationProperties(new Dictionary<string, string>
-        //            {
-        //                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-        //                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-        //                    "The username/password couple is invalid."
-        //            });
-
-        //            return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-        //        }
-
-        //        // Create a new ClaimsPrincipal containing the claims that
-        //        // will be used to create an id_token, a token or a code.
-        //        var principal = await _signInManager.CreateUserPrincipalAsync(user);
-
-        //        // Set the list of scopes granted to the client application.
-        //        principal.SetScopes(new[]
-        //        {
-        //            Scopes.OpenId,
-        //            Scopes.Email,
-        //            Scopes.Profile,
-        //            Scopes.Roles
-        //        }.Intersect(request.GetScopes()));
-
-        //        foreach (var claim in principal.Claims)
-        //        {
-        //            claim.SetDestinations(GetDestinations(claim, principal));
-        //        }
-
-        //        return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-        //    }
-
-        //    if (request.IsClientCredentialsGrantType())
-        //    {
-        //        // Note: the client credentials are automatically validated by OpenIddict:
-        //        // if client_id or client_secret are invalid, this action won't be invoked.
-
-        //        var application = await _openIddictApplicationManager.FindByClientIdAsync(request.ClientId);
-        //        if (application == null)
-        //        {
-        //            throw new InvalidOperationException("The application details cannot be found in the database.");
-        //        }
-
-        //        // Create a new ClaimsIdentity containing the claims that
-        //        // will be used to create an id_token, a token or a code.
-        //        var identity = new ClaimsIdentity(
-        //            TokenValidationParameters.DefaultAuthenticationType,
-        //            Claims.Name, Claims.Role);
-
-        //        // Use the client_id as the subject identifier.
-        //        identity.AddClaim(Claims.Subject, await _openIddictApplicationManager.GetClientIdAsync(application),
-        //            Destinations.AccessToken, Destinations.IdentityToken);
-
-        //        identity.AddClaim(Claims.Name, await _openIddictApplicationManager.GetDisplayNameAsync(application),
-        //            Destinations.AccessToken, Destinations.IdentityToken);
-
-        //        return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-        //    }
-
-        //    throw new NotImplementedException("The specified grant type is not implemented.");
-        //}
-
-
+       
         [HttpGet("~/connect/authorize")]
         [HttpPost("~/connect/authorize")]
         [IgnoreAntiforgeryToken]

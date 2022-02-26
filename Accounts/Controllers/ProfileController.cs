@@ -10,9 +10,11 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CommunAxiom.Accounts.Controllers
 {
+    [Authorize]
     public class ProfileController : Controller
     {
         private readonly UserManager<User> _userManager;

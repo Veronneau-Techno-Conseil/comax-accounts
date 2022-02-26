@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,13 +24,19 @@ namespace CommunAxiom.Accounts
                 {
                     webBuilder.UseKestrel(opts=>
                     {
-                        opts.ConfigureHttpsDefaults(def =>
+                        if (webBuilder.GetSetting("Urls").StartsWith("https"))
                         {
-                            def.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(System.IO.Path.GetFullPath("./certs/localhost.pfx"), "tester123");
-                        });
+                            opts.ConfigureHttpsDefaults(def =>
+                            {
+                                var certPem = File.ReadAllText("cert.pem");
+                                var eccPem = File.ReadAllText("key.pem");
+
+                                var cert = X509Certificate2.CreateFromPem(certPem, eccPem);
+                                def.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(cert.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Pkcs12));
+                            });
+                        }
                     })
-                        .UseUrls("https://localhost:5001")
-                        .UseStartup<Startup>();
+                    .UseStartup<Startup>();
                 });
     }
 }

@@ -3,41 +3,53 @@
     ViewData["Title"] = "Application Details";
 }
 
-<h2>@ViewData["Title"].</h2>
-
-
-<h4>Application Details Shown Here</h4>
-<hr />
-<div>
-    <div>
-        <label asp-for="DisplayName"></label>
-        <div>
-            @Model.DisplayName
-        </div>
-    </div>
-
-    <div>
-        <label asp-for="ClientId"></label>
-        <div>
-            @Model.ClientId
-        </div>
-    </div>
-
-    <div style="@(Model.ShowSecret ? "display:block" : "display:none")">
-        <label asp-for="ClientSecret"></label>
-        <p>Make sure to copy your client secret now and keep a local copy safe to use it with the application. 
-        You Wouldnt be able to see this secret again</p>
-        <div>
-            @Model.ClientSecret
-        </div>
-    </div>
-    <div>
-        <form method="post">
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Regenerate Secret" class="btn btn-primary" />
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
                 </div>
             </div>
-        </form>
+            <div class="card-content">
+                <div class="field">
+                    <label asp-for="DisplayName" class="label"></label>
+                    <span class="is-primary">@Model.DisplayName</span>
+                </div>
+                <div class="field">
+                    <label asp-for="PostLogoutRedirectURI" class="label"></label>
+                    <span class="is-primary" >@Model.PostLogoutRedirectURI</span>
+                </div>
+                    <div class="field">
+                    <label asp-for="RedirectURI" class="label"></label>
+                    <span class="is-primary">@Model.RedirectURI</span>
+                </div>
+                <div class="field is-grouped">
+                     <div style="@(Model.ShowSecret ? "display:block" : "display:none")">
+                        <label asp-for="ClientSecret"></label>
+                        <p>Make sure to copy your client secret now and keep a local copy safe to use it with the application. 
+                        You Wouldnt be able to see this secret again</p>
+                        <div>
+                            @Model.ClientSecret
+                        </div>
+                    </div>
+                    <div>
+                        <form method="post">
+                            <div class="field">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Regenerate Secret" class="input is-primary" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+
+   
+

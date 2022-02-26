@@ -43,10 +43,20 @@ namespace CommunAxiom.Accounts.Models.Configurations
                 .WithMany()
                 .HasForeignKey(x => x.ApplicationTypeId);
 
+            builder.Entity<ApplicationTypeMap>()
+                .HasOne(x => x.Application)
+                .WithMany()
+                .HasForeignKey(x => x.ApplicationId);
+
             builder.Entity<UserApplicationMap>()
                 .HasOne(x => x.User)
                 .WithMany()
                 .HasForeignKey(x => x.UserId);
+
+            builder.Entity<UserApplicationMap>()
+                .HasOne(x => x.Application)
+                .WithMany()
+                .HasForeignKey(x => x.ApplicationId);
         }
 
         public void SetupTables(ModelBuilder builder)
