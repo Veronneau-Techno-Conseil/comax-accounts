@@ -49,6 +49,14 @@ $control-border-width: 2px;
 $input-border-color: transparent;
 $input-shadow: none;
 
+.content .is-primary {
+    color: $primary
+}
+
+.is-bold{
+    font-weight: 600;
+}
+
 // Import only what you need from Bulma
 @import "../../node_modules/bulma/sass/utilities/_all.sass";
 @import "../../node_modules/bulma/sass/base/_all.sass";

@@ -48,7 +48,7 @@ namespace CommunAxiom.Accounts.Controllers
             _configuration = configuration;
         }
 
-        
+
 
         [HttpGet("~/connect/logout")]
         public async Task<IActionResult> Logout()
@@ -103,7 +103,17 @@ namespace CommunAxiom.Accounts.Controllers
                     yield break;
             }
         }
-       
+
+        [HttpGet("~/connect/contentform")]
+        public IActionResult ConsentForm()
+        {
+            return View("authorize", new AuthorizeViewModel
+            {
+                DisplayName = "Test render consent form",
+                Scope = "Profile Contacts"
+            });
+        }
+
         [HttpGet("~/connect/authorize")]
         [HttpPost("~/connect/authorize")]
         [IgnoreAntiforgeryToken]
