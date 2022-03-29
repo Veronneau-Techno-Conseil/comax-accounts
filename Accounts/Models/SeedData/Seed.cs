@@ -13,7 +13,9 @@ namespace CommunAxiom.Accounts.Models.SeedData
         {
             AccountTypes.SeedData(ctxt);
 
-            ApplicationTypes.SeedData(ctxt);            
+            ApplicationTypes.SeedData(ctxt);      
+            
+            Roles.SeedData(ctxt);
         }
     }
 }

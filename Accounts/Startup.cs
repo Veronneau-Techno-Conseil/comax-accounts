@@ -9,6 +9,7 @@ using CommunAxiom.Accounts.Cache;
 using CommunAxiom.Accounts.Contracts;
 using CommunAxiom.Accounts.Helpers;
 using CommunAxiom.Accounts.Models;
+using CommunAxiom.Accounts.Models.SeedData;
 using CommunAxiom.Accounts.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Caching.Memory;
 using SendGridProvider;
 using TwilioSmsProvider;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -50,6 +52,10 @@ namespace CommunAxiom.Accounts
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<AccountsDbContext>();
 
+            //Allows for loading claims that don't show up in the user
+            services.AddScoped<IUserClaimsPrincipalFactory<User>, Security.ClaimsPrincipalFactory>();
+
+
             // Configure Identity to use the same JWT claims as OpenIddict instead
             // of the legacy WS-Federation claims it uses by default (ClaimTypes),
             // which saves you from doing the mapping in your authorization controller.
@@ -61,6 +67,11 @@ namespace CommunAxiom.Accounts
             });
 
             services.AddAuthentication();
+            services.AddAuthorization(options =>
+            {
+                Security.ManagementPolicies.SetupPolicies(options);
+            });
+
         //.AddGoogle("Google", options =>
         //{
         //    options.CallbackPath = "/signin-google";
@@ -141,9 +152,13 @@ namespace CommunAxiom.Accounts
                     // Register the ASP.NET Core host.
                     options.UseAspNetCore();
                 });
+            
+            //TODO: switch to distributed memory cache
+            services.AddMemoryCache();
+            services.AddSingleton<ITempData, Helpers.TempStorage>();
 
             services.AddCors();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISmsSender, SmsSender>();
@@ -177,7 +192,7 @@ namespace CommunAxiom.Accounts
             }
             
             dbcontext.Database.Migrate();
-            //Seed.SeedData(dbcontext);
+            Seed.SeedData(dbcontext);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -199,6 +214,7 @@ namespace CommunAxiom.Accounts
             app.UseEndpoints(options =>
             {
                 options.MapControllers();
+                options.MapAreaControllerRoute("Management", "management", "management/{controller}/{action=Index}/{id?}");
                 options.MapDefaultControllerRoute();
             });
                         

@@ -1,0 +1,73 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Application.AppViewModel
+@{
+    var buttonText = "Register";
+    if (!string.IsNullOrWhiteSpace(Model?.ApplicationId))
+    {
+        ViewData["Title"] = "Modify the Application";
+        buttonText = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Register A New Application";
+    }
+    
+    var items = CommunAxiom.Accounts.Models.Values.OIDCPermissions().Select(x=>new SelectListItem(x.Name, x.Value));
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Index"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-controller="Applications" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                    @if (!string.IsNullOrWhiteSpace(Model?.ApplicationId))
+                    {
+                        <input asp-for="ApplicationId" type="hidden" />
+                    }
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="DisplayName" class="label"></label>
+                        <input asp-for="DisplayName" class="input is-primary" />
+                        <span asp-validation-for="DisplayName" class="help is-danger"></span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model?.ClientId))
+                    {
+                        <div class="field">
+                            <label asp-for="ClientId" class="label"></label>
+                            <span>@Model.ClientId</span>
+                        </div>
+                    }
+                    <div class="field">
+                        <label asp-for="PostLogoutRedirectURI" class="label"></label>
+                        <input asp-for="PostLogoutRedirectURI" class="input is-primary" />
+                        <span asp-validation-for="PostLogoutRedirectURI" class="help is-danger"></span>
+                    </div>
+                     <div class="field">
+                        <label asp-for="RedirectURI" class="label"></label>
+                        <input asp-for="RedirectURI" class="input is-primary" />
+                        <span asp-validation-for="RedirectURI" class="help is-danger"></span>
+                    </div>
+                     <div class="field">
+                        <label asp-for="Permissions" class="label"></label>
+                        <select multiple asp-for="Permissions" class="input is-primary" asp-items="items"></select>
+                        <span asp-validation-for="Permissions" class="help is-danger"></span>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -84,7 +84,7 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles,
                     
-                    Permissions.ResponseTypes.Code
+                    Permissions.ResponseTypes.CodeIdTokenToken
                 }),
                 PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
                 {
@@ -107,7 +107,7 @@ namespace CommunAxiom.Accounts.Controllers
             //Create the ApplicationTypeMaps & UserApplicationsMap Record
             if (CreatedApplication != null)
             {
-                var CommonsApp = _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == "Commons").FirstOrDefault();
+                var CommonsApp = _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == ApplicationType.COMMONS).FirstOrDefault();
 
                 var ApplicationTypeMap = new ApplicationTypeMap
                 {
