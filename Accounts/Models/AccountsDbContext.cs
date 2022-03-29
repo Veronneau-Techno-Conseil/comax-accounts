@@ -1,6 +1,7 @@
 ﻿using CommunAxiom.Accounts.Models.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,33 @@ namespace CommunAxiom.Accounts.Models
             else
             {
                 opts.UseNpgsql(configs.ConnectionString);
+            }
+        }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            base.ConfigureConventions(configurationBuilder);
+
+            configurationBuilder.Properties<string>()
+                .HaveConversion<NullConverter>();
+        }
+
+
+        private class NullConverter : ValueConverter<string, string>
+        {
+            public NullConverter()
+                : base(
+                    v => ConvertString(v),
+                    v => ConvertString(v))
+            {
+            }
+            public override bool ConvertsNulls => true;
+            
+            static string ConvertString(string s)
+            {
+                if (s == null || s.Equals("[null]", StringComparison.InvariantCultureIgnoreCase) || s.Equals("(null)", StringComparison.InvariantCultureIgnoreCase))
+                    return "";
+                return s;
             }
         }
     }

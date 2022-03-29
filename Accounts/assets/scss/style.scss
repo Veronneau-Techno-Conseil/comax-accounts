@@ -15,7 +15,7 @@ $grey-light: #8aafb4;
 $grey-lighter: #9DBFC1;
 $grey-lightest: #D6D1C9;
 
-$white-ter: hsl(0, 0%, 96%) ;
+$white-ter: hsl(0, 0%, 96%);
 $white-bis: hsl(0, 0%, 98%);
 $white: hsl(0, 0%, 100%);
 
@@ -49,6 +49,7 @@ $control-border-width: 2px;
 $input-border-color: transparent;
 $input-shadow: none;
 
+
 // Import only what you need from Bulma
 @import "../../node_modules/bulma/sass/utilities/_all.sass";
 @import "../../node_modules/bulma/sass/base/_all.sass";
@@ -59,3 +60,90 @@ $input-shadow: none;
 @import "../../node_modules/bulma/sass/components/navbar.sass";
 @import "../../node_modules/bulma/sass/layout/hero.sass";
 @import "../../node_modules/bulma/sass/layout/section.sass";
+
+@import "../../node_modules/select-picker/dist/picker.css";
+
+.picker {
+    display: flex;
+    flex-direction: column;
+
+    .pc-element {
+        background-color: $primary;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0.25em 0em;
+        padding: 0.25em 0.5em;
+        border-radius: 6px;
+
+        .pc-close:after {
+            content: '\2716';
+            cursor: pointer;
+        }
+    }
+
+    .pc-select {
+        cursor: pointer;
+
+        .pc-element {
+            background-color: $grey-dark;
+        }
+    }
+}
+
+.content .is-primary {
+    color: $primary
+}
+
+.content input.is-primary {
+    color: $grey-dark;
+}
+
+.is-bold {
+    font-weight: 600;
+}
+
+.navbar-brand strong {
+    margin-left: 1em;
+    font-size: large;
+}
+
+.navbar-item img {
+    max-height: 2.75rem;
+}
+
+.container.narrow {
+    max-width: 800px;
+}
+
+html, body {
+    font-family: Roboto, "Segoe UI", Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    height: 100%;
+}
+
+.width-100 {
+    width: 100%;
+}
+
+.w-25 {
+    min-width: 25%
+}
+
+.w-33 {
+    min-width: 33%
+}
+
+.w-40 {
+    min-width: 40%
+}
+
+.w-50 {
+    min-width: 50%
+}
+
+.navbar-item.is-active, .navbar-item:hover {
+    background-color: #D6D6CE !important;
+}

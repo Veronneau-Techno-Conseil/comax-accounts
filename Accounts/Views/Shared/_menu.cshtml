@@ -18,13 +18,18 @@
 
         <div id="navMenuIndex" class="navbar-menu">
             <div class="navbar-start">
-                <a asp-controller="Home" class="navbar-item" asp-action="Index" title="Home">
+                <a asp-controller="Home" asp-area="" class="navbar-item" asp-action="Index" title="Home">
                     Home
                 </a>
 
                 @if (SIManager.IsSignedIn(User))
                 {
-                <a asp-controller="Applications" class="navbar-item" asp-action="Manage">Manage Applications</a>
+                    <a asp-controller="Applications" asp-area="" class="navbar-item" asp-action="Manage">Manage Applications</a>
+
+                    if(User.HasClaim(Roles.SYS_APP_CLAIM, AccessLevels.ACCESS_LEVEL_ADMIN))
+                    {
+                        <a asp-controller="Applications" asp-area="Management" class="navbar-item" asp-action="Index">Manage System Applications</a>
+                    }
                 }
 
                 <a class="navbar-item">
@@ -35,10 +40,10 @@
             <div class="navbar-end">
                 @if (SIManager.IsSignedIn(User))
                 {
-                <a class="navbar-item" asp-controller="Profile" asp-action="Edit" asp-route-Id="@UserManager.GetUserId(User)" title="Profile">
+                <a class="navbar-item" asp-controller="Profile" asp-action="Edit" asp-area="" asp-route-Id="@UserManager.GetUserId(User)" title="Profile">
                     @Html.Partial("./Menu/_avatar.cshtml", UserManager.GetUserAsync(User).Result?.ProfilePicture)
                 </a>
-                <a asp-controller="Account" class="navbar-item" asp-action="LogOff">
+                <a asp-controller="Account" class="navbar-item" asp-area="" asp-action="LogOff">
                     <img alt="Log off" class="image is-32x32" src="https://djp65hxq6jm81.cloudfront.net/uploads/735de877-33df-42ce-a423-af091d396e7c/Logout.png" />
                 </a>
                 }

@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
+#nullable disable
+
 namespace CommunAxiom.Accounts.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
@@ -15,23 +17,25 @@ namespace CommunAxiom.Accounts.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.9")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.AccountType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccountTypes");
+                    b.ToTable("AccountTypes", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Application", b =>
@@ -59,8 +63,8 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("DeletedDate")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DisplayName")
                         .HasColumnType("text");
@@ -92,22 +96,23 @@ namespace CommunAxiom.Accounts.Migrations
                     b.HasIndex("ClientId")
                         .IsUnique();
 
-                    b.ToTable("OpenIddictApplications");
+                    b.ToTable("OpenIddictApplications", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.ApplicationType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApplicationTypes");
+                    b.ToTable("ApplicationTypes", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.ApplicationTypeMap", b =>
@@ -122,7 +127,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("ApplicationTypeId");
 
-                    b.ToTable("ApplicationTypeMaps");
+                    b.ToTable("ApplicationTypeMaps", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Authorization", b =>
@@ -140,7 +145,7 @@ namespace CommunAxiom.Accounts.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Properties")
                         .HasColumnType("text");
@@ -164,7 +169,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("ApplicationId", "Status", "Subject", "Type");
 
-                    b.ToTable("OpenIddictAuthorizations");
+                    b.ToTable("OpenIddictAuthorizations", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Scope", b =>
@@ -205,7 +210,7 @@ namespace CommunAxiom.Accounts.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("OpenIddictScopes");
+                    b.ToTable("OpenIddictScopes", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Token", b =>
@@ -226,10 +231,10 @@ namespace CommunAxiom.Accounts.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Payload")
                         .HasColumnType("text");
@@ -238,7 +243,7 @@ namespace CommunAxiom.Accounts.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("RedemptionDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ReferenceId")
                         .HasMaxLength(100)
@@ -265,7 +270,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("ApplicationId", "Status", "Subject", "Type");
 
-                    b.ToTable("OpenIddictTokens");
+                    b.ToTable("OpenIddictTokens", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.User", b =>
@@ -337,7 +342,7 @@ namespace CommunAxiom.Accounts.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.UserApplicationMap", b =>
@@ -353,7 +358,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserApplicationMap");
+                    b.ToTable("UserApplicationMap", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -379,15 +384,16 @@ namespace CommunAxiom.Accounts.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("text");
@@ -403,15 +409,16 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("text");
@@ -427,7 +434,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -449,7 +456,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -464,7 +471,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -483,16 +490,24 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.ApplicationTypeMap", b =>
                 {
+                    b.HasOne("CommunAxiom.Accounts.Models.Application", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("CommunAxiom.Accounts.Models.ApplicationType", "ApplicationType")
                         .WithMany()
                         .HasForeignKey("ApplicationTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Application");
 
                     b.Navigation("ApplicationType");
                 });
@@ -534,11 +549,19 @@ namespace CommunAxiom.Accounts.Migrations
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.UserApplicationMap", b =>
                 {
+                    b.HasOne("CommunAxiom.Accounts.Models.Application", "Application")
+                        .WithMany("UserApplicationMaps")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("CommunAxiom.Accounts.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Application");
 
                     b.Navigation("User");
                 });
@@ -599,6 +622,8 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Navigation("Authorizations");
 
                     b.Navigation("Tokens");
+
+                    b.Navigation("UserApplicationMaps");
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Authorization", b =>
