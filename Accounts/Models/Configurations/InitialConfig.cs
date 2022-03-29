@@ -14,7 +14,6 @@ namespace CommunAxiom.Accounts.Models.Configurations
     {
         public void SetupFields(ModelBuilder builder)
         {
-
             builder.Entity<User>()
                 .Property(x => x.AccountTypeId)
                 .IsRequired();
@@ -29,6 +28,7 @@ namespace CommunAxiom.Accounts.Models.Configurations
                .HasKey(x => new { x.ApplicationId });
             builder.Entity<ApplicationTypeMap>()
                 .HasKey(x => new { x.ApplicationId });
+
         }
 
         public void SetupRelationships(ModelBuilder builder)
@@ -55,7 +55,7 @@ namespace CommunAxiom.Accounts.Models.Configurations
 
             builder.Entity<UserApplicationMap>()
                 .HasOne(x => x.Application)
-                .WithMany()
+                .WithMany(x=>x.UserApplicationMaps)
                 .HasForeignKey(x => x.ApplicationId);
         }
 

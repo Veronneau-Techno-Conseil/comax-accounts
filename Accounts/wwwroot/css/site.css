@@ -1,33 +1,4 @@
 ﻿
 @import ~/css/style.min.css;
 
-.navbar-brand strong {
-    margin-left: 1em;
-    font-size: large;
-}
-
-.navbar-item img {
-    max-height: 2.75rem;
-}
-
-.container.narrow {
-    max-width: 800px;
-}
-
-html, body {
-    font-family: Roboto, "Segoe UI", Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    height: 100%;
-    
-}
-
-.width-100 {
-    width: 100%;
-}
-
-.w-25 {
-    min-width: 25%
-}
-
 

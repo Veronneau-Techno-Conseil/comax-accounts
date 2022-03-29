@@ -8,11 +8,21 @@ namespace CommunAxiom.Accounts.Models.SeedData
         {
             var ApplicationTypes = ctxt.Set<Models.ApplicationType>();
 
-            if (!ApplicationTypes.Any())
+            if (!ApplicationTypes.Any(x=>x.Name == ApplicationType.COMMONS))
             {
                 ApplicationTypes.Add(new ApplicationType
                 {
-                    Name = Models.ApplicationType.COMMONS
+                    Name = ApplicationType.COMMONS
+                });
+
+                ctxt.SaveChanges();
+            }
+
+            if (!ApplicationTypes.Any(x => x.Name == ApplicationType.SYSTEM))
+            {
+                ApplicationTypes.Add(new ApplicationType
+                {
+                    Name = ApplicationType.SYSTEM
                 });
 
                 ctxt.SaveChanges();
