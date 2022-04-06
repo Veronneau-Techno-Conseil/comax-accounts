@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:${IMG_NAME} AS build-env
 WORKDIR /src
 
 # Copy csproj and restore as distinct layers
-COPY ./ ./
+COPY ./src ./
 RUN dotnet restore
 
 # Copy everything else and build
