@@ -133,8 +133,8 @@ pipeline {
             }
             steps {
                 echo "Deploy action: ${deployAction}"
-                withCredentials([file(credentialsId: 'pdsk3s', variable: 'kubecfg'), file(credentialsId: 'helmrepos', variable: 'repos')]) {
-                    sh 'helm -n cx-accounts install accounts ./helm/ --kubeconfig ${kubecfg} --repository-config ${repos}'
+                withCredentials([file(credentialsId: 'pdsk3s', variable: 'kubecfg'), file(credentialsId: 'helmrepos', variable: 'repos'), file(credentialsId: 'accountsvalues', variable: 'accountsvalues')]) {
+                    sh 'helm -n cx-accounts install accounts ./helm/ --kubeconfig ${kubecfg} --repository-config ${repos} -f ${accountsvalues}'
                 }
             }
         }
@@ -145,8 +145,8 @@ pipeline {
                 }
             }
             steps {
-                withCredentials([file(credentialsId: 'pdsk3s', variable: 'kubecfg'), file(credentialsId: 'helmrepos', variable: 'repos')]) {
-                    sh 'helm -n cx-accounts upgrade accounts ./helm/ --kubeconfig ${kubecfg} --repository-config ${repos}'
+                withCredentials([file(credentialsId: 'pdsk3s', variable: 'kubecfg'), file(credentialsId: 'helmrepos', variable: 'repos'), file(credentialsId: 'accountsvalues', variable: 'accountsvalues')]) {
+                    sh 'helm -n cx-accounts upgrade accounts ./helm/ --kubeconfig ${kubecfg} --repository-config ${repos} -f ${accountsvalues}'
                 }
             }
         }

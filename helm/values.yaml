@@ -15,7 +15,7 @@ nameOverride: "cxact"
 fullnameOverride: ""
 
 
-connstr: "Host=dbsrv1.vertechcon.lan;Port=5432;Database=accounts;Username=accountsdbsa;Password=lsey67vIr42h"
+connstr: "Host=dbsrv;Port=5432;Database=actsDb;Username=username;Password=password"
 urls: "http://*:8080"
 pubCaptcha: ""
 captchaSecret: ""
@@ -53,12 +53,12 @@ ingress:
     cert-manager.io/cluster-issuer: "vault-issuer"
     ingress.kubernetes.io/protocol: https
   hosts:
-    - host: accounts.pdsk3s.lan
+    - host: host.domain.com
       paths: 
         - path: /
   tls: 
   - hosts:
-      - accounts.pdsk3s.lan
+      - host.domain.com
     secretName: "accountstls"
 
 resources: {}
