@@ -1,0 +1,59 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Application.AppViewModel
+@{
+    ViewData["Title"] = "Application Details";
+    bool showSecret = TempData.ContainsKey("showSecret") ? (bool)TempData["showSecret"] : false;
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Index"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="field">
+                    <label asp-for="DisplayName" class="label"></label>
+                    <span class="is-primary">@Model.DisplayName</span>
+                </div>
+                <div class="field">
+                    <label asp-for="PostLogoutRedirectURI" class="label"></label>
+                    <span class="is-primary" >@Model.PostLogoutRedirectURI</span>
+                </div>
+                    <div class="field">
+                    <label asp-for="RedirectURI" class="label"></label>
+                    <span class="is-primary">@Model.RedirectURI</span>
+                </div>
+                <div class="field is-grouped">
+                     <div style="@(showSecret ? "display:block" : "display:none")">
+                        <label asp-for="ClientSecret"></label>
+                        <p>Make sure to copy your client secret now and keep a local copy safe to use it with the application. 
+                        You Wouldnt be able to see this secret again</p>
+                        <div>
+                            @Model.ClientSecret
+                        </div>
+                    </div>
+                    <div>
+                        <form method="post">
+                            <div class="field">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Regenerate Secret" class="input is-primary" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+   
+

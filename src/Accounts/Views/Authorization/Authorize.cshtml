@@ -1,0 +1,49 @@
+﻿@using Microsoft.Extensions.Primitives
+@model AuthorizeViewModel
+@{
+    ViewData["Title"] = "Request for access";
+    var scopes = Model.Scope.Split(" ");
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-controller="Authorization" asp-action="Authorize" method="post">
+                    <div class="field">
+                        <h4>Authorize <i class="is-primary">@Model.DisplayName</i> access to your data?</h4>
+                    </div>
+                    <div class="field">
+                        <p asp-validation-summary="All" class="help is-danger"></p>
+                    </div>
+                    <div class="field level is-flex-direction-column">
+                        <span class="level-align is-bold">Scopes requested: </span>
+                        @foreach(var sc in scopes)
+                        {
+                            <span class="level-align">@sc</span>
+                        }
+                    </div>
+                    <div class="field is-grouped is-flex-direction-row-reverse">
+                        <div class="control">
+                            @foreach (var parameter in Context.Request.HasFormContentType ?
+                            (IEnumerable<KeyValuePair<string, StringValues>>) Context.Request.Form : Context.Request.Query)
+                            {
+                                <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+                            }
+                            <input class="button is-link btn-lg btn-success" name="submit.Accept" type="submit" value="Consent" />
+                            <input class="button is-link btn-lg btn-danger" name="submit.Deny" type="submit" value="Deny" />
+                        </div>
+                    </div>
+                   
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

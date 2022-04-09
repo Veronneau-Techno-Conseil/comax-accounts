@@ -1,0 +1,71 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Profile.EditViewModel;
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+
+@{
+    ViewBag.Title = "Edit Profile";
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-50">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="media">
+                  <div class="media-left">
+                    <figure class="image is-96x96">
+                      @if (Model.ProfilePicture != null)
+                        {
+                            <img id="profilePicture" style="width:96px;height:96px;object-fit:cover; border-radius: 60px" src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfilePicture))">
+                        }
+                        else
+                        {
+                            <img id="profilePicture" style="width:96px;height:96px;object-fit:cover; border-radius: 60px" src="~/Images/userIcon.png">
+                        }
+    
+                    </figure>
+                  </div>
+                  <div class="media-content">
+                    <div>
+                        <a asp-controller="Profile" asp-action="ProfilePicture" asp-route-ID="@Model.Id"><button class="btn btn-primary">Update Image</button></a>
+                    </div>
+                  </div>
+                </div>
+
+
+                <form method="post">
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="UserName" class="label"></label>
+                        <input asp-for="UserName" class="input is-primary" />
+                        <span asp-validation-for="UserName" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Email" class="label"></label>
+                        <input asp-for="Email" class="input is-primary" />
+                        <span asp-validation-for="Email" class="help is-danger"></span>
+                    </div>
+                     <div class="field">
+                        <label asp-for="PhoneNumber" class="label"></label>
+                        <input asp-for="PhoneNumber" class="input is-primary" />
+                        <span asp-validation-for="PhoneNumber" class="help is-danger"></span>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">Update</button>
+                            <button asp-controller="Home" asp-action="Index" class="button is-link">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
