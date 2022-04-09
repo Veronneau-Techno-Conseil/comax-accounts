@@ -217,7 +217,6 @@ namespace CommunAxiom.Accounts
                 options.MapAreaControllerRoute("Management", "management", "management/{controller}/{action=Index}/{id?}");
                 options.MapDefaultControllerRoute();
             });
-                        
         }
     }
 }

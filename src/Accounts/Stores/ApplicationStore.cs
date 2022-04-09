@@ -33,8 +33,7 @@ namespace CommunAxiom.Accounts.Stores
         public override ValueTask DeleteAsync(Application application, CancellationToken cancellationToken)
         {
             application.Deleted = true;
-            application.DeletedDate = DateTime.Now;
-
+            application.DeletedDate = DateTime.UtcNow;
             return base.UpdateAsync(application, cancellationToken);
         }
 

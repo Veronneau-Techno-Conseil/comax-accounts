@@ -94,12 +94,8 @@ namespace CommunAxiom.Accounts.Controllers
         // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register([FromServices] ReCaptcha reCaptcha, string returnUrl = null)
+        public IActionResult Register(string returnUrl = null)
         {
-            if (reCaptcha.UseCaptcha)
-            {
-                ViewData["PubCaptcha"] = reCaptcha.PubCaptcha;
-            }
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -117,8 +113,8 @@ namespace CommunAxiom.Accounts.Controllers
             {
                 if (reCaptcha != null && reCaptcha.UseCaptcha)
                 {
-                    if (!Request.Form.ContainsKey("g-recaptcha-response")) return View();
-                    var captcha = Request.Form["g-recaptcha-response"].ToString();
+                    if (string.IsNullOrWhiteSpace(model.CaptchaResponse)) return View();
+                    var captcha = model.CaptchaResponse;
                     if (!await reCaptcha.IsValid(captcha)) return View();
                 }
                 //The AccountType was hardcoded based on the JiraTicket COM26-COM(149) Task https://vertechcon.atlassian.net/browse/COM-149

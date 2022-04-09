@@ -21,5 +21,7 @@ namespace CommunAxiom.Accounts.ViewModels.Account
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
+        public string CaptchaResponse { get; set; }
+
     }
 }

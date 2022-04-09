@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using OpenIddict.Abstractions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -60,7 +61,7 @@ namespace CommunAxiom.Accounts.Controllers
                 Id = Guid.NewGuid().ToString(),
                 ClientId = RandomWord,
                 Deleted = false,
-                DeletedDate = DateTime.Parse("01-01-1900"),
+                DeletedDate = null,
                 DisplayName = model.DisplayName,
                 DisplayNames = Newtonsoft.Json.JsonConvert.SerializeObject(new System.Collections.Generic.Dictionary<string,string>
                 {
@@ -135,11 +136,13 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpGet]
         public IActionResult Manage()
         {
-            var Applications = _applicationManager.ListAsync();
-
+            var ownedApps = _context.Set<Models.UserApplicationMap>().Include(x=>x.User).Include(x=>x.Application)
+                        .Where(x => x.User.UserName == User.Identity.Name && !x.Application.Deleted)
+                        .Select(x=>x.Application).ToList();
+            
             var model = new ManageViewModel
             {
-                Applications = Applications
+                Applications = ownedApps
             };
 
             return View(model);
@@ -182,11 +185,26 @@ namespace CommunAxiom.Accounts.Controllers
             return RedirectToAction("Details", new { id = application.Id, secret = secret, showSecret = true });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        [HttpGet]
+        public IActionResult Delete(string Id)
         {
-            //TODO: A delete action should always be done through a post action on a standard website 
-            var application = await _applicationManager.FindByIdAsync(id);
+            var Application = _applicationManager.FindByIdAsync(Id).Result;
+            var ApplicationDetails = new DetailsViewModel
+            {
+                Id = Application.Id,
+                DisplayName = Application.DisplayName,
+                ClientId = Application.ClientId,
+                PostLogoutRedirectURI = Application.PostLogoutRedirectUris,
+                RedirectURI = Application.RedirectUris
+            };
+
+            return View(ApplicationDetails);
+        }
+
+            [HttpPost]
+        public async Task<IActionResult> Delete(DetailsViewModel model)
+        {
+            var application = await _applicationManager.FindByIdAsync(model.Id);
             if (application == null)
             {
                 ViewBag.ErrorMessage = "Application cannot be found";

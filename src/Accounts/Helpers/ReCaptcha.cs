@@ -24,7 +24,7 @@ namespace CommunAxiom.Accounts.Helpers
         {
             get
             {
-                return !string.IsNullOrWhiteSpace(PubCaptcha);
+                return !string.IsNullOrWhiteSpace(PubCaptcha) && !string.IsNullOrWhiteSpace(CaptchaSecret);
             }
         }
 

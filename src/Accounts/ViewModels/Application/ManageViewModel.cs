@@ -7,6 +7,6 @@ namespace CommunAxiom.Accounts.ViewModels.Application
 {
     public class ManageViewModel
     {
-      public IAsyncEnumerable<Models.Application> Applications { get; set; }
+      public IEnumerable<Models.Application> Applications { get; set; }
     }
 }

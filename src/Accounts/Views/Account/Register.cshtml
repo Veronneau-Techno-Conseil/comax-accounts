@@ -1,7 +1,8 @@
-﻿@model CommunAxiom.Accounts.ViewModels.Account.RegisterViewModel
+﻿@using CommunAxiom.Accounts.Helpers
+@model CommunAxiom.Accounts.ViewModels.Account.RegisterViewModel
+@inject ReCaptcha reCaptcha
 @{
     ViewData["Title"] = "Register";
-    string publicCaptcha = ViewData.ContainsKey("PubCaptcha") ? (string)ViewData["PubCaptcha"] : null;
 }
 
 <div class="level">
@@ -16,7 +17,7 @@
             </div>
             <div class="card-content">
                 
-                <form asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" role="form">
+                <form id="register-form" asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" role="form">
                     <h4>Create a new account.</h4>
                     <div asp-validation-summary="All" class="help is-danger"></div>
                     <div class="field">
@@ -34,17 +35,25 @@
                         <input asp-for="ConfirmPassword" class="input is-primary" />
                         <span asp-validation-for="ConfirmPassword" class="help is-danger"></span>
                     </div>
-                    @if (!string.IsNullOrWhiteSpace(publicCaptcha))
+                    @if (reCaptcha.UseCaptcha)
                     {
-                        <div class="field">
-                            <div class="g-recaptcha" data-sitekey=""></div>
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <input type="hidden" asp-for="CaptchaResponse" />
+                                <button class="g-recaptcha button is-link" 
+                                    data-sitekey="@reCaptcha.PubCaptcha" 
+                                    data-callback='onSubmit' 
+                                    data-action='submit'>Register</button>
+                            </div>
                         </div>
                     }
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button type="submit" class="button is-link">Register</button>
+                    else {
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="submit" class="button is-link">Register</button>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </form>
 
             </div>
@@ -52,11 +61,15 @@
     </div>
 </div>
 
-
-
-
-
 @section Scripts {
+    <script>
+       function onSubmit(token) {           
+         $("#CaptchaResponse").val(token);
+         document.getElementById("register-form").submit();
+       }
+     </script>
+    @if(reCaptcha.UseCaptcha) {
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    }
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
