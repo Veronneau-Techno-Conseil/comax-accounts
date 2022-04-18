@@ -71,6 +71,25 @@ namespace CommunAxiom.Accounts.Controllers.Management
             return View("Views/Management/Applications/Detail.cshtml", m);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Keygen(AppViewModel model)
+        {
+
+            var secret = Guid.NewGuid().ToString();
+            var application = _applicationManager.FindByIdAsync(model.ApplicationId).Result;
+            if (application == null)
+            {
+                ViewBag.ErrorMessage = "Application cannot be found";
+                return RedirectToAction("Manage", "Applications");
+            }
+            else
+            {
+                await _applicationManager.UpdateAsync(application, secret);
+            }
+            this.TempCache.SetApplicationSecret(model.ApplicationId, secret);
+            return RedirectToAction("Details", new { appId = application.Id, showSecret = true });
+        }
+
         [HttpGet]
         public IActionResult Add()
         {
