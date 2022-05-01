@@ -87,7 +87,7 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles,
-                    
+
                     Permissions.ResponseTypes.CodeIdTokenToken
                 }),
                 PostLogoutRedirectUris = JsonSerializer.Serialize(new[]

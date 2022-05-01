@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Business\Application\ConcreteProviders\" />
     <Folder Include="Migrations\" />
     <Folder Include="Validations\" />
   </ItemGroup>
