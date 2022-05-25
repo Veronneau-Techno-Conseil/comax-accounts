@@ -201,6 +201,22 @@ namespace CommunAxiom.Accounts.Migrations
                     b.ToTable("Contacts", (string)null);
                 });
 
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.ContactMethodType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactMethodType", (string)null);
+                });
+
             modelBuilder.Entity("CommunAxiom.Accounts.Models.ContactRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -235,22 +251,6 @@ namespace CommunAxiom.Accounts.Migrations
                     b.HasIndex("NotificationId");
 
                     b.ToTable("ContactRequests", (string)null);
-                });
-
-            modelBuilder.Entity("CommunAxiom.Accounts.Models.ContactType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ContactType", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.CreationStatus", b =>
@@ -323,16 +323,32 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("GroupMemberId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int>("GroupRoleId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GroupMemberId");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("GroupRoleId");
 
                     b.ToTable("GroupMemberRole", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.GroupRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GroupRole", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.IdProvider", b =>
@@ -362,7 +378,7 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("ContactId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ContactTypeId")
+                    b.Property<int>("ContactMethodTypeId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Message")
@@ -372,25 +388,9 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("ContactId");
 
-                    b.HasIndex("ContactTypeId");
+                    b.HasIndex("ContactMethodTypeId");
 
                     b.ToTable("Notifications", (string)null);
-                });
-
-            modelBuilder.Entity("CommunAxiom.Accounts.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Scope", b =>
@@ -840,15 +840,15 @@ namespace CommunAxiom.Accounts.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CommunAxiom.Accounts.Models.Role", "Role")
+                    b.HasOne("CommunAxiom.Accounts.Models.GroupRole", "GroupRole")
                         .WithMany()
-                        .HasForeignKey("RoleId")
+                        .HasForeignKey("GroupRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("GroupMember");
 
-                    b.Navigation("Role");
+                    b.Navigation("GroupRole");
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Notification", b =>
@@ -859,15 +859,15 @@ namespace CommunAxiom.Accounts.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CommunAxiom.Accounts.Models.ContactType", "ContactType")
+                    b.HasOne("CommunAxiom.Accounts.Models.ContactMethodType", "ContactMethodType")
                         .WithMany()
-                        .HasForeignKey("ContactTypeId")
+                        .HasForeignKey("ContactMethodTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Contact");
 
-                    b.Navigation("ContactType");
+                    b.Navigation("ContactMethodType");
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Token", b =>

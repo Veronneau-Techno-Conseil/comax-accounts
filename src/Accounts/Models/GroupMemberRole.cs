@@ -6,10 +6,10 @@
 
         public int GroupMemberId { get; set; }
 
-        public int RoleId { get; set; }
+        public int GroupRoleId { get; set; }
 
         public GroupMember GroupMember { get; set; }
 
-        public Role Role { get; set; }
+        public GroupRole GroupRole { get; set; }
     }
 }

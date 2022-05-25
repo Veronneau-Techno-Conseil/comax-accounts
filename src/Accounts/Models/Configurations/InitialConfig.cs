@@ -41,6 +41,14 @@ namespace CommunAxiom.Accounts.Models.Configurations
                 .Property(x => x.UserId)
                 .IsRequired();
 
+            builder.Entity<Notification>()
+                .Property(x => x.ContactMethodTypeId)
+                .IsRequired();
+
+            builder.Entity<Notification>()
+                .Property(x => x.ContactId)
+                .IsRequired();
+
         }
 
         public void SetupRelationships(ModelBuilder builder)
@@ -126,11 +134,19 @@ namespace CommunAxiom.Accounts.Models.Configurations
                 .HasForeignKey(x => x.GroupMemberId);
 
             builder.Entity<GroupMemberRole>()
-                .HasOne(x => x.Role)
+                .HasOne(x => x.GroupRole)
                 .WithMany()
-                .HasForeignKey(x => x.RoleId);
+                .HasForeignKey(x => x.GroupRoleId);
 
+            builder.Entity<Notification>()
+                .HasOne(x => x.Contact)
+                .WithMany()
+                .HasForeignKey(x => x.ContactId);
 
+            builder.Entity<Notification>()
+                .HasOne(x => x.ContactMethodType)
+                .WithMany()
+                .HasForeignKey(x => x.ContactMethodTypeId);
         }
 
         public void SetupTables(ModelBuilder builder)
@@ -153,8 +169,8 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<Models.IdProvider>()
                 .ToTable("IdProvider");
             
-            builder.Entity<Models.ContactType>()
-                .ToTable("ContactType");
+            builder.Entity<Models.ContactMethodType>()
+                .ToTable("ContactMethodType");
             
             builder.Entity<Models.Contact>()
                 .ToTable("Contacts");
@@ -165,8 +181,8 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<Models.ContactRequest>()
                 .ToTable("ContactRequests");
 
-            builder.Entity<Models.Role>()
-                .ToTable("Roles");
+            builder.Entity<Models.GroupRole>()
+                .ToTable("GroupRole");
 
             builder.Entity<Models.Group>()
                 .ToTable("Groups");

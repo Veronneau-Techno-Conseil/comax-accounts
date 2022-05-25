@@ -19,15 +19,45 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpGet]
-        public IActionResult Manage()
+        public IActionResult Groups()
         {
-            var contacts = _context.Set<Models.Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
-                .Where(x => x.PrimaryAccount.UserName == User.Identity.Name)
-                .Select(x => new Contact { Id = x.Id, PrimaryAccount = x.PrimaryAccount, User = x.User, UserId = x.UserId, PrimaryAccountId = x.PrimaryAccountId, CreationStatus = x.CreationStatus, CreationStatusId = x.CreationStatusId }).ToList();
-
             var groups = _context.Set<Models.Group>().Include(x => x.Owner)
                 .Where(x => x.Owner.UserName == User.Identity.Name)
                 .Select(x => new Models.Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId }).ToList();
+
+            var contactRequests = _context.Set<Models.ContactRequest>().Include(x => x.Contact)
+                .Where(x => x.Contact.PrimaryAccount.UserName == User.Identity.Name)
+                .Select(x => new Models.ContactRequest
+                {
+                    Id = x.Id,
+                    Contact = x.Contact,
+                    ContactId = x.ContactId,
+                    ContactStatus = x.ContactStatus,
+                    ContactStatusId = x.ContactStatusId,
+                    IdProvider = x.IdProvider,
+                    IdProviderId = x.IdProviderId,
+                    Notification = x.Notification,
+                    NotificationId = x.NotificationId,
+                    DateSent = x.DateSent
+                }).ToList();
+
+            var model = new ManageViewModel
+            {
+                Groups = groups,
+                ContactRequests = contactRequests
+            };
+
+            //ViewBag.ResourceSelected = 0;
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Contacts()
+        {
+            var contacts = _context.Set<Models.Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
+                .Where(x => x.PrimaryAccount.UserName == User.Identity.Name && x.UserId != null)
+                .Select(x => new Contact { Id = x.Id, PrimaryAccount = x.PrimaryAccount, User = x.User, UserId = x.UserId, PrimaryAccountId = x.PrimaryAccountId, CreationStatus = x.CreationStatus, CreationStatusId = x.CreationStatusId }).ToList();
 
             var contactRequests = _context.Set<Models.ContactRequest>().Include(x => x.Contact)
                 .Where( x => x.Contact.PrimaryAccount.UserName == User.Identity.Name)
@@ -47,13 +77,42 @@ namespace CommunAxiom.Accounts.Controllers
  
             var model = new ManageViewModel            {
                 Contacts = contacts,
-                Groups = groups,
                 ContactRequests = contactRequests
             };
+
+            //ViewBag.ResourceSelected = 0;
 
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Requests()
+        {
+            var contactRequests = _context.Set<Models.ContactRequest>().Include(x => x.Contact)
+                .Where(x => x.Contact.PrimaryAccount.UserName == User.Identity.Name)
+                .Select(x => new Models.ContactRequest
+                {
+                    Id = x.Id,
+                    Contact = x.Contact,
+                    ContactId = x.ContactId,
+                    ContactStatus = x.ContactStatus,
+                    ContactStatusId = x.ContactStatusId,
+                    IdProvider = x.IdProvider,
+                    IdProviderId = x.IdProviderId,
+                    Notification = x.Notification,
+                    NotificationId = x.NotificationId,
+                    DateSent = x.DateSent
+                }).ToList();
+
+            var model = new ManageViewModel
+            {
+                ContactRequests = contactRequests
+            };
+
+            //ViewBag.ResourceSelected = 0;
+
+            return View(model);
+        }
     }
 }
 
