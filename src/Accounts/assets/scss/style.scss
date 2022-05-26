@@ -151,6 +151,44 @@ html, body {
     min-width: 50%
 }
 
+.wem-1{
+    width: 1em;
+}
+
+.wem-2 {
+    width: 2em;
+}
+
+.wem-3 {
+    width: 3em;
+}
+
+.wem-4 {
+    width: 4em;
+}
+
+.wem-5 {
+    width: 5em;
+}
+
 .navbar-item.is-active, .navbar-item:hover {
     background-color: #D6D6CE !important;
+}
+
+.icon{
+    width: fit-content;
+    height: fit-content;
+    max-height: 1.5rem;
+}
+
+.icon.large {
+    width: fit-content;
+    height: fit-content;
+    max-height: 2rem;
+}
+
+table{
+    td{
+        vertical-align: middle;
+    }
 }
