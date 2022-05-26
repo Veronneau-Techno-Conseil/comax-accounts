@@ -14,6 +14,7 @@ using System.Text.Json;
 using OpenIddict.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using CommunAxiom.Accounts.Contracts;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -24,13 +25,15 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly OpenIddictApplicationManager<Application> _applicationManager;
         private readonly UserManager<User> _userManager;
         private readonly AccountsDbContext _context;
+        private readonly ITempData _tempCache;
 
-        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context)
+        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context, ITempData tempData)
         {
             _applicationManager = ApplicationManager;
             _serviceProvider = serviceProvider;
             _userManager = userManager;
             _context = context;
+            _tempCache = tempData;
         }
 
         [HttpGet]
@@ -84,8 +87,9 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles,
-                    
-                    Permissions.ResponseTypes.CodeIdTokenToken
+
+                    Permissions.ResponseTypes.CodeIdTokenToken,
+                    Permissions.ResponseTypes.Code
                 }),
                 PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
                 {
@@ -149,25 +153,28 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(string Id, string secret, bool showSecret)
+        public IActionResult Details(string Id, bool showSecret)
         {
-            var Application = _applicationManager.FindByIdAsync(Id).Result;
-            var ApplicationDetails = new DetailsViewModel
+            var app = _applicationManager.FindByIdAsync(Id).Result;
+
+            var appDetails = new DetailsViewModel
             {
-                Id = Application.Id,
-                DisplayName = Application.DisplayName,
-                ClientId = Application.ClientId,
-                ClientSecret = secret,
+                Id = app.Id,
+                DisplayName = app.DisplayName,
+                ClientId = app.ClientId,
                 ShowSecret = showSecret,
-                PostLogoutRedirectURI = Application.PostLogoutRedirectUris,
-                RedirectURI = Application.RedirectUris
+                PostLogoutRedirectURI = app.PostLogoutRedirectUris,
+                RedirectURI = app.RedirectUris
             };
 
-            return View(ApplicationDetails);
+            TempData["showSecret"] = true;
+            appDetails.ClientSecret = this._tempCache.GetApplicationSecret(app.Id);
+
+            return View(appDetails);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Details(Application model)
+        public async Task<IActionResult> Keygen(Application model)
         {
             
             var secret = Guid.NewGuid().ToString();
@@ -181,8 +188,8 @@ namespace CommunAxiom.Accounts.Controllers
             {
                 await _applicationManager.UpdateAsync(application, secret);
             }
-
-            return RedirectToAction("Details", new { id = application.Id, secret = secret, showSecret = true });
+            _tempCache.SetApplicationSecret(model.Id, secret);
+            return RedirectToAction("Details", new { id = application.Id, showSecret = true });
         }
 
         [HttpGet]
