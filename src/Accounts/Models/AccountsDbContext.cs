@@ -60,12 +60,12 @@ namespace CommunAxiom.Accounts.Models
                     v => ConvertString(v))
             {
             }
-            public override bool ConvertsNulls => true;
+            public override bool ConvertsNulls => false;
             
             static string ConvertString(string s)
             {
                 if (s == null || s.Equals("[null]", StringComparison.InvariantCultureIgnoreCase) || s.Equals("(null)", StringComparison.InvariantCultureIgnoreCase))
-                    return "";
+                    return null;
                 return s;
             }
         }
