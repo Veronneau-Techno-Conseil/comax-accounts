@@ -408,6 +408,7 @@ namespace CommunAxiom.Accounts.Controllers
             }
             else if (request.IsClientCredentialsGrantType())
             {
+                //TODO: Complete systems based on service type
                 var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 // Subject (sub) is a required field, we use the client id as the subject identifier here.
