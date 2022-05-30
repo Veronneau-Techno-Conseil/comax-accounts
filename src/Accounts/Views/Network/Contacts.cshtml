@@ -9,52 +9,35 @@
             <div class="column is-12">
                 <div class="card has-background-white">
                     <div class="card-content">
-                        <table class="table is-hoverable">
-                            <thead />
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <h5>My Network</h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="columns">
-                                            <div class="column is-2">
-                                                <img class="image is-32x32" src="~/Images/Contacts.png" />
-                                            </div>
-                                            <div class="column is-10">
-                                                @Html.ActionLink("Contacts","Contacts")
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="columns">
-                                            <div class="column is-2">
-                                                <img class="image is-32x32" src="~/Images/Groups.png" />
-                                            </div>
-                                            <div class="column is-10">
-                                                @Html.ActionLink("Groups","Groups")
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="columns">
-                                            <div class="column is-2">
-                                                <img class="image is-32x32" src="~/Images/Groups.png" />
-                                            </div>
-                                            <div class="column is-10">
-                                                @Html.ActionLink("Requests","Requests")
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="columns is-gapless">
+                            <div class="column is-12">
+                                <div class="m-0">
+                                    <figure class="image is-32x32">
+                                        <img src="https://bulma.io/images/placeholders/128x128.png"> <label>@Html.ActionLink("Contacts","Contacts")</label>
+                                    </figure>
+                                </div>
+                            </div>
+                          </div>
+                        <div class="columns">
+                            <div class="column is-2">
+                                <figure class="image is-32x32">
+                                    <img class="is-32x32" src="~/Images/Groups.png" />
+                                </figure>
+                            </div>
+                            <div class="column is-10">
+                                @Html.ActionLink("Groups","Groups")
+                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column is-2">
+                                <figure class="image is-32x32">
+                                    <img class="is-32x32" src="~/Images/Groups.png" />
+                                </figure>
+                            </div>
+                            <div class="column is-10">
+                                @Html.ActionLink("Requests","Requests")
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -92,78 +75,72 @@
             <div class="column is-12">
                 <div class="card has-background-white">
                     <div class="card-content">
-                        <table class="table is-fullwidth" style="overflow-x: auto">
-                            <thead />
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <h5>Contacts</h5>
-                                    </td>
-                                </tr>
+                        <div class="columns">
+                            <div class="column is-12">
+                                <h5>Contacts</h5>
+                            </div>
+                        </div>
+                        @{
+                            var contactsArray = Model.Contacts.ToArray();
+                            double count = contactsArray.Count();
 
-                                @{
-                                    var contactsArray = Model.Contacts.ToArray();
-                                    double count = contactsArray.Count();
-
-                                    if (count == 100)
-                                    {
-                                        <tr>
-                                            <td width="100%">no contacts to display</td>
-                                        </tr>
-
-                                    }
-                                    else
-                                    {
-                                        int contactCount = 0;
-                                        var rowCount = Math.Round((double)(count / 3), (int)0, MidpointRounding.ToPositiveInfinity);
-                                        @for (int i = 0; i < rowCount; i++)
+                            if (count == 100)
+                            {
+                                <div class="columns">
+                                    <div class="column is-12">
+                                        no contacts to display
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                int contactCount = 0;
+                                var rowCount = Math.Round((double)(count / 3), (int)0, MidpointRounding.ToPositiveInfinity);
+                                @for (int i = 0; i < rowCount; i++)
+                                {
+                                    var divCount = contactCount + 3;
+                                    <div class="columns is-variable is-5">
+                                        @for (int j = contactCount; j < divCount; j++)
                                         {
-                                            var divCount = contactCount + 3;
-                                            <tr>
-                                                @for (int j = contactCount; j < divCount; j++)
-                                                {
-                                                    if (j <= contactsArray.Count() - 1)
-                                                    {
-                                                        <td width="33%">
-                                                            <center>
-                                                                <div style="border: 1px solid #D6D6CE">
-                                                                    <div class="m-0" style="background-color:#D6D6CE;">
-                                                                        <br />
-                                                                        &nbsp;
-                                                                    </div>
-                                                                    <div class="m-0 has-background-light">
-                                                                        <figure class="image is-64x64">
-                                                                            @if (contactsArray[j].User.ProfilePicture != null)
-                                                                            {
-                                                                                <img id="profilePicture" class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="data:image/*;base64,@(Convert.ToBase64String(contactsArray[j].User.ProfilePicture))">
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
-                                                                            }
-                                                                        </figure>
-                                                                        @Html.DisplayFor(contactItem => contactsArray[j].User.UserName)
-                                                                    </div>
-                                                                </div>
-                                                            </center>
-                                                        </td>
-                                                    }
-                                                    else
-                                                    {
-                                                        <td width="33%">
-                                                            &nbsp;
-                                                        </td>
-                                                    }
+                                            if (j <= contactsArray.Count() - 1)
+                                            {
+                                                <div class="column is-4">
+                                                    <center>
+                                                        <div style="border: 1px solid #D6D6CE">
+                                                            <div class="m-0" style="background-color:#D6D6CE;">
+                                                                <br />
+                                                                &nbsp;
+                                                            </div>
+                                                        </div>
+                                                        <div class="m-0 has-background-light">
+                                                            <figure class="image is-64x64">
+                                                                @if (contactsArray[j].User.ProfilePicture != null)
+                                                                {
+                                                                    <img id="profilePicture" class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="data:image/*;base64,@(Convert.ToBase64String(contactsArray[j].User.ProfilePicture))">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
+                                                                }
+                                                            </figure>
+                                                            @Html.DisplayFor(contactItem => contactsArray[j].User.UserName)
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="column is-4">
+                                                    &nbsp;
+                                                </div>
 
-                                                    contactCount++;
-                                                }
-                                            </tr>
+                                                contactCount++;
+                                            }
                                         }
-                                    }
+                                    </div>
                                 }
-
-                            </tbody>
-                        </table>
+                            }
+                        }
                     </div>
                 </div>
             </div>
