@@ -23,7 +23,7 @@ namespace CommunAxiom.Accounts.Controllers
         {
             var groups = _context.Set<Models.Group>().Include(x => x.Owner)
                 .Where(x => x.Owner.UserName == User.Identity.Name)
-                .Select(x => new Models.Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId }).ToList();
+                .Select(x => new Models.Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name=x.Name }).ToList();
 
             var contactRequests = _context.Set<Models.ContactRequest>().Include(x => x.Contact)
                 .Where(x => x.Contact.PrimaryAccount.UserName == User.Identity.Name)

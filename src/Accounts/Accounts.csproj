@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\Applications\NewFolder\**" />
-    <Content Remove="Views\Applications\NewFolder\**" />
-    <EmbeddedResource Remove="Views\Applications\NewFolder\**" />
-    <None Remove="Views\Applications\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="assets\ts\site.ts" />
   </ItemGroup>
 

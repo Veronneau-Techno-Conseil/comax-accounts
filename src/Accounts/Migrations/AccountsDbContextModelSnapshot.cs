@@ -277,6 +277,12 @@ namespace CommunAxiom.Accounts.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<byte[]>("GroupPicture")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("text");

@@ -1,69 +1,34 @@
 ﻿@model CommunAxiom.Accounts.ViewModels.Network.ManageViewModel
 @{
-    ViewData["Title"] = "Manage Network";
+    ViewData["Title"] = "Requests";
 }
-<div class="hero is-halfheight">
-    <div class="hero body">
+
+<div class="columns is-variable is-5">
+    <div class="column is-3">
         <div class="columns">
-            <div class="column is-narrow">
+            <div class="column is-12">
+                @Html.Partial("../Shared/Network/MyNetwork.cshtml");
             </div>
-            <div class="column is-3 has-background-white">
-                <table class="table is-hoverable">
-                    <thead>
-                        <h5 class="p2">My Network</h5>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="columns">
-                                    <div class="column is-2">
-                                        <img class="image is-32x32" src="~/Images/Contacts.png" />
-                                    </div>
-                                    <div class="column is-10">
-                                        @Html.ActionLink("Contacts","Contacts")
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="columns">
-                                    <div class="column is-2">
-                                        <img class="image is-32x32" src="~/Images/Groups.png" />
-                                    </div>
-                                    <div class="column is-10">
-                                        @Html.ActionLink("Groups","Groups")
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="columns">
-                                    <div class="column is-2">
-                                        <img class="image is-32x32" src="~/Images/Groups.png" />
-                                    </div>
-                                    <div class="column is-10">
-                                        @Html.ActionLink("Requests","Requests")
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="column is-narrow">
-            </div>
-            <div class="column is-8">
-                <div class="columns">
-                    <div class="column is-12 has-background-white">
-                        <div class="hero is-halfheight">
-                            this is the requests view
+        </div>
+    </div>
+    <div class="column is-9">
+        <div class="columns">
+            <div class="column is-12">
+                <div class="card has-background-white">
+                    <div class="card-content">
+                        <div class="columns">
+                            <div class="column is-12">
+                                <h5>Requests</h5>
+                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column is-12">
+                                <h5>Requests Content</h5>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="column is-narrow"></div>
         </div>
     </div>
 </div>

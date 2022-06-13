@@ -1,82 +1,111 @@
 ﻿@model CommunAxiom.Accounts.ViewModels.Network.ManageViewModel
 @{
-    ViewData["Title"] = "Manage Network";
+    ViewData["Title"] = "Contacts";
 }
-<div class="hero is-halfheight">
-    <div class="hero body">
+
+<div class="columns is-variable is-5">
+    <div class="column is-3">
         <div class="columns">
-            <div class="column is-narrow">
+            <div class="column is-12">
+                @Html.Partial("../Shared/Network/MyNetwork.cshtml");
             </div>
-            <div class="column is-3 has-background-white">
-                <table class="table is-hoverable">
-                    <thead>
-                        <h5 class="p2">My Network</h5>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="columns">
-                                    <div class="column is-2">
-                                        <img class="image is-32x32" src="~/Images/Contacts.png" />
-                                    </div>
-                                    <div class="column is-10">
-                                        @Html.ActionLink("Contacts","Contacts")
-                                    </div>
+        </div>
+    </div>
+    <div class="column is-9">
+        <div class="columns">
+            <div class="column is-12">
+                <div class="card has-background-white">
+                    <div class="card-content">
+                        <div class="columns is-gapless">
+                            <div class="column is-11 has-background-white">
+                                <div class="has-background-white">
+                                    @if (Model.ContactRequests.Count() == 1)
+                                    {
+                                        <label class="label">You have @Model.ContactRequests.Count() prending request</label>
+                                    }
+                                    else
+                                    {
+                                        <label class="label">You have @Model.ContactRequests.Count() prending requests</label>
+                                    }
                                 </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="columns">
-                                    <div class="column is-2">
-                                        <img class="image is-32x32" src="~/Images/Groups.png" />
-                                    </div>
-                                    <div class="column is-10">
-                                        @Html.ActionLink("Groups","Groups")
-                                    </div>
+                            </div>
+                            <div class="column is-1">
+                                <div class="has-background-white">
+                                    @Html.ActionLink("Manage","Requests")
                                 </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="columns">
-                                    <div class="column is-2">
-                                        <img class="image is-32x32" src="~/Images/Groups.png" />
-                                    </div>
-                                    <div class="column is-10">
-                                        @Html.ActionLink("Requests","Requests")
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="column is-narrow">
-            </div>
-            <div class="column is-8">
-                <div class="columns">
-                    <div class="column is-12 has-background-white">
+        </div>
+        <div class="columns">
+            <div class="column is-12">
+                <div class="card has-background-white">
+                    <div class="card-content">
                         <div class="columns">
-                            <div class="column is-10">
-                                You have @Model.ContactRequests.Count() prending requests
-                            </div>
-                            <div class="column is-2">
-                                @Html.ActionLink("Manage","Requests")
+                            <div class="column is-12">
+                                <h5>Groups</h5>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <br />
-                <div class="columns">
-                    <div class="column is-12 has-background-white">
-                        <div class="hero is-halfheight">
-                            this is the groups view
-                        </div>
+                        @{
+                            var groupsArray = Model.Groups.ToArray();
+                            double count = groupsArray.Count();
+
+                            if (count == 100)
+                            {
+                                <div class="columns">
+                                    <div class="column is-12">
+                                        no groups to display
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                int groupsCount = 0;
+                                var rowCount = Math.Round((double)(count / 3), (int)0, MidpointRounding.ToPositiveInfinity);
+                                @for (int i = 0; i < rowCount; i++)
+                                {
+                                    var divCount = groupsCount + 3;
+                                    <div class="columns is-variable is-5">
+                                        @for (int j = groupsCount; j < divCount; j++)
+                                        {
+                                            if (j <= groupsArray.Count() - 1)
+                                            {
+                                                <div class="column is-4">
+                                                    <center>
+                                                        <div style="border: 1px solid #D6D6CE">
+                                                            <div class="m-0" style="background-color:#D6D6CE;">
+                                                                <br />
+                                                                &nbsp;
+                                                            </div>
+                                                        </div>
+                                                        <div class="m-0 has-background-light">
+                                                            <figure class="image is-64x64" style="margin-bottom: -10px">
+                                                                <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
+                                                            </figure>
+                                                            
+                                                            <label class="is-size-7">@Html.DisplayFor(groupItem => groupsArray[j].Name)</label>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="column is-4">
+                                                    &nbsp;
+                                                </div>
+                                                                                                
+                                            }
+                                            groupsCount++;
+                                        }
+                                    </div>
+                                }
+                            }
+                        }
                     </div>
                 </div>
             </div>
-            <div class="column is-narrow"></div>
         </div>
     </div>
 </div>
