@@ -7,5 +7,9 @@ namespace CommunAxiom.Accounts.Models
 {
     public class Token: OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreToken<string, Models.Application, Models.Authorization>
     {
+        public Token(): base()
+        {
+            this.Id = Guid.NewGuid().ToString();
+        }
     }
 }

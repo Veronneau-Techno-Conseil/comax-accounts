@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunAxiom.Accounts.Models;
@@ -87,8 +87,9 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles,
-                    
-                    Permissions.ResponseTypes.CodeIdTokenToken
+
+                    Permissions.ResponseTypes.CodeIdTokenToken,
+                    Permissions.ResponseTypes.Code
                 }),
                 PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
                 {
@@ -102,7 +103,7 @@ namespace CommunAxiom.Accounts.Controllers
                 {
                     Requirements.Features.ProofKeyForCodeExchange
                 })
-            };
+            };            
             var secret = Guid.NewGuid().ToString();
             await _applicationManager.CreateAsync(application, secret);
 
@@ -135,7 +136,7 @@ namespace CommunAxiom.Accounts.Controllers
             //and explain that the user must keep a local copy safe to use with the application
             return RedirectToAction("Details", new { Id = CreatedApplication.Id, secret = secret, showSecret = true });
         }
-
+        
         [HttpGet]
         public IActionResult Manage()
         {
@@ -207,7 +208,7 @@ namespace CommunAxiom.Accounts.Controllers
             return View(ApplicationDetails);
         }
 
-            [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Delete(DetailsViewModel model)
         {
             var application = await _applicationManager.FindByIdAsync(model.Id);

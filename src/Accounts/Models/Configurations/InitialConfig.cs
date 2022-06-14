@@ -77,7 +77,6 @@ namespace CommunAxiom.Accounts.Models.Configurations
                 .HasOne(x => x.Application)
                 .WithMany(x=>x.UserApplicationMaps)
                 .HasForeignKey(x => x.ApplicationId);
-
             builder.Entity<Contact>()
                 .HasOne(x => x.PrimaryAccount)
                 .WithMany()
@@ -147,6 +146,7 @@ namespace CommunAxiom.Accounts.Models.Configurations
                 .HasOne(x => x.ContactMethodType)
                 .WithMany()
                 .HasForeignKey(x => x.ContactMethodTypeId);
+
         }
 
         public void SetupTables(ModelBuilder builder)

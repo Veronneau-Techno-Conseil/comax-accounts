@@ -406,6 +406,22 @@ namespace CommunAxiom.Accounts.Controllers
                 // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
                 return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
+            else if (request.IsClientCredentialsGrantType())
+            {
+                //TODO: Complete systems based on service type
+                var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+                // Subject (sub) is a required field, we use the client id as the subject identifier here.
+                identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId ?? throw new InvalidOperationException());
+
+                // TODO: pull info from DB for claims based on application ownership
+                identity.AddClaim("some-claim", "some-value", OpenIddictConstants.Destinations.AccessToken);
+
+                var claimsPrincipal = new ClaimsPrincipal(identity);
+
+                claimsPrincipal.SetScopes(request.GetScopes());
+                return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
 
             throw new InvalidOperationException("The specified grant type is not supported.");
         }

@@ -21,6 +21,7 @@ pubCaptcha: ""
 captchaSecret: ""
 authCert: "/cert/cert.pem"
 authKey: "/cert/key.pem"
+baseAddress: "https://baseaddress.addr"
 
 serviceAccount:
   # Specifies whether a service account should be created
