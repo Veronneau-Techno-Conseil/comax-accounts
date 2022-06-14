@@ -25,6 +25,7 @@
                 @if (SIManager.IsSignedIn(User))
                 {
                     <a asp-controller="Applications" asp-area="" class="navbar-item" asp-action="Manage">Manage Applications</a>
+                    <a asp-controller="Network" asp-area="" class="navbar-item" asp-action="Contacts">Network</a>
 
                     if(User.HasClaim(Roles.SYS_APP_CLAIM, AccessLevels.ACCESS_LEVEL_ADMIN))
                     {

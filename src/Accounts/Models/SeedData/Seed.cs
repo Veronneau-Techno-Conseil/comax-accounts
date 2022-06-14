@@ -16,6 +16,14 @@ namespace CommunAxiom.Accounts.Models.SeedData
             ApplicationTypes.SeedData(ctxt);      
             
             Roles.SeedData(ctxt);
+
+            GroupRoles.SeedData(ctxt);
+
+            IdProviders.SeedData(ctxt);
+
+            CreationStatuses.SeedData(ctxt);
+
+            ContactMethodTypes.SeedData(ctxt);
         }
     }
 }

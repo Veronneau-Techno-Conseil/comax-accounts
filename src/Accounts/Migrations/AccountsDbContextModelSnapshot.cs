@@ -172,6 +172,233 @@ namespace CommunAxiom.Accounts.Migrations
                     b.ToTable("OpenIddictAuthorizations", (string)null);
                 });
 
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreationStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PrimaryAccountId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreationStatusId");
+
+                    b.HasIndex("PrimaryAccountId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Contacts", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.ContactMethodType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactMethodType", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.ContactRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ContactStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("IdProviderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NotificationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("ContactStatusId");
+
+                    b.HasIndex("IdProviderId");
+
+                    b.HasIndex("NotificationId");
+
+                    b.ToTable("ContactRequests", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.CreationStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CreationStatus", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Group", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("GroupPicture")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Groups", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.GroupMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GroupMembers", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.GroupMemberRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GroupMemberId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GroupRoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupMemberId");
+
+                    b.HasIndex("GroupRoleId");
+
+                    b.ToTable("GroupMemberRole", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.GroupRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GroupRole", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.IdProvider", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdProvider", (string)null);
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ContactMethodTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("ContactMethodTypeId");
+
+                    b.ToTable("Notifications", (string)null);
+                });
+
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Scope", b =>
                 {
                     b.Property<string>("Id")
@@ -519,6 +746,134 @@ namespace CommunAxiom.Accounts.Migrations
                         .HasForeignKey("ApplicationId");
 
                     b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Contact", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.CreationStatus", "CreationStatus")
+                        .WithMany()
+                        .HasForeignKey("CreationStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommunAxiom.Accounts.Models.User", "PrimaryAccount")
+                        .WithMany()
+                        .HasForeignKey("PrimaryAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommunAxiom.Accounts.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("CreationStatus");
+
+                    b.Navigation("PrimaryAccount");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.ContactRequest", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommunAxiom.Accounts.Models.CreationStatus", "ContactStatus")
+                        .WithMany()
+                        .HasForeignKey("ContactStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommunAxiom.Accounts.Models.IdProvider", "IdProvider")
+                        .WithMany()
+                        .HasForeignKey("IdProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommunAxiom.Accounts.Models.Notification", "Notification")
+                        .WithMany()
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("ContactStatus");
+
+                    b.Navigation("IdProvider");
+
+                    b.Navigation("Notification");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Group", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.GroupMember", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommunAxiom.Accounts.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.GroupMemberRole", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.GroupMember", "GroupMember")
+                        .WithMany()
+                        .HasForeignKey("GroupMemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommunAxiom.Accounts.Models.GroupRole", "GroupRole")
+                        .WithMany()
+                        .HasForeignKey("GroupRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupMember");
+
+                    b.Navigation("GroupRole");
+                });
+
+            modelBuilder.Entity("CommunAxiom.Accounts.Models.Notification", b =>
+                {
+                    b.HasOne("CommunAxiom.Accounts.Models.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommunAxiom.Accounts.Models.ContactMethodType", "ContactMethodType")
+                        .WithMany()
+                        .HasForeignKey("ContactMethodTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("ContactMethodType");
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Token", b =>

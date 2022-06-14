@@ -1,0 +1,35 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Network.ManageViewModel
+@{
+    ViewData["Title"] = "Requests";
+}
+
+<div class="columns is-variable is-5">
+    <div class="column is-3">
+        <div class="columns">
+            <div class="column is-12">
+                @Html.Partial("../Shared/Network/MyNetwork.cshtml");
+            </div>
+        </div>
+    </div>
+    <div class="column is-9">
+        <div class="columns">
+            <div class="column is-12">
+                <div class="card has-background-white">
+                    <div class="card-content">
+                        <div class="columns">
+                            <div class="column is-12">
+                                <h5>Requests</h5>
+                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column is-12">
+                                <h5>Requests Content</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
