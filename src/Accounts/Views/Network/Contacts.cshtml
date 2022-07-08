@@ -2,7 +2,9 @@
 @{
     ViewData["Title"] = "Contacts";
 }
-
+<style>
+    tr:hover {background-color: #D6D6CE !important;}
+</style>
 <div class="columns is-variable is-5">
     <div class="column is-3">
         <div class="columns">
@@ -52,7 +54,7 @@
                             var contactsArray = Model.Contacts.ToArray();
                             double count = contactsArray.Count();
 
-                            if (count == 100)
+                            if (count == 0)
                             {
                                 <div class="columns">
                                     <div class="column is-12">
