@@ -123,7 +123,6 @@ namespace CommunAxiom.Accounts
                     options.AllowClientCredentialsFlow();
                     options.AllowAuthorizationCodeFlow();
 
-                    //TODO: refactor to provision from configuration specific to oidc (not ssl)
                     var certPem = File.ReadAllText(Configuration["AuthCert"]);
                     var eccPem = File.ReadAllText(Configuration["AuthKey"]);
 

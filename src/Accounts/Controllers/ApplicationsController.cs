@@ -78,7 +78,7 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.GrantTypes.RefreshToken,
                     Permissions.GrantTypes.DeviceCode,
                     Permissions.GrantTypes.ClientCredentials,
-                    
+
                     Permissions.Endpoints.Device,
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
@@ -131,8 +131,6 @@ namespace CommunAxiom.Accounts.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            //TODO: This should return a restul view, not the list. you want to display the secret to the client
-            //and explain that the user must keep a local copy safe to use with the application
             return RedirectToAction("Details", new { Id = CreatedApplication.Id, secret = secret, showSecret = true });
         }
 

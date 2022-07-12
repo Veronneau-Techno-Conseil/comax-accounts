@@ -65,7 +65,7 @@ namespace CommunAxiom.Accounts.Models.Configurations
 
             builder.Entity<ApplicationTypeMap>()
                 .HasOne(x => x.Application)
-                .WithMany()
+                .WithMany(x=>x.ApplicationTypeMaps)
                 .HasForeignKey(x => x.ApplicationId);
 
             builder.Entity<UserApplicationMap>()

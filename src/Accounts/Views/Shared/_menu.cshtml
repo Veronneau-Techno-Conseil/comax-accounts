@@ -30,6 +30,7 @@
                     if(User.HasClaim(Roles.SYS_APP_CLAIM, AccessLevels.ACCESS_LEVEL_ADMIN))
                     {
                         <a asp-controller="Applications" asp-area="Management" class="navbar-item" asp-action="Index">Manage System Applications</a>
+                        <a asp-controller="AppNamespace" asp-area="Management" class="navbar-item" asp-action="Index">Manage App Namepace</a>
                     }
                 }
 

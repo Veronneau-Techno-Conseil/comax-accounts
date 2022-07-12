@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CommunAxiom.Accounts.Business;
 using CommunAxiom.Accounts.Helpers;
 using CommunAxiom.Accounts.Models;
 using CommunAxiom.Accounts.Stores;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
 using OpenIddict.Core;
@@ -267,8 +269,8 @@ namespace CommunAxiom.Accounts.Controllers
         {
             var request = HttpContext.GetOpenIddictServerRequest() ??
                 throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
-
-            // Retrieve the profile of the logged in user.
+            
+                // Retrieve the profile of the logged in user.
             var user = await _userManager.GetUserAsync(User) ??
                 throw new InvalidOperationException("The user details cannot be retrieved.");
 
@@ -360,7 +362,7 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpPost("~/connect/token"), Produces("application/json")]
-        public async Task<IActionResult> Exchange()
+        public async Task<IActionResult> Exchange([FromServices]ClientClaimsProvider clientClaimsProvider)
         {
             var request = HttpContext.GetOpenIddictServerRequest() ??
                 throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
@@ -405,6 +407,29 @@ namespace CommunAxiom.Accounts.Controllers
 
                 // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
                 return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+            else if (request.IsClientCredentialsGrantType())
+            {
+                var token = HttpContext.Request.Headers["x-act-as"];
+
+                Contracts.ClientClaimsContainer result = null;
+                if(token.Count > 0)
+                {
+                    result = await clientClaimsProvider.GetActAsToken(request, request.ClientId, token[0]);
+                }
+                else
+                {
+                    result = await clientClaimsProvider.GetClientDetails(request, request.ClientId);
+                }
+
+                //TODO: Complete systems based on service type
+                var identity = new ClaimsIdentity(GrantTypes.ClientCredentials);
+                identity.AddClaims(result.Claims);
+                
+                var claimsPrincipal = new ClaimsPrincipal(identity);
+
+                claimsPrincipal.SetScopes(request.GetScopes());
+                return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
             throw new InvalidOperationException("The specified grant type is not supported.");

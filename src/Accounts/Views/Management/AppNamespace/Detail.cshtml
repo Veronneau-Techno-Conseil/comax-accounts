@@ -1,0 +1,69 @@
+﻿@model CommunAxiom.Accounts.Models.AppNamespace
+@{
+    ViewData["Title"] = "Application Details";
+    bool showSecret = TempData.ContainsKey("showSecret") ? (bool)TempData["showSecret"] : false;
+}
+
+
+<div class="card w-25" style="margin-bottom: 1em;">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                @ViewData["Title"]
+            </p>
+        </div>
+        <div class="card-header-icon">
+            <a asp-action="Index"><img src="~/Images/Back.png" class="icon" /></a>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="field">
+            <label asp-for="Name" class="label"></label>
+            <span class="is-primary">@Model.Name</span>
+        </div>
+        <div class="field">
+            <label asp-for="Description" class="label"></label>
+            <span class="is-primary">@Model.Description</span>
+        </div>
+    </div>
+</div>
+<div class="card w-25">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                Namespace claims
+            </p>
+        </div>
+    </div>
+    <div class="card-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><abbr title="Name">Claim Name</abbr></th>
+                    <th><abbr title="Description">Description</abbr></th>
+                    <!--/management/appclaim/{appNs}/create-->
+                    <th><abbr title=""><a asp-controller="AppClaim" asp-area="Management" asp-action="create" asp-route-appNs="@Model.Id" ><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AppClaims)
+                {
+                    <tr>
+                        <td>@item.ClaimName</td>
+                        <td>@item.Description</td>
+                        <td>
+                            <a asp-action="Details" asp-area="Management" asp-controller="AppClaim" asp-route-appId="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
+                            <a asp-action="Edit" asp-area="Management" asp-controller="AppClaim" asp-route-appId="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>
+                            <a asp-action="Delete" asp-area="Management" asp-controller="AppClaim" asp-route-appId="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+
