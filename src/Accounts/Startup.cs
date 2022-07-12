@@ -25,6 +25,7 @@ using Microsoft.Extensions.Caching.Memory;
 using SendGridProvider;
 using TwilioSmsProvider;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using OpenIddict.Server;
 
 namespace CommunAxiom.Accounts
 {
@@ -102,9 +103,14 @@ namespace CommunAxiom.Accounts
                 // Register the OpenIddict server components.
                 .AddServer(options =>
                 {
+                    //TODO: Enable
+                    options.DisableAccessTokenEncryption();
+
+
                     // Enable the authorization, logout, userinfo, and introspection endpoints.
-                    options.SetAuthorizationEndpointUris("/connect/authorize")
-                            .SetDeviceEndpointUris("/connect/device")
+                    options.SetIssuer(new Uri(Configuration["BaseAddress"]))
+                           .SetAuthorizationEndpointUris("/connect/authorize")
+                           .SetDeviceEndpointUris("/connect/device")
                            .SetLogoutEndpointUris("/connect/logout")
                            .SetIntrospectionEndpointUris("/connect/introspect")
                            .SetUserinfoEndpointUris("/connect/userinfo")
@@ -151,7 +157,7 @@ namespace CommunAxiom.Accounts
                     // Register the ASP.NET Core host.
                     options.UseAspNetCore();
                 });
-            
+
             //TODO: switch to distributed memory cache
             services.AddMemoryCache();
             services.AddSingleton<ITempData, Helpers.TempStorage>();
