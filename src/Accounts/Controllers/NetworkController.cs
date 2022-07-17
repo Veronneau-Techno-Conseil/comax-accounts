@@ -1,8 +1,11 @@
 ﻿using CommunAxiom.Accounts.Models;
 using CommunAxiom.Accounts.ViewModels.Network;
+using FluentEmail.Core;
+using FluentEmailProvider;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,11 +15,159 @@ namespace CommunAxiom.Accounts.Controllers
     public class NetworkController : Controller
     {
         private readonly Models.AccountsDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public NetworkController(AccountsDbContext context, UserManager<User> userManager)
+        public NetworkController(AccountsDbContext context, IEmailService emailService)
         {
             this._context = context;
+            this._emailService = emailService;
 
+        }
+
+        [HttpPost]
+        public IActionResult NewContact()
+        {
+
+            var contactRequests = GetContactRequests();
+
+            var model = new ManageViewModel
+            {
+                ContactRequests = contactRequests
+            };
+
+            return View("Requests", model);
+        }
+
+        [HttpPost]
+        public IActionResult NewRequest()
+        {
+
+
+            var contactRequests = GetContactRequests();
+
+            var model = new ManageViewModel
+            {
+                ContactRequests = contactRequests
+            };
+
+            return View("Requests", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrganizationalContact(string Id)
+        {
+            var contactPair = _context.Set<User>()
+                              .Where(x => x.UserName == User.Identity.Name || x.Id == Id)
+                              .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).ToList();
+
+            var status = _context.Set<CreationStatus>().AsQueryable().Where(x => x.Name == CreationStatus.PENDING).FirstOrDefault();
+
+            var primaryAccount = contactPair.First(x => x.UserName == User.Identity.Name);
+            var user = contactPair.First(x => x.Id == Id);
+
+            var contactRequester = new Contact
+            {
+                PrimaryAccount = primaryAccount,
+                PrimaryAccountId = primaryAccount.Id,
+                User = user,
+                UserId = user.Id,
+                CreationStatus = status,
+                CreationStatusId = status.Id
+            };
+
+            var contactRequested = new Contact
+            {
+                PrimaryAccount = user,
+                PrimaryAccountId = user.Id,
+                User = primaryAccount,
+                UserId = primaryAccount.Id,
+                CreationStatus = status,
+                CreationStatusId = status.Id
+            };
+
+            _context.Entry(contactRequester).State = EntityState.Added;
+            _context.SaveChanges();
+
+            _context.Entry(contactRequested).State = EntityState.Added;
+            _context.SaveChanges();
+
+            Contact newContact = (Contact)_context.Set<Contact>().AsQueryable().Where(x => x.PrimaryAccountId == primaryAccount.Id && x.UserId == user.Id).FirstOrDefault();
+            IdProvider idProvider = (IdProvider)_context.Set<IdProvider>().AsQueryable().Where(x => x.Name == IdProvider.EMAIL).FirstOrDefault();
+            ContactMethodType contactMethodType = (ContactMethodType)_context.Set<ContactMethodType>().AsQueryable().Where(x => x.Name == ContactMethodType.EMAIL).FirstOrDefault();
+
+            var dateSent = DateTime.UtcNow;
+            
+            var message = _emailService.GetMessage();
+
+            var notification = new Notification
+            {
+                Contact = newContact,                
+                ContactId = newContact.Id,
+                ContactMethodType = contactMethodType,
+                ContactMethodTypeId = contactMethodType.Id,
+                Message = message
+            };
+
+            _context.Entry(notification).State = EntityState.Added;
+            _context.SaveChanges();
+
+            Notification newNotification = (Notification)_context.Set<Notification>().AsQueryable().Where(x => x.ContactId == newContact.Id).FirstOrDefault();
+
+            var contactRequest = new ContactRequest
+            {
+                ContactId = newContact.Id,
+                Contact = newContact,
+                ContactStatus = status,
+                ContactStatusId = status.Id,
+                IdProvider = idProvider,
+                IdProviderId = idProvider.Id,
+                DateSent = dateSent,
+                Notification = newNotification,
+                NotificationId = newNotification.Id,
+            };
+
+            _context.Entry(contactRequest).State = EntityState.Added;
+
+            _context.SaveChanges();
+
+            var users = _context.Set<Models.User>()
+                        .Where(x => x.UserName != User.Identity.Name)
+                        .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).ToList();
+
+            var contacts = GetContacts();
+            var contactRequests = GetContactRequests();
+
+            var filteredUsers = users.Where(x => !contacts.Any(y => y.User.Id == x.Id) && !contactRequests.Any(z => z.Contact.User.Id == x.Id));
+
+            var model = new ManageViewModel
+            {
+                Users = filteredUsers
+            };
+
+            await _emailService.Send(contactRequester.User.UserName, message);
+
+            return View("ContactRequests", model);
+        }
+
+        [HttpPost]
+        public IActionResult NewGroup()
+        {
+
+            var groups = _context.Set<Models.Group>().Include(x => x.Owner)
+                .Where(x => x.Owner.UserName == User.Identity.Name)
+                .Select(x => new Models.Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name = x.Name }).ToList();
+
+            var contactRequests = GetContactRequests();
+
+            var model = new ManageViewModel
+            {
+                Groups = groups,
+                ContactRequests = contactRequests
+            };
+
+            //ViewBag.ResourceSelected = 0;
+
+            return View("Groups", model);
         }
 
         [HttpGet]
@@ -69,7 +220,28 @@ namespace CommunAxiom.Accounts.Controllers
             return View(model);
         }
 
-       [HttpPost]
+        public IActionResult ContactRequest()
+        {
+            var users = _context.Set<Models.User>()
+                        .Where(x => x.UserName != User.Identity.Name)
+                        .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).ToList();
+
+            var contacts = GetContacts();
+
+            var contactRequests = GetContactRequests();
+
+            var filteredUsers = users.Where(x => !contacts.Any(y => y.User.Id == x.Id) && !contactRequests.Any(z => z.Contact.User.Id == x.Id));
+
+
+            var model = new ManageViewModel
+            {
+                Users = filteredUsers
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Approve(int Id)
         {
             var contactRequest = GetContactRequest(Id);

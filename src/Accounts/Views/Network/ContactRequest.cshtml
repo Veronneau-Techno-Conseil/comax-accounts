@@ -1,0 +1,147 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Network.ManageViewModel
+@{
+    ViewData["Title"] = "ContactRequest";
+}
+
+@section scripts{
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, x, tablinks;
+            x = document.getElementsByClassName("content-tab");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < x.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " is-active";
+        }
+    </script>
+}
+    
+    <div class="columns is-variable is-5">
+        <div class="column is-3">
+            <div class="columns">
+                <div class="column is-12">
+                    @Html.Partial("../Shared/Network/MyNetwork.cshtml")
+                </div>
+            </div>
+        </div>
+        <div class="column is-9">
+            <div class="columns">
+                <div class="column is-12">
+                    <div class="card has-background-white">
+                        <div class="card-content">
+                            <div class="columns">
+                                <div class="column is-11">
+                                    <h5>New Request</h5>
+                                </div>
+                            </div>
+                            <div class="columns">
+                                <div class="column is-12">
+                                    <nav class="tabs is-boxed is-fullwidth is-size-6">
+                                        <div class="container">
+                                            <ul style="margin:0;">
+                                                <li class="tab is-active" onclick="openTab(event,'External')"><a>External</a></li>
+                                                <li class="tab" onclick="openTab(event,'Internal')"><a>My Organization</a></li>
+                                            </ul>
+                                        </div>
+                                    </nav>
+                                    <div class="columns">
+                                        <div class="column is-12">
+                                            <div id="External" class="content-tab">
+                                                test
+                                            </div>
+                                            <div id="Internal" class="content-tab" style="display:none">
+                                                @{
+                                                var usersArray = Model.Users.ToArray();
+                                                double count = usersArray.Count();
+
+                                                if (count == 0)
+                                                {
+                                                    <div class="columns">
+                                                        <div class="column is-12">
+                                                            no users to display
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    int contactCount = 0;
+                                                    var rowCount = Math.Round((double)(count / 3), (int)0, MidpointRounding.ToPositiveInfinity);
+                                                    @for (int i = 0; i < rowCount; i++)
+                                                    {
+                                                        var divCount = contactCount + 3;
+                                                        <div class="columns is-variable is-5">
+                                                            @for (int j = contactCount; j < divCount; j++)
+                                                            {
+                                                                if (j <= usersArray.Count() - 1)
+                                                                {
+                                                                    <div class="column is-4">
+                                                                        <center>
+                                                                            <div style="border: 1px solid #D6D6CE">
+                                                                                <div class="m-0" style="background-color:#D6D6CE;">
+                                                                                    <table>
+                                                                                        <tr>
+                                                                                            <td align="right">
+                                                                                                <form asp-controller="Network" asp-action="AddOrganizationalContact" method="post" role="form">
+                                                                                                    <input type="hidden" id="user + @usersArray[j].Id" name="Id" value="@usersArray[j].Id" />
+                                                                                                    
+                                                                                                    <!--<a onclick="document.getElementById('@usersArray[j].Id').submit();">
+                                                                                                        
+                                                                                                    </a>-->
+                                                                                                    <button style="border:none; background-color:#D6D6CE" type="submit" id="@usersArray[j].Id" value="@usersArray[j].Id"><img class="image icon" src="~/Images/Add.png" /></button>
+                                                                                                </form>
+                                                                                                
+                                                                                                
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="m-0 has-background-light">
+                                                                                <figure class="image is-64x64" style="margin-bottom: -10px">
+                                                                                    @if (usersArray[j].ProfilePicture != null)
+                                                                                    {
+                                                                                        <img id="profilePicture" class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="data:image/*;base64,@(Convert.ToBase64String(usersArray[j].ProfilePicture))">
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
+                                                                                    }
+                                                                                </figure>
+
+                                                                                <label class="is-size-7">@Html.DisplayFor(contactItem => usersArray[j].UserName)</label>
+                                                                            </div>
+                                                                        </center>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="column is-4">
+                                                                        &nbsp;
+                                                                    </div>
+
+                                                                }
+                                                                contactCount++;
+                                                            }
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+

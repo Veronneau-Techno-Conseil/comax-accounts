@@ -26,6 +26,7 @@ using SendGridProvider;
 using TwilioSmsProvider;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server;
+using FluentEmailProvider;
 
 namespace CommunAxiom.Accounts
 {
@@ -169,6 +170,13 @@ namespace CommunAxiom.Accounts
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISmsSender, SmsSender>();
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
+
+            services
+                .AddFluentEmail("wesley@test.com")
+                .AddRazorRenderer()
+                .AddSmtpSender("localhost", 25);
+
+            services.AddTransient<IEmailService, EmailService>();
 
             MigrateDb(services);
         }
