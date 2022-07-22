@@ -9,5 +9,7 @@ namespace CommunAxiom.Accounts.ViewModels.Network
         public IEnumerable<Models.ContactRequest> ContactRequests { get; set; }
 
         public IEnumerable<Models.Group> Groups { get; set; }
+
+        public Models.ContactRequest ContactRequest { get; set; }
     }
 }

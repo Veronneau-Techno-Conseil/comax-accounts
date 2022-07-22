@@ -1,5 +1,36 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model CommunAxiom.Accounts.ViewModels.Network.ManageViewModel
 @{
+    ViewData["Title"] = "Approve";
 }
+<div class="level">
+    <div class="level-item">
+        <div class="card w-50">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        Contact list addition requested:
+                    </p>
+                </div>
+            </div>
+            <div class="card-content">
+                <label class="label">@Model.ContactRequest.Contact.PrimaryAccount.UserName has requested to add you as a contact.</label>
+                <br />
+                <div class="columns">
+                    <div class="column is-12">
+                        <form id="approve-form" asp-controller="Network" asp-action="Approve" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" role="form">
+                            <input type="hidden" id="@Model.ContactRequest.Id" name="Id" value="@Model.ContactRequest.Id" />
+                            <button class="button is-link" style="width:125px;">Approve</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="columns">
+                    <div class="column is-12">
+                        <form id="approve-form" asp-controller="Network" asp-action="Deny" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" role="form">
+                            <input type="hidden" id="@Model.ContactRequest.Id" name="Id" value="@Model.ContactRequest.Id" />
+                            <button class="button is-link" style="width:125px;">Deny</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

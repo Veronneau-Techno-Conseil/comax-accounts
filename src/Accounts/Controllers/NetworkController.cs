@@ -53,6 +53,19 @@ namespace CommunAxiom.Accounts.Controllers
             return View("Requests", model);
         }
 
+        [HttpGet]
+        public IActionResult ApproveDeny(int id)
+        {
+            var contactRequest = GetContactRequest(id);
+
+            var model = new ManageViewModel
+            {
+                ContactRequest = contactRequest
+            };
+
+            return View(model);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddOrganizationalContact(string Id)
         {
@@ -146,7 +159,7 @@ namespace CommunAxiom.Accounts.Controllers
 
             await _emailService.Send(contactRequester.User.UserName, message);
 
-            return View("ContactRequests", model);
+            return View("ContactRequest", model);
         }
 
         [HttpPost]
@@ -355,7 +368,11 @@ namespace CommunAxiom.Accounts.Controllers
                {
                    Id = x.Id,
                    PrimaryAccount = x.PrimaryAccount,
-                   User = x.User,
+                   User = new User { 
+                        Id = x.User.Id,
+                        UserName = x.User.UserName,
+                        ProfilePicture = x.User.ProfilePicture
+                   },
                    UserId = x.UserId,
                    PrimaryAccountId = x.PrimaryAccountId,
                    CreationStatus = x.CreationStatus,
