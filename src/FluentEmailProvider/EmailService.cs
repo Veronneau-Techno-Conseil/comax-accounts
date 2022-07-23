@@ -27,7 +27,7 @@ namespace FluentEmailProvider
 
         public string GetLoginMessage(int contactRequestId)
         {
-            return "https://localhost:5002/Account/Login/" + contactRequestId.ToString();
+            return "https://localhost:5002/Account/Login/" + contactRequestId.ToString() + "?ReturnUrl=%2F";
         }
     }
 }

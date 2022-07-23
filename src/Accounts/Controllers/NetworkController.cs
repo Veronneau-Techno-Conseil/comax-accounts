@@ -40,10 +40,6 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpPost]
         public async Task<IActionResult> AddExternal(ManageViewModel viewModel)
         {
-            //create contact
-            //create notification
-            //create contact request
-            //send email
 
             var primaryAccount = _context.Set<User>()
                               .Where(x => x.UserName == User.Identity.Name)
@@ -62,13 +58,23 @@ namespace CommunAxiom.Accounts.Controllers
             };
 
             _context.Entry(contact).State = EntityState.Added;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             //Contact newContact = (Contact)_context.Set<Contact>().AsQueryable().Where(x => x.PrimaryAccountId == primaryAccount.Id).FirstOrDefault();
             IdProvider idProvider = (IdProvider)_context.Set<IdProvider>().AsQueryable().Where(x => x.Name == IdProvider.EMAIL).FirstOrDefault();
             ContactMethodType contactMethodType = (ContactMethodType)_context.Set<ContactMethodType>().AsQueryable().Where(x => x.Name == ContactMethodType.EMAIL).FirstOrDefault();
 
             var dateSent = DateTime.UtcNow;
+            
+            var notification = new Notification
+            {
+                Contact = contact,
+                ContactId = contact.Id,
+                ContactMethodType = contactMethodType,
+                ContactMethodTypeId = contactMethodType.Id,
+                Message = string.Empty,
+                Email = viewModel.Email
+            };
 
             var contactRequest = new ContactRequest
             {
@@ -79,40 +85,21 @@ namespace CommunAxiom.Accounts.Controllers
                 IdProvider = idProvider,
                 IdProviderId = idProvider.Id,
                 DateSent = dateSent,
-                Notification = null
-            };
-
-            _context.Entry(contactRequest).State = EntityState.Added;
-            _context.SaveChanges();
-
-            var message = _emailService.GetRegisterMessage(contactRequest.Id);
-
-            var notification = new Notification
-            {
-                Contact = contact,
-                ContactId = contact.Id,
-                ContactMethodType = contactMethodType,
-                ContactMethodTypeId = contactMethodType.Id,
-                Message = message,
-                Email = viewModel.Email
+                Notification = notification,
+                NotificationId = notification.Id
             };
 
             _context.Entry(notification).State = EntityState.Added;
-            _context.SaveChanges();
+            _context.Entry(contactRequest).State = EntityState.Added;
 
-            contactRequest.Notification = notification;
+            await _context.SaveChangesAsync();
 
-            _context.Entry(contactRequest).State = EntityState.Modified;
-            _context.SaveChanges();
-            
-            await _emailService.Send(viewModel.Email, message);
+            notification.Message = _emailService.GetRegisterMessage(contactRequest.Id);
 
-            var contactRequests = GetContactRequests();
+            _context.Entry(notification).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-            var model = new ManageViewModel
-            {
-                ContactRequests = contactRequests
-            };
+            await _emailService.Send(viewModel.Email, notification.Message);
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
@@ -150,9 +137,8 @@ namespace CommunAxiom.Accounts.Controllers
             };
 
             _context.Entry(contactRequester).State = EntityState.Added;
-            _context.SaveChanges();
-
             _context.Entry(contactRequested).State = EntityState.Added;
+
             _context.SaveChanges();
 
             IdProvider idProvider = (IdProvider)_context.Set<IdProvider>().AsQueryable().Where(x => x.Name == IdProvider.EMAIL).FirstOrDefault();
@@ -170,7 +156,7 @@ namespace CommunAxiom.Accounts.Controllers
             };
 
             _context.Entry(notification).State = EntityState.Added;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             var contactRequest = new ContactRequest
             {
@@ -186,29 +172,15 @@ namespace CommunAxiom.Accounts.Controllers
             };
 
             _context.Entry(contactRequest).State = EntityState.Added;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             var message = _emailService.GetLoginMessage(contactRequest.Id);
 
             notification.Message = message;
             
             _context.Entry(notification).State = EntityState.Modified;
-            _context.SaveChanges();
 
-
-            var users = _context.Set<Models.User>()
-                        .Where(x => x.UserName != User.Identity.Name)
-                        .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).ToList();
-
-            var contacts = GetContacts();
-            var contactRequests = GetContactRequests();
-
-            var filteredUsers = users.Where(x => !contacts.Any(y => y.User.Id == x.Id) && !contactRequests.Any(z => z.Contact.User.Id == x.Id));
-
-            var model = new ManageViewModel
-            {
-                Users = filteredUsers
-            };
+            await _context.SaveChangesAsync();
 
             await _emailService.Send(contactRequester.User.UserName, message);
 
@@ -231,8 +203,6 @@ namespace CommunAxiom.Accounts.Controllers
                 ContactRequests = contactRequests
             };
 
-            //ViewBag.ResourceSelected = 0;
-
             return View("Groups", model);
         }
 
@@ -251,8 +221,6 @@ namespace CommunAxiom.Accounts.Controllers
                 ContactRequests = contactRequests
             };
 
-            //ViewBag.ResourceSelected = 0;
-
             return View(model);
         }
 
@@ -267,8 +235,6 @@ namespace CommunAxiom.Accounts.Controllers
                 Contacts = contacts,
                 ContactRequests = contactRequests
             };
-
-            //ViewBag.ResourceSelected = 0;
 
             return View(model);
         }
@@ -312,18 +278,7 @@ namespace CommunAxiom.Accounts.Controllers
         {
             var contactRequest = GetContactRequest(Id);
 
-            if (contactRequest.Contact.User == null)
-            {
-                var user = _context.Set<User>()
-                              .Where(x => x.UserName == User.Identity.Name)
-                              .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
-                contactRequest.Contact.User = user;
-                contactRequest.Contact.UserId = user.Id;
-            }
             
-
-
-            var contact = GetRequestedContact(contactRequest.Contact.PrimaryAccountId, contactRequest.Contact.UserId);
             var status = _context.Set<CreationStatus>().AsQueryable().Where(x => x.Name == CreationStatus.COMPLETE).FirstOrDefault();
 
             contactRequest.ContactStatusId = status.Id;
@@ -331,28 +286,36 @@ namespace CommunAxiom.Accounts.Controllers
             contactRequest.ContactStatus = status;
             contactRequest.Contact.CreationStatus = status;
 
+            Contact contactRequeted = new Contact();
+
+            if (contactRequest.Contact.User.Id == null)
+            {
+                var user = _context.Set<User>()
+                              .Where(x => x.UserName == User.Identity.Name)
+                              .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
+                contactRequest.Contact.User = user;
+                contactRequest.Contact.UserId = user.Id;
+
+                contactRequeted.PrimaryAccount = contactRequest.Contact.User;
+                contactRequeted.PrimaryAccountId = contactRequest.Contact.User.Id;
+                contactRequeted.User = contactRequest.Contact.PrimaryAccount;
+                contactRequeted.UserId = contactRequest.Contact.PrimaryAccountId;
+                contactRequeted.CreationStatusId = status.Id;
+                contactRequeted.CreationStatus = status;
+                _context.Entry(contactRequeted).State = EntityState.Added;
+            }
+            else
+            {
+                contactRequeted = GetRequestedContact(contactRequest.Contact.PrimaryAccountId, contactRequest.Contact.UserId);
+                contactRequeted.CreationStatusId = status.Id;
+                contactRequeted.CreationStatus = status;
+                _context.Entry(contactRequeted).State = EntityState.Modified;
+            }
+
             _context.Entry(contactRequest).State = EntityState.Modified;
             _context.Entry(contactRequest.Contact).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
-
-            contact.CreationStatusId = status.Id;
-            contact.CreationStatus = status;
-
-            _context.Entry(contact).State = EntityState.Modified;
-
-            await _context.SaveChangesAsync();
-
-
-
-            var contacts = GetContacts();
-            var contactRequests = GetContactRequests();
-
-            var model = new ManageViewModel
-            {
-                Contacts = contacts,
-                ContactRequests = contactRequests
-            };
 
             return RedirectToAction(nameof(NetworkController.Contacts), "Network");
         }
@@ -374,13 +337,6 @@ namespace CommunAxiom.Accounts.Controllers
 
             await _context.SaveChangesAsync();
 
-            var contactRequests = GetContactRequests();
-
-            var model = new ManageViewModel
-            {
-                ContactRequests = contactRequests
-            };
-
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
 
@@ -395,13 +351,6 @@ namespace CommunAxiom.Accounts.Controllers
             _context.Entry(contactRequest.Contact).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
-
-            var contactRequests = GetContactRequests();
-
-            var model = new ManageViewModel
-            {
-                ContactRequests = contactRequests
-            };
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }

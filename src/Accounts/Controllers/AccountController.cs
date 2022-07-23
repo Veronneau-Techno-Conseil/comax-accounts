@@ -147,7 +147,7 @@ namespace CommunAxiom.Accounts.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     
                     if (model.ContactRequestId != 0)
-                        return RedirectToAction(nameof(NetworkController.ApproveDeny), "Network", model.ContactRequestId);
+                        return RedirectToAction(nameof(NetworkController.ApproveDeny), "Network", new { id = model.ContactRequestId });
 
                     return RedirectToLocal(returnUrl);
                 }
