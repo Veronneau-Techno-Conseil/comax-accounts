@@ -44,11 +44,11 @@
                                     <h5>Requests</h5>
                                 </div>
                                 <div class="column is-1">
-                                     <center>
+                                    <center>
                                         <a asp-controller="Network" asp-area="" asp-action="ContactRequest">
                                             <img class="image icon" src="~/Images/Add.png" />
                                         </a>
-                                     </center>
+                                    </center>
                                 </div>
                             </div>
                             <div class="columns">
@@ -86,11 +86,26 @@
                                                             @foreach (var request in outgoingRequests)
                                                             {
                                                                 <tr>
-                                                                    <td width="10%">
+                                                                    <td width="10%" class="is-hidden-mobile">
                                                                         <label class="is-size-6">@request.Id</label>
                                                                     </td>
-                                                                    <td width="80%">
-                                                                        <label class="is-size-6">@request.DateSent</label>
+                                                                    <td width="40%" class="is-hidden-mobile">
+                                                                        @{
+                                                                            var dt = DateTime.SpecifyKind(request.DateSent, DateTimeKind.Utc);
+                                                                        }
+                                                                        <label class="is-size-6">@dt.ToLocalTime()</label>
+                                                                    </td>
+                                                                    <td width="40%">
+                                                                        @{
+                                                                            if(request.Contact.UserId == null)
+                                                                            {
+                                                                                <label class="is-size-7-mobile">@request.Notification.Email</label>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <label class="is-size-7-mobile">@request.Contact.User.UserName</label>
+                                                                            }
+                                                                        }
                                                                     </td>
                                                                     <td width="10%" class="has-text-right">
                                                                         <form asp-controller="Network" asp-action="Cancel" method="post" role="form">
@@ -128,11 +143,17 @@
                                                             @foreach (var request in incomingRequests)
                                                             {
                                                                 <tr>
-                                                                    <td width="10%">
+                                                                    <td width="10%" class="is-hidden-mobile">
                                                                         <label class="is-size-6">@request.Id</label>
                                                                     </td>
-                                                                    <td width="80%">
-                                                                        <label class="is-size-6">@request.DateSent</label>
+                                                                    <td width="40%" class="is-hidden-mobile">
+                                                                        @{
+                                                                            var dt = DateTime.SpecifyKind(request.DateSent, DateTimeKind.Utc);
+                                                                        }
+                                                                        <label class="is-size-6">@dt.ToLocalTime()</label>
+                                                                    </td>
+                                                                    <td width="40%">
+                                                                        <label class="is-size-7-mobile">@request.Contact.PrimaryAccount.UserName</label>
                                                                     </td>
                                                                     <td width="5%" class="has-text-right">
                                                                         <form asp-controller="Network" asp-action="Approve" method="post" role="form">

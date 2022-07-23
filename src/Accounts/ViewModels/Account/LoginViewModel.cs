@@ -14,5 +14,7 @@ namespace CommunAxiom.Accounts.ViewModels.Account
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
+        public int ContactRequestId { get; set; }
     }
 }

@@ -9,6 +9,8 @@ namespace FluentEmailProvider
     {
         Task Send(string email, string message);
 
-        string GetMessage();
+        string GetRegisterMessage(int contactRequestId);
+
+        string GetLoginMessage(int contactRequestId);
     }
 }

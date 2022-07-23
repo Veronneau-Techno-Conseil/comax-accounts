@@ -1,27 +1,11 @@
 ﻿@model CommunAxiom.Accounts.ViewModels.Network.ManageViewModel
+@using CommunAxiom.Accounts.Helpers
 @{
     ViewData["Title"] = "ContactRequest";
 }
 
-@section scripts{
 
-    <script>
-        function openTab(evt, tabName) {
-            var i, x, tablinks;
-            x = document.getElementsByClassName("content-tab");
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tab");
-            for (i = 0; i < x.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" is-active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " is-active";
-        }
-    </script>
-}
-    
+
     <div class="columns is-variable is-5">
         <div class="column is-3">
             <div class="columns">
@@ -53,7 +37,25 @@
                                     <div class="columns">
                                         <div class="column is-12">
                                             <div id="External" class="content-tab">
-                                                test
+                                                <div class="columns">
+                                                    <div class="column is-6">
+                                                        <form id="addexternalcontact-form" asp-controller="Network" asp-action="AddExternal" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" role="form">
+                                                            <h5>Add an external contact</h5>
+                                                            <div class="field">
+                                                                <label asp-for="Email" class="label"></label>
+                                                                <input asp-for="Email" class="input is-primary" />
+                                                                <span asp-validation-for="Email" class="help is-danger"></span>
+                                                            </div>
+                                                            <div class="field is-grouped">
+                                                                <div class="control">
+                                                                    <button type="submit" class="button is-link">Send</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="column is-6">
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div id="Internal" class="content-tab" style="display:none">
                                                 @{
@@ -89,14 +91,14 @@
                                                                                             <td align="right">
                                                                                                 <form asp-controller="Network" asp-action="AddOrganizationalContact" method="post" role="form">
                                                                                                     <input type="hidden" id="user + @usersArray[j].Id" name="Id" value="@usersArray[j].Id" />
-                                                                                                    
+
                                                                                                     <!--<a onclick="document.getElementById('@usersArray[j].Id').submit();">
-                                                                                                        
+
                                                                                                     </a>-->
                                                                                                     <button style="border:none; background-color:#D6D6CE" type="submit" id="@usersArray[j].Id" value="@usersArray[j].Id"><img class="image icon" src="~/Images/Add.png" /></button>
                                                                                                 </form>
-                                                                                                
-                                                                                                
+
+
                                                                                             </td>
                                                                                         </tr>
                                                                                     </table>
@@ -143,5 +145,26 @@
         </div>
     </div>
 </div>
-    </div>
+
+@section scripts{
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, x, tablinks;
+            x = document.getElementsByClassName("content-tab");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < x.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " is-active";
+        }
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
+    
+
 

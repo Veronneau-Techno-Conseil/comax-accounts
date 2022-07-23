@@ -397,7 +397,13 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("ContactMethodTypeId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
                     b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

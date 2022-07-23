@@ -24,35 +24,6 @@ namespace CommunAxiom.Accounts.Controllers
 
         }
 
-        [HttpPost]
-        public IActionResult NewContact()
-        {
-
-            var contactRequests = GetContactRequests();
-
-            var model = new ManageViewModel
-            {
-                ContactRequests = contactRequests
-            };
-
-            return View("Requests", model);
-        }
-
-        [HttpPost]
-        public IActionResult NewRequest()
-        {
-
-
-            var contactRequests = GetContactRequests();
-
-            var model = new ManageViewModel
-            {
-                ContactRequests = contactRequests
-            };
-
-            return View("Requests", model);
-        }
-
         [HttpGet]
         public IActionResult ApproveDeny(int id)
         {
@@ -64,6 +35,86 @@ namespace CommunAxiom.Accounts.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddExternal(ManageViewModel viewModel)
+        {
+            //create contact
+            //create notification
+            //create contact request
+            //send email
+
+            var primaryAccount = _context.Set<User>()
+                              .Where(x => x.UserName == User.Identity.Name)
+                              .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
+
+            var status = _context.Set<CreationStatus>().AsQueryable().Where(x => x.Name == CreationStatus.PENDING).FirstOrDefault();
+
+            var contact = new Contact
+            {
+                PrimaryAccount = primaryAccount,
+                PrimaryAccountId = primaryAccount.Id,
+                User = null,
+                UserId = null,
+                CreationStatus = status,
+                CreationStatusId = status.Id
+            };
+
+            _context.Entry(contact).State = EntityState.Added;
+            _context.SaveChanges();
+
+            //Contact newContact = (Contact)_context.Set<Contact>().AsQueryable().Where(x => x.PrimaryAccountId == primaryAccount.Id).FirstOrDefault();
+            IdProvider idProvider = (IdProvider)_context.Set<IdProvider>().AsQueryable().Where(x => x.Name == IdProvider.EMAIL).FirstOrDefault();
+            ContactMethodType contactMethodType = (ContactMethodType)_context.Set<ContactMethodType>().AsQueryable().Where(x => x.Name == ContactMethodType.EMAIL).FirstOrDefault();
+
+            var dateSent = DateTime.UtcNow;
+
+            var contactRequest = new ContactRequest
+            {
+                ContactId = contact.Id,
+                Contact = contact,
+                ContactStatus = status,
+                ContactStatusId = status.Id,
+                IdProvider = idProvider,
+                IdProviderId = idProvider.Id,
+                DateSent = dateSent,
+                Notification = null
+            };
+
+            _context.Entry(contactRequest).State = EntityState.Added;
+            _context.SaveChanges();
+
+            var message = _emailService.GetRegisterMessage(contactRequest.Id);
+
+            var notification = new Notification
+            {
+                Contact = contact,
+                ContactId = contact.Id,
+                ContactMethodType = contactMethodType,
+                ContactMethodTypeId = contactMethodType.Id,
+                Message = message,
+                Email = viewModel.Email
+            };
+
+            _context.Entry(notification).State = EntityState.Added;
+            _context.SaveChanges();
+
+            contactRequest.Notification = notification;
+
+            _context.Entry(contactRequest).State = EntityState.Modified;
+            _context.SaveChanges();
+            
+            await _emailService.Send(viewModel.Email, message);
+
+            var contactRequests = GetContactRequests();
+
+            var model = new ManageViewModel
+            {
+                ContactRequests = contactRequests
+            };
+
+            return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
 
         [HttpPost]
@@ -104,44 +155,46 @@ namespace CommunAxiom.Accounts.Controllers
             _context.Entry(contactRequested).State = EntityState.Added;
             _context.SaveChanges();
 
-            Contact newContact = (Contact)_context.Set<Contact>().AsQueryable().Where(x => x.PrimaryAccountId == primaryAccount.Id && x.UserId == user.Id).FirstOrDefault();
             IdProvider idProvider = (IdProvider)_context.Set<IdProvider>().AsQueryable().Where(x => x.Name == IdProvider.EMAIL).FirstOrDefault();
             ContactMethodType contactMethodType = (ContactMethodType)_context.Set<ContactMethodType>().AsQueryable().Where(x => x.Name == ContactMethodType.EMAIL).FirstOrDefault();
 
             var dateSent = DateTime.UtcNow;
-            
-            var message = _emailService.GetMessage();
 
             var notification = new Notification
             {
-                Contact = newContact,                
-                ContactId = newContact.Id,
+                Contact = contactRequester,                
+                ContactId = contactRequester.Id,
                 ContactMethodType = contactMethodType,
                 ContactMethodTypeId = contactMethodType.Id,
-                Message = message
+                Message = String.Empty
             };
 
             _context.Entry(notification).State = EntityState.Added;
             _context.SaveChanges();
 
-            Notification newNotification = (Notification)_context.Set<Notification>().AsQueryable().Where(x => x.ContactId == newContact.Id).FirstOrDefault();
-
             var contactRequest = new ContactRequest
             {
-                ContactId = newContact.Id,
-                Contact = newContact,
+                ContactId = contactRequester.Id,
+                Contact = contactRequester,
                 ContactStatus = status,
                 ContactStatusId = status.Id,
                 IdProvider = idProvider,
                 IdProviderId = idProvider.Id,
                 DateSent = dateSent,
-                Notification = newNotification,
-                NotificationId = newNotification.Id,
+                Notification = notification,
+                NotificationId = notification.Id
             };
 
             _context.Entry(contactRequest).State = EntityState.Added;
-
             _context.SaveChanges();
+
+            var message = _emailService.GetLoginMessage(contactRequest.Id);
+
+            notification.Message = message;
+            
+            _context.Entry(notification).State = EntityState.Modified;
+            _context.SaveChanges();
+
 
             var users = _context.Set<Models.User>()
                         .Where(x => x.UserName != User.Identity.Name)
@@ -159,7 +212,7 @@ namespace CommunAxiom.Accounts.Controllers
 
             await _emailService.Send(contactRequester.User.UserName, message);
 
-            return View("ContactRequest", model);
+            return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
 
         [HttpPost]
@@ -259,8 +312,18 @@ namespace CommunAxiom.Accounts.Controllers
         {
             var contactRequest = GetContactRequest(Id);
 
-            var contact = GetRequestedContact(contactRequest.Contact.PrimaryAccountId, contactRequest.Contact.UserId);
+            if (contactRequest.Contact.User == null)
+            {
+                var user = _context.Set<User>()
+                              .Where(x => x.UserName == User.Identity.Name)
+                              .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
+                contactRequest.Contact.User = user;
+                contactRequest.Contact.UserId = user.Id;
+            }
+            
 
+
+            var contact = GetRequestedContact(contactRequest.Contact.PrimaryAccountId, contactRequest.Contact.UserId);
             var status = _context.Set<CreationStatus>().AsQueryable().Where(x => x.Name == CreationStatus.COMPLETE).FirstOrDefault();
 
             contactRequest.ContactStatusId = status.Id;
@@ -291,7 +354,7 @@ namespace CommunAxiom.Accounts.Controllers
                 ContactRequests = contactRequests
             };
 
-            return View("Contacts", model);
+            return RedirectToAction(nameof(NetworkController.Contacts), "Network");
         }
 
         [HttpPost]
@@ -318,7 +381,7 @@ namespace CommunAxiom.Accounts.Controllers
                 ContactRequests = contactRequests
             };
 
-            return View("Requests", model);
+            return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
 
         public async Task<IActionResult> Cancel(int Id)
@@ -340,7 +403,7 @@ namespace CommunAxiom.Accounts.Controllers
                 ContactRequests = contactRequests
             };
 
-            return View("Requests", model);
+            return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
 
         private Contact GetRequestedContact(string PrimaryAccountId, string UserId)
@@ -442,7 +505,12 @@ namespace CommunAxiom.Accounts.Controllers
                     ContactStatusId = x.ContactStatusId,
                     IdProvider = x.IdProvider,
                     IdProviderId = x.IdProviderId,
-                    Notification = x.Notification,
+                    Notification = new Notification
+                    {
+                        Id = x.Notification.Id,
+                        Email = x.Notification.Email,
+                        Phone = x.Notification.Phone
+                    },
                     NotificationId = x.NotificationId,
                     DateSent = x.DateSent
                 }).ToList();

@@ -35,6 +35,7 @@
                         <input asp-for="ConfirmPassword" class="input is-primary" />
                         <span asp-validation-for="ConfirmPassword" class="help is-danger"></span>
                     </div>
+                    <input type="hidden" asp-for="ContactRequestId" />
                     @if (reCaptcha.UseCaptcha)
                     {
                         <div class="field is-grouped">

@@ -20,9 +20,14 @@ namespace FluentEmailProvider
             .Body(message).SendAsync();
         }
 
-        public string GetMessage()
+        public string GetRegisterMessage(int contactRequestId)
         {
-            return "This is a organizational contact add";
+            return "https://localhost:5002/Account/Register/" + contactRequestId.ToString();
+        }
+
+        public string GetLoginMessage(int contactRequestId)
+        {
+            return "https://localhost:5002/Account/Login/" + contactRequestId.ToString();
         }
     }
 }

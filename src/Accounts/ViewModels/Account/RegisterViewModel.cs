@@ -23,5 +23,7 @@ namespace CommunAxiom.Accounts.ViewModels.Account
 
         public string CaptchaResponse { get; set; }
 
+        public int ContactRequestId { get; set; }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CommunAxiom.Accounts.ViewModels.Network
 {
@@ -11,5 +12,10 @@ namespace CommunAxiom.Accounts.ViewModels.Network
         public IEnumerable<Models.Group> Groups { get; set; }
 
         public Models.ContactRequest ContactRequest { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
     }
 }
