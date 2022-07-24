@@ -171,9 +171,10 @@ namespace CommunAxiom.Accounts
             services.AddTransient<ISmsSender, SmsSender>();
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
 
+            var directory = Directory.GetCurrentDirectory();
             services
-                .AddFluentEmail("wesley@test.com")
-                .AddRazorRenderer()
+                .AddFluentEmail("noreply@communaxiom.org")
+                .AddRazorRenderer(directory)
                 .AddSmtpSender("localhost", 25);
 
             services.AddTransient<IEmailService, EmailService>();

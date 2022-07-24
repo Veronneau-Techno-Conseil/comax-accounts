@@ -99,7 +99,7 @@ namespace CommunAxiom.Accounts.Controllers
             _context.Entry(notification).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            await _emailService.Send(viewModel.Email, notification.Message);
+            _emailService.SendEmail(viewModel.Email, notification.Message, contactRequest.Contact.PrimaryAccount.UserName);
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
@@ -182,7 +182,7 @@ namespace CommunAxiom.Accounts.Controllers
 
             await _context.SaveChangesAsync();
 
-            await _emailService.Send(contactRequester.User.UserName, message);
+            _emailService.SendEmail(contactRequester.User.UserName, message, contactRequester.PrimaryAccount.UserName);
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }

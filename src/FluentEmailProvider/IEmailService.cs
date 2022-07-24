@@ -7,7 +7,7 @@ namespace FluentEmailProvider
 {
     public interface IEmailService
     {
-        Task Send(string email, string message);
+        void SendEmail(string email, string message, string primaryAccount);
 
         string GetRegisterMessage(int contactRequestId);
 
