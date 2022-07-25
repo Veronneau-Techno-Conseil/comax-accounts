@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CommunAxiom.Accounts.Models;
 using System.Collections.Generic;
 using CommunAxiom.Accounts.Constants;
+using Microsoft.Extensions.Configuration;
 
 namespace CommunAxiom.Accounts.Business
 {
@@ -15,14 +16,14 @@ namespace CommunAxiom.Accounts.Business
     {
         private readonly Models.AccountsDbContext _accountsDbContext;
         private readonly OpenIddictValidationService _validationService;
-        private readonly ApplyTokenResponseContext _context;
+        private readonly IConfiguration _config;
 
 
-        public ClientClaimsProvider(ApplyTokenResponseContext context, Models.AccountsDbContext accountsDbContext, OpenIddictValidationService validationService)
+        public ClientClaimsProvider(IConfiguration config, Models.AccountsDbContext accountsDbContext, OpenIddictValidationService validationService)
         {
             _accountsDbContext = accountsDbContext;
             _validationService = validationService;
-            _context = context;
+            _config = config;
         }
 
         public async Task<ClientClaimsContainer> GetClientDetails(OpenIddictRequest request, string clientId)
@@ -34,7 +35,7 @@ namespace CommunAxiom.Accounts.Business
 
             claimsList.AddRange(new[]
             {
-                new System.Security.Claims.Claim(OpenIddictConstants.Claims.Issuer, this._context.Issuer.ToString()),
+                new System.Security.Claims.Claim(OpenIddictConstants.Claims.Issuer, this._config["BaseAddress"]),
                 new System.Security.Claims.Claim(OpenIddictConstants.Claims.Name, app.DisplayName),
                 new System.Security.Claims.Claim(OpenIddictConstants.Claims.Subject, app.ClientId),
                 new System.Security.Claims.Claim(Claims.URI_CLAIM, UriProvider.GetUri(app.ApplicationTypeMaps[0].ApplicationType.Name, clientId))
@@ -43,7 +44,7 @@ namespace CommunAxiom.Accounts.Business
             foreach (var claim in claims)
             {
                 var ns = string.Format($"{claim.AppClaim.AppNamespace.Name}{claim.AppClaim.ClaimName}");
-                System.Security.Claims.Claim c = new System.Security.Claims.Claim(ns, claim.Value, null, this._context.Issuer.ToString());
+                System.Security.Claims.Claim c = new System.Security.Claims.Claim(ns, claim.Value, null, this._config["BaseAddress"]);
                 claimsList.Add(c);
             }
 
@@ -64,6 +65,7 @@ namespace CommunAxiom.Accounts.Business
 
             claimsList.Add(new System.Security.Claims.Claim(Claims.IMPERSONATED_CLAIM, UriProvider.GetUri(app.ApplicationTypeMaps[0].ApplicationType.Name, clientId)));
             claimsList.AddRange(principal.Claims);
+
 
             var ret = new ClientClaimsContainer()
             {

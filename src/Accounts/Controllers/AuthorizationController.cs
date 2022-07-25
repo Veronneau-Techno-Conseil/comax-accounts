@@ -423,9 +423,13 @@ namespace CommunAxiom.Accounts.Controllers
                 }
 
                 //TODO: Complete systems based on service type
+				//TODO: Split identities within the principal
                 var identity = new ClaimsIdentity(GrantTypes.ClientCredentials);
-                identity.AddClaims(result.Claims);
-                
+                foreach(var c in result.Claims)
+                {
+                    identity.AddClaim(c.Type, c.Value, Destinations.AccessToken);
+                }
+
                 var claimsPrincipal = new ClaimsPrincipal(identity);
 
                 claimsPrincipal.SetScopes(request.GetScopes());

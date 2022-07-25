@@ -26,6 +26,7 @@ using SendGridProvider;
 using TwilioSmsProvider;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server;
+using CommunAxiom.Accounts.Business;
 
 namespace CommunAxiom.Accounts
 {
@@ -168,6 +169,7 @@ namespace CommunAxiom.Accounts
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISmsSender, SmsSender>();
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
+            services.AddTransient<ClientClaimsProvider>();
 
             MigrateDb(services);
         }
