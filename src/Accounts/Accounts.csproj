@@ -7,17 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\Applications\NewFolder\**" />
-    <Content Remove="Views\Applications\NewFolder\**" />
-    <EmbeddedResource Remove="Views\Applications\NewFolder\**" />
-    <None Remove="Views\Applications\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="assets\ts\site.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
@@ -42,16 +31,6 @@
     <PackageReference Include="System.Linq.Async" Version="5.1.0" />
     <PackageReference Include="System.Runtime" Version="4.3.1" />
     <PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Business\Application\ConcreteProviders\" />
-    <Folder Include="Migrations\" />
-    <Folder Include="Validations\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\Images\Profiles.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -91,7 +70,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <ProjectExtensions><VisualStudio><UserProperties wwwroot_4lib_4bootstrap_4dist_4css_4bootstrap_1css_1map__JsonSchema="" /></VisualStudio></ProjectExtensions>
-  
 </Project>
