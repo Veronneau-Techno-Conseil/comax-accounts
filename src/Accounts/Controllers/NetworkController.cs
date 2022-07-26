@@ -2,6 +2,7 @@
 using CommunAxiom.Accounts.ViewModels.Network;
 using FluentEmail.Core;
 using FluentEmailProvider;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace CommunAxiom.Accounts.Controllers
 {
+    [Authorize]
     public class NetworkController : Controller
     {
         private readonly Models.AccountsDbContext _context;
@@ -65,7 +67,7 @@ namespace CommunAxiom.Accounts.Controllers
             ContactMethodType contactMethodType = (ContactMethodType)_context.Set<ContactMethodType>().AsQueryable().Where(x => x.Name == ContactMethodType.EMAIL).FirstOrDefault();
 
             var dateSent = DateTime.UtcNow;
-            
+
             var notification = new Notification
             {
                 Contact = contact,
@@ -102,6 +104,26 @@ namespace CommunAxiom.Accounts.Controllers
             _emailService.SendEmail(viewModel.Email, notification.Message, contactRequest.Contact.PrimaryAccount.UserName);
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteContact(int id)
+        {
+            var contact = _context.Set<Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
+                .Where(x => x.Id == id)
+                .Select(x => new Contact
+                 {
+                     Id = x.Id,
+                     PrimaryAccount = x.PrimaryAccount,
+                     User = x.User,
+                     UserId = x.UserId,
+                     PrimaryAccountId = x.PrimaryAccountId,
+                     CreationStatus = x.CreationStatus,
+                     CreationStatusId = x.CreationStatusId
+                 }).FirstOrDefault();
+
+
+            return RedirectToAction(nameof(Contacts));
         }
 
         [HttpPost]
@@ -252,6 +274,7 @@ namespace CommunAxiom.Accounts.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public IActionResult ContactRequest()
         {
             var users = _context.Set<Models.User>()
@@ -340,6 +363,7 @@ namespace CommunAxiom.Accounts.Controllers
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
 
+        [HttpPost]
         public async Task<IActionResult> Cancel(int Id)
         {
             var contactRequest = GetContactRequest(Id);
@@ -354,6 +378,8 @@ namespace CommunAxiom.Accounts.Controllers
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
+
+        
 
         private Contact GetRequestedContact(string PrimaryAccountId, string UserId)
         {

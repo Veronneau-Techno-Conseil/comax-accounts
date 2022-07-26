@@ -50,13 +50,13 @@ namespace FluentEmailProvider
 
         public string GetRegisterMessage(int contactRequestId)
         {
-            return "https://localhost:5002/Account/Register/" + contactRequestId.ToString();
+            return "https://localhost:5002/Network/ApproveDeny/" + contactRequestId.ToString() + "/";
         }
 
         public string GetLoginMessage(int contactRequestId)
         {
 
-            return "https://localhost:5002/Account/Login/" + contactRequestId.ToString() + "?ReturnUrl=%2F";
+            return "https://localhost:5002/Network/ApproveDeny/" + contactRequestId.ToString() + "/";
         }
 
 

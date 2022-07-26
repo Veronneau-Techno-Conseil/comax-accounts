@@ -39,7 +39,7 @@
                                             <div id="External" class="content-tab">
                                                 <div class="columns">
                                                     <div class="column is-6">
-                                                        <form id="addexternalcontact-form" asp-controller="Network" asp-action="AddExternal" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" role="form">
+                                                        <form id="addexternalcontact-form" asp-controller="Network" asp-action="AddExternal" method="post" role="form">
                                                             <h5>Add an external contact</h5>
                                                             <div class="field">
                                                                 <label asp-for="Email" class="label"></label>
@@ -91,14 +91,8 @@
                                                                                             <td align="right">
                                                                                                 <form asp-controller="Network" asp-action="AddOrganizationalContact" method="post" role="form">
                                                                                                     <input type="hidden" id="user + @usersArray[j].Id" name="Id" value="@usersArray[j].Id" />
-
-                                                                                                    <!--<a onclick="document.getElementById('@usersArray[j].Id').submit();">
-
-                                                                                                    </a>-->
                                                                                                     <button style="border:none; background-color:#D6D6CE" type="submit" id="@usersArray[j].Id" value="@usersArray[j].Id"><img class="image icon" src="~/Images/Add.png" /></button>
                                                                                                 </form>
-
-
                                                                                             </td>
                                                                                         </tr>
                                                                                     </table>

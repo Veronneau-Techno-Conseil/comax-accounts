@@ -87,8 +87,16 @@
                                                     <center>
                                                         <div style="border: 1px solid #D6D6CE">
                                                             <div class="m-0" style="background-color:#D6D6CE;">
-                                                                <br />
-                                                                &nbsp;
+                                                                <table>
+                                                                    <tr>
+                                                                        <td align="right">
+                                                                            <form asp-controller="Network" asp-action="DeleteContact" method="post" role="form">
+                                                                                <input type="hidden" id="user + @contactsArray[j].Id" name="Id" value="@contactsArray[j].Id" />
+                                                                                <button style="border:none; background-color:#D6D6CE" type="submit" id="@contactsArray[j].Id" value="@contactsArray[j].Id"><img class="image icon" src="~/Images/Delete.png" /></button>
+                                                                            </form>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
                                                             </div>
                                                         </div>
                                                         <div class="m-0 has-background-light">
