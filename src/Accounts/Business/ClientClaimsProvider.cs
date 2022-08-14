@@ -43,7 +43,7 @@ namespace CommunAxiom.Accounts.Business
 
             foreach (var claim in claims)
             {
-                var ns = string.Format($"{claim.AppClaim.AppNamespace.Name}{claim.AppClaim.ClaimName}");
+                var ns = $"{claim.AppClaim.AppNamespace.Name}{claim.AppClaim.ClaimName}";
                 System.Security.Claims.Claim c = new System.Security.Claims.Claim(ns, claim.Value, null, this._config["BaseAddress"]);
                 claimsList.Add(c);
             }

@@ -1,17 +1,21 @@
-﻿@model CommunAxiom.Accounts.Models.AppClaim
+﻿@using CommunAxiom.Accounts.Contracts
+@model CommunAxiom.Accounts.Models.AppClaimAssignment
+@inject ILookupStore _lookupStore
 @{
     var buttonText = "Create";
     var action = "Edit";
     if (Model?.Id > 0)
     {
-        ViewData["Title"] = "Modify the App Claim";
+        ViewData["Title"] = "Modify the App Claim Assignment";
         buttonText = "Save";
     }
     else
     {
-        ViewData["Title"] = "Create a new App Claim";
+        ViewData["Title"] = "Create a new App Claim Assignment";
         action = "Create";
     }
+
+    var claimsLookup = _lookupStore.ListApplicationClaims().Select(x=>new SelectListItem(x.Name, x.Value.ToString()));
 }
 
 <div class="level">
@@ -24,26 +28,29 @@
                     </p>
                 </div>
                 <div class="card-header-icon">
-                    <a asp-action="Details" asp-controller="AppNamespace" asp-route-id="@Model.AppNamespaceId"><img src="~/Images/Back.png" class="icon" /></a>
+                    <a asp-action="Details" asp-controller="ApplicationType" asp-route-id="@Model.ApplicationTypeId"><img src="~/Images/Back.png" class="icon" /></a>
                 </div>
             </div>
             <div class="card-content">
-                <form asp-area="Management" asp-action="@action" asp-controller="AppClaim" method="post" role="form">
+                <form asp-area="Management" asp-action="@action" asp-controller="AppClaimAssignment" method="post" role="form">
                     @if (Model?.Id > 0)
                     {
                         <input asp-for="Id" type="hidden" />
-                        <input asp-for="AppNamespaceId" type="hidden" />
+                        <input asp-for="ApplicationTypeId" type="hidden" />
                     }
+
                     <div asp-validation-summary="All" class="help is-danger"></div>
+
                     <div class="field">
-                        <label asp-for="ClaimName" class="label"></label>
-                        <input asp-for="ClaimName" class="input is-primary" />
-                        <span asp-validation-for="ClaimName" class="help is-danger"></span>
+                        <label asp-for="AppClaimId" class="label"></label>
+                        <select asp-for="AppClaimId" asp-items="@claimsLookup" class="input is-primary select"></select>
+                        <span asp-validation-for="AppClaimId" class="help is-danger"></span>
                     </div>
+
                     <div class="field">
-                        <label asp-for="Description" class="label"></label>
-                        <input asp-for="Description" class="input is-primary" />
-                        <span asp-validation-for="Description" class="help is-danger"></span>
+                        <label asp-for="Value" class="label"></label>
+                        <input asp-for="Value" class="input is-primary" />
+                        <span asp-validation-for="Value" class="help is-danger"></span>
                     </div>
                      
                     <div class="field is-grouped">

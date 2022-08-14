@@ -56,7 +56,7 @@ namespace CommunAxiom.Accounts.Models.Configurations
 
             builder.Entity<AppClaimAssignment>()
                 .HasOne(x=>x.ApplicationType)
-                .WithMany()
+                .WithMany(x=>x.AppClaimAssignments)
                 .HasForeignKey(x=>x.ApplicationTypeId);
         }
 

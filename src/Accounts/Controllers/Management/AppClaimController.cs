@@ -23,7 +23,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         [Route("/management/appclaim/{appNs}")]
         public async Task<ActionResult> Index(int appNs)
         {
-            var lst = await _context.Set<AppClaim>().ToListAsync();
+            var lst = await _context.Set<AppClaim>().Where(x=>x.AppNamespaceId == appNs).ToListAsync();
             return View("Views/Management/AppClaim/Detail.cshtml", lst);
         }
 
@@ -31,7 +31,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         [Route("/management/appclaim/{appNs}/details/{id}")]
         public async Task<ActionResult> Details(int appNs, int id)
         {
-            var value = await _context.Set<AppClaim>().FirstAsync(x=>x.Id == id);
+            var value = await _context.Set<AppClaim>().FirstAsync(x=> x.AppNamespaceId == appNs && x.Id == id);
             return View("Views/Management/AppClaim/Detail.cshtml", value);
         }
 
@@ -55,7 +55,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
                 await set.AddAsync(ac);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details","AppNamespace", new { id=appNs });
             }
             catch
             {
@@ -90,7 +90,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
                 value.Description = ns.Description;
                 
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details","AppNamespace", new { id=appNs });
             }
             catch
             {
@@ -126,7 +126,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
 
                 set.Remove(value);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details","AppNamespace", new { id=appNs });
             }
             catch
             {

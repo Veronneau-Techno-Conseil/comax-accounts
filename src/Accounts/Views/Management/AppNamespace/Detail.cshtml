@@ -52,9 +52,9 @@
                         <td>@item.ClaimName</td>
                         <td>@item.Description</td>
                         <td>
-                            <a asp-action="Details" asp-area="Management" asp-controller="AppClaim" asp-route-appId="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
-                            <a asp-action="Edit" asp-area="Management" asp-controller="AppClaim" asp-route-appId="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>
-                            <a asp-action="Delete" asp-area="Management" asp-controller="AppClaim" asp-route-appId="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
+                            <a asp-action="Details" asp-area="Management" asp-controller="AppClaim" asp-route-appNs="@item.AppNamespaceId" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
+                            <a asp-action="Edit" asp-area="Management" asp-controller="AppClaim"  asp-route-appNs="@item.AppNamespaceId" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>
+                            <a asp-action="Delete" asp-area="Management" asp-controller="AppClaim"  asp-route-appNs="@item.AppNamespaceId" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
                         </td>
                     </tr>
                 }
