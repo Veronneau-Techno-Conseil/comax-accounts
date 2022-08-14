@@ -1,6 +1,6 @@
-﻿@model CommunAxiom.Accounts.Models.AppNamespace
+﻿@model CommunAxiom.Accounts.Models.AppClaim
 @{
-    ViewData["Title"] = "Delete Application";
+    ViewData["Title"] = "Delete Application Claim";
 }
 
 <div class="level">
@@ -13,13 +13,13 @@
                     </p>
                 </div>
                 <div class="card-header-icon">
-                    <a asp-action="Index"><img src="~/Images/Back.png" class="icon" /></a>
+                    <a asp-action="Details" asp-controller="AppNamespace" asp-route-id="@Model.AppNamespaceId"><img src="~/Images/Back.png" class="icon" /></a>
                 </div>
             </div>
             <div class="card-content">
                 <div class="field">
-                    <label asp-for="Name" class="label"></label>
-                    <span class="is-primary">@Model.Name</span>
+                    <label asp-for="ClaimName" class="label"></label>
+                    <span class="is-primary">@Model.ClaimName</span>
                 </div>
                 <div class="field">
                     <label asp-for="Description" class="label"></label>
@@ -29,7 +29,7 @@
                     <form asp-action="Delete">
                         <input type="hidden" asp-for="Id" />
                         <input type="submit" class="button is-link" value="Confirm deletion" />
-                        <a asp-action="Index" class="button is-danger">Cancel</a>
+                        <a asp-action="Details" asp-controller="AppNamespace" asp-route-id="@Model.AppNamespaceId" class="button is-danger">Cancel</a>
                     </form>
                 </div>
             </div>
