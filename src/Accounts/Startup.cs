@@ -26,6 +26,7 @@ using SendGridProvider;
 using TwilioSmsProvider;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server;
+using CommunAxiom.Accounts.Business;
 
 namespace CommunAxiom.Accounts
 {
@@ -56,6 +57,7 @@ namespace CommunAxiom.Accounts
             //Allows for loading claims that don't show up in the user
             services.AddScoped<IUserClaimsPrincipalFactory<User>, Security.ClaimsPrincipalFactory>();
 
+            services.AddTransient<ILookupStore, LookupStore>();
 
             // Configure Identity to use the same JWT claims as OpenIddict instead
             // of the legacy WS-Federation claims it uses by default (ClaimTypes),
@@ -129,7 +131,6 @@ namespace CommunAxiom.Accounts
                     options.AllowClientCredentialsFlow();
                     options.AllowAuthorizationCodeFlow();
 
-                    //TODO: refactor to provision from configuration specific to oidc (not ssl)
                     var certPem = File.ReadAllText(Configuration["AuthCert"]);
                     var eccPem = File.ReadAllText(Configuration["AuthKey"]);
 
@@ -169,6 +170,7 @@ namespace CommunAxiom.Accounts
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISmsSender, SmsSender>();
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
+            services.AddTransient<ClientClaimsProvider>();
 
             MigrateDb(services);
         }

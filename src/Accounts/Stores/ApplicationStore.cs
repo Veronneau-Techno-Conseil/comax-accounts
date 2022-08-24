@@ -48,9 +48,6 @@ namespace CommunAxiom.Accounts.Stores
 
         public override ValueTask<Application> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            //TODO: add condition to filter out softdeleted
-            //return base.FindByIdAsync(identifier, cancellationToken);
-
             var result = base.FindByIdAsync(identifier, cancellationToken);
             if (result.Result != null)
             {
@@ -65,16 +62,12 @@ namespace CommunAxiom.Accounts.Stores
 
         public override IAsyncEnumerable<Application> FindByPostLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
-            //TODO: Add filter to async enumerable
             return Context.Set<Application>().AsAsyncEnumerable().Where(x => x.PostLogoutRedirectUris.Contains(address));
-            //return base.FindByPostLogoutRedirectUriAsync(address, cancellationToken);
         }
 
         public override IAsyncEnumerable<Application> FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
-            //TODO: Add filter to async enumerable
             return Context.Set<Application>().AsAsyncEnumerable().Where(x => x.RedirectUris.Contains(address));
-            //return base.FindByRedirectUriAsync(address, cancellationToken);
         }
 
         public override IAsyncEnumerable<Application> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -84,7 +77,6 @@ namespace CommunAxiom.Accounts.Stores
 
         public override IAsyncEnumerable<TResult> ListAsync<TState, TResult>(System.Func<IQueryable<Application>, TState, IQueryable<TResult>> query, TState state, CancellationToken cancellationToken)
         {
-            //add filter to query
             return base.ListAsync(query, state, cancellationToken);
         }
 

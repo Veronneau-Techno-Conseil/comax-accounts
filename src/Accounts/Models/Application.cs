@@ -13,5 +13,6 @@ namespace CommunAxiom.Accounts.Models
         public bool Deleted { get; set; }
         public DateTime? DeletedDate { get; set; }
         public List<Models.UserApplicationMap> UserApplicationMaps { get; set; }
+        public List<Models.ApplicationTypeMap> ApplicationTypeMaps { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CommunAxiom.Accounts.Business;
 using CommunAxiom.Accounts.Helpers;
 using CommunAxiom.Accounts.Models;
 using CommunAxiom.Accounts.Stores;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
 using OpenIddict.Core;
@@ -267,8 +269,8 @@ namespace CommunAxiom.Accounts.Controllers
         {
             var request = HttpContext.GetOpenIddictServerRequest() ??
                 throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
-
-            // Retrieve the profile of the logged in user.
+            
+                // Retrieve the profile of the logged in user.
             var user = await _userManager.GetUserAsync(User) ??
                 throw new InvalidOperationException("The user details cannot be retrieved.");
 
@@ -360,7 +362,7 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpPost("~/connect/token"), Produces("application/json")]
-        public async Task<IActionResult> Exchange()
+        public async Task<IActionResult> Exchange([FromServices]ClientClaimsProvider clientClaimsProvider)
         {
             var request = HttpContext.GetOpenIddictServerRequest() ??
                 throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
@@ -408,14 +410,25 @@ namespace CommunAxiom.Accounts.Controllers
             }
             else if (request.IsClientCredentialsGrantType())
             {
+                var token = HttpContext.Request.Headers["x-act-as"];
+
+                Contracts.ClientClaimsContainer result = null;
+                if(token.Count > 0)
+                {
+                    result = await clientClaimsProvider.GetActAsToken(request, request.ClientId, token[0]);
+                }
+                else
+                {
+                    result = await clientClaimsProvider.GetClientDetails(request, request.ClientId);
+                }
+
                 //TODO: Complete systems based on service type
-                var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-
-                // Subject (sub) is a required field, we use the client id as the subject identifier here.
-                identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId ?? throw new InvalidOperationException());
-
-                // TODO: pull info from DB for claims based on application ownership
-                identity.AddClaim("some-claim", "some-value", OpenIddictConstants.Destinations.AccessToken);
+				//TODO: Split identities within the principal
+                var identity = new ClaimsIdentity(GrantTypes.ClientCredentials);
+                foreach(var c in result.Claims)
+                {
+                    identity.AddClaim(c.Type, c.Value, Destinations.AccessToken);
+                }
 
                 var claimsPrincipal = new ClaimsPrincipal(identity);
 
