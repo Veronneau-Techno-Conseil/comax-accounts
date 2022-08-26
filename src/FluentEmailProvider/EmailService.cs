@@ -31,12 +31,7 @@ namespace FluentEmailProvider
                        .UseMemoryCachingProvider()
                        .Build();
 
-            string procedure;
-
-            if (message.Contains("Register"))
-                procedure = "Please click on the link to Register";
-            else
-                procedure = "Please click on the link to login";
+            string procedure = "Please click on the link to login";
 
             var model = new { Message = message, PrimaryAccount = primaryAccount, Procedure = procedure };
 
@@ -47,18 +42,6 @@ namespace FluentEmailProvider
                 .UsingTemplate(template, model)
                 .SendAsync();
         }
-
-        public string GetRegisterMessage(int contactRequestId)
-        {
-            return "https://localhost:5002/Network/ApproveDeny/" + contactRequestId.ToString() + "/";
-        }
-
-        public string GetLoginMessage(int contactRequestId)
-        {
-
-            return "https://localhost:5002/Network/ApproveDeny/" + contactRequestId.ToString() + "/";
-        }
-
 
     }
 }

@@ -44,15 +44,10 @@ namespace CommunAxiom.Accounts.Controllers
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(int id = 0, string returnUrl = null)
+        public IActionResult Login(string returnUrl = null)
         {
-            var model = new LoginViewModel
-            {
-                ContactRequestId = id
-            };
-
             ViewData["ReturnUrl"] = returnUrl;
-            return View(model);
+            return View();
         }
 
         //
@@ -74,9 +69,6 @@ namespace CommunAxiom.Accounts.Controllers
                 
                 if (result.Succeeded)
                 {
-                    if (model.ContactRequestId != 0)
-                        return RedirectToAction(nameof(NetworkController.ApproveDeny), "Network", new { id = model.ContactRequestId });
-
                     return RedirectToLocal(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -145,9 +137,6 @@ namespace CommunAxiom.Accounts.Controllers
                     //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                     //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    
-                    if (model.ContactRequestId != 0)
-                        return RedirectToAction(nameof(NetworkController.ApproveDeny), "Network", new { id = model.ContactRequestId });
 
                     return RedirectToLocal(returnUrl);
                 }

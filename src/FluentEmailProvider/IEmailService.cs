@@ -8,9 +8,5 @@ namespace FluentEmailProvider
     public interface IEmailService
     {
         void SendEmail(string email, string message, string primaryAccount);
-
-        string GetRegisterMessage(int contactRequestId);
-
-        string GetLoginMessage(int contactRequestId);
     }
 }

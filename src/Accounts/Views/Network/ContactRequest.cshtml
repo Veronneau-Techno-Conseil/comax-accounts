@@ -39,7 +39,7 @@
                                             <div id="External" class="content-tab">
                                                 <div class="columns">
                                                     <div class="column is-6">
-                                                        <form id="addexternalcontact-form" asp-controller="Network" asp-action="AddExternal" method="post" role="form">
+                                                        <form id="addexternalcontact-form" asp-controller="Network" asp-action="AddContact" method="post" role="form">
                                                             <h5>Add an external contact</h5>
                                                             <div class="field">
                                                                 <label asp-for="Email" class="label"></label>
@@ -89,7 +89,7 @@
                                                                                     <table>
                                                                                         <tr>
                                                                                             <td align="right">
-                                                                                                <form asp-controller="Network" asp-action="AddOrganizationalContact" method="post" role="form">
+                                                                                                <form asp-controller="Network" asp-action="AddContact" method="post" role="form">
                                                                                                     <input type="hidden" id="user + @usersArray[j].Id" name="Id" value="@usersArray[j].Id" />
                                                                                                     <button style="border:none; background-color:#D6D6CE" type="submit" id="@usersArray[j].Id" value="@usersArray[j].Id"><img class="image icon" src="~/Images/Add.png" /></button>
                                                                                                 </form>
@@ -142,7 +142,7 @@
 
 @section scripts{
 
-    <script>
+    @*<script>
         function openTab(evt, tabName) {
             var i, x, tablinks;
             x = document.getElementsByClassName("content-tab");
@@ -156,7 +156,7 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " is-active";
         }
-    </script>
+    </script>*@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
     
