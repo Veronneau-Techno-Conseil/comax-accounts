@@ -16,13 +16,7 @@ namespace FluentEmailProvider
             _fluentEmail = fluentEmail;
         }
 
-        //public async Task SendMessage(string email, string message)
-        //{
-        //    await _fluentEmail.To(email)
-        //    .Body(message).SendAsync();
-        //}
-
-        public async void SendEmail(string email, string message, string primaryAccount)
+        public async void SendEmail(string email, string templatePath, string message, object model)
         {
             var directory = Directory.GetCurrentDirectory();
 
@@ -31,11 +25,7 @@ namespace FluentEmailProvider
                        .UseMemoryCachingProvider()
                        .Build();
 
-            string procedure = "Please click on the link to login";
-
-            var model = new { Message = message, PrimaryAccount = primaryAccount, Procedure = procedure };
-
-            string template = await engine.CompileRenderAsync("./Views/Shared/_EmailLayout.cshtml", model);
+            string template = await engine.CompileRenderAsync(templatePath, model);
 
             await _fluentEmail.To(email)
                 .Subject("CommunAxiom.org contact request")

@@ -132,10 +132,15 @@ namespace CommunAxiom.Accounts.Controllers
 
             notification.Message = "https://localhost:5002/Network/ApproveDeny/" + contactRequest.Id.ToString() + "/";
 
+            
+
             _context.Entry(notification).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            _emailService.SendEmail(Id == null ? viewModel.Email : contact.User.UserName, notification.Message, contactRequest.Contact.PrimaryAccount.UserName);
+            string templatePath = "./Views/Shared/_EmailLayout.cshtml";
+            var model = new { Message = notification.Message, PrimaryAccount = primaryAccount, Procedure = "Please click on the link to login" };
+
+            _emailService.SendEmail(Id == null ? viewModel.Email : contact.User.UserName,templatePath,notification.Message, model);
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
