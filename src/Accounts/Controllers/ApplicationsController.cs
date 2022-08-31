@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunAxiom.Accounts.Models;
@@ -78,7 +78,7 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.GrantTypes.RefreshToken,
                     Permissions.GrantTypes.DeviceCode,
                     Permissions.GrantTypes.ClientCredentials,
-                    
+
                     Permissions.Endpoints.Device,
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
@@ -87,7 +87,7 @@ namespace CommunAxiom.Accounts.Controllers
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles,
-
+                    
                     Permissions.ResponseTypes.CodeIdTokenToken,
                     Permissions.ResponseTypes.Code
                 }),
@@ -103,7 +103,7 @@ namespace CommunAxiom.Accounts.Controllers
                 {
                     Requirements.Features.ProofKeyForCodeExchange
                 })
-            };            
+            };
             var secret = Guid.NewGuid().ToString();
             await _applicationManager.CreateAsync(application, secret);
 
@@ -132,11 +132,9 @@ namespace CommunAxiom.Accounts.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            //TODO: This should return a restul view, not the list. you want to display the secret to the client
-            //and explain that the user must keep a local copy safe to use with the application
             return RedirectToAction("Details", new { Id = CreatedApplication.Id, secret = secret, showSecret = true });
         }
-        
+
         [HttpGet]
         public IActionResult Manage()
         {
@@ -208,7 +206,7 @@ namespace CommunAxiom.Accounts.Controllers
             return View(ApplicationDetails);
         }
 
-        [HttpPost]
+            [HttpPost]
         public async Task<IActionResult> Delete(DetailsViewModel model)
         {
             var application = await _applicationManager.FindByIdAsync(model.Id);

@@ -1,0 +1,41 @@
+﻿@model CommunAxiom.Accounts.Models.AppClaimAssignment
+@{
+    ViewData["Title"] = "Application Details";
+    bool showSecret = TempData.ContainsKey("showSecret") ? (bool)TempData["showSecret"] : false;
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="ApplicationType" asp-route-id="@Model.ApplicationTypeId"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="field">
+                    <label asp-for="ApplicationType" class="label"></label>
+                    <span class="is-primary">@Model.ApplicationType.Name</span>
+                </div>
+                <div class="field">
+                    <label asp-for="AppClaim" class="label"></label>
+                    <span class="is-primary">@Model.AppClaim.AppNamespace.Name@Model.AppClaim.ClaimName </span>
+                </div>
+                <div class="field">
+                    <label asp-for="Value" class="label"></label>
+                    <span class="is-primary">@Model.Value</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+
+

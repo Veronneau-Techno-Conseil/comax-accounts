@@ -3,6 +3,7 @@ using System;
 using CommunAxiom.Accounts.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CommunAxiom.Accounts.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    partial class AccountsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220718142716_apptypeid")]
+    partial class apptypeid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,11 +260,6 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("CreationStatusId")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.Property<string>("PrimaryAccountId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -316,11 +313,6 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.Property<int>("IdProviderId")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
 
                     b.Property<int>("NotificationId")
                         .HasColumnType("integer");
@@ -472,13 +464,7 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("ContactMethodTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
                     b.Property<string>("Message")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Phone")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

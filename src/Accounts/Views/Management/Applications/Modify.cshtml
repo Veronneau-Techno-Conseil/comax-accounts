@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div class="card-content">
-                <form asp-controller="Applications" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                <form asp-area="Management" asp-controller="Applications" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
                     @if (!string.IsNullOrWhiteSpace(Model?.ApplicationId))
                     {
                         <input asp-for="ApplicationId" type="hidden" />

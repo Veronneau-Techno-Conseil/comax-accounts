@@ -14,7 +14,8 @@ namespace CommunAxiom.Accounts.Models.Configurations
         public static void Setup(ModelBuilder builder)
         {
             var arr = new IModelConfig[]{
-                new InitialConfig()
+                new InitialConfig(),
+                new ApplicationClaimsConfig()
             };
 
             foreach (var item in arr)

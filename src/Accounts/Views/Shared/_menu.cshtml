@@ -5,7 +5,7 @@
 <nav class="navbar is-white" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
-            <a asp-controller="Home" class="navbar-item" asp-action="Index" title="Home">
+            <a asp-area="" asp-controller="Home" class="navbar-item" asp-action="Index" title="Home">
                 <img src="~/Images/Profiles.png" />
                 <strong>Profiles</strong>
             </a>
@@ -26,10 +26,12 @@
                 {
                     <a asp-controller="Applications" asp-area="" class="navbar-item" asp-action="Manage">Manage Applications</a>
                     <a asp-controller="Network" asp-area="" class="navbar-item" asp-action="Contacts">Network</a>
-
+                    
                     if(User.HasClaim(Roles.SYS_APP_CLAIM, AccessLevels.ACCESS_LEVEL_ADMIN))
                     {
-                        <a asp-controller="Applications" asp-area="Management" class="navbar-item" asp-action="Index">Manage System Applications</a>
+                        <a asp-controller="Applications" asp-area="Management" class="navbar-item" asp-action="Index">System Applications</a>
+                        <a asp-controller="AppNamespace" asp-area="Management" class="navbar-item" asp-action="Index">App Namepace</a>
+                        <a asp-controller="ApplicationType" asp-area="Management" class="navbar-item" asp-action="Index">Application Types</a>
                     }
                 }
 

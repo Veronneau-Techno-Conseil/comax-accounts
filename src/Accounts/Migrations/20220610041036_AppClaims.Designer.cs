@@ -3,6 +3,7 @@ using System;
 using CommunAxiom.Accounts.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CommunAxiom.Accounts.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    partial class AccountsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220610041036_AppClaims")]
+    partial class AppClaims
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,10 +76,8 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("AppClaimId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ApplicationTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("AssignmentTags")
+                    b.Property<string>("ApplicationId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Value")
@@ -88,7 +88,7 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.HasIndex("AppClaimId");
 
-                    b.HasIndex("ApplicationTypeId");
+                    b.HasIndex("ApplicationId");
 
                     b.ToTable("AppClaimAssignment", (string)null);
                 });
@@ -258,11 +258,6 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("CreationStatusId")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.Property<string>("PrimaryAccountId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -317,11 +312,6 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("IdProviderId")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.Property<int>("NotificationId")
                         .HasColumnType("integer");
 
@@ -361,12 +351,6 @@ namespace CommunAxiom.Accounts.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<byte[]>("GroupPicture")
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
 
                     b.Property<string>("OwnerId")
                         .IsRequired()
@@ -472,13 +456,7 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("ContactMethodTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
                     b.Property<string>("Message")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Phone")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -830,21 +808,21 @@ namespace CommunAxiom.Accounts.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CommunAxiom.Accounts.Models.ApplicationType", "ApplicationType")
+                    b.HasOne("CommunAxiom.Accounts.Models.Application", "Application")
                         .WithMany()
-                        .HasForeignKey("ApplicationTypeId")
+                        .HasForeignKey("ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppClaim");
 
-                    b.Navigation("ApplicationType");
+                    b.Navigation("Application");
                 });
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.ApplicationTypeMap", b =>
                 {
                     b.HasOne("CommunAxiom.Accounts.Models.Application", "Application")
-                        .WithMany("ApplicationTypeMaps")
+                        .WithMany()
                         .HasForeignKey("ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1095,8 +1073,6 @@ namespace CommunAxiom.Accounts.Migrations
 
             modelBuilder.Entity("CommunAxiom.Accounts.Models.Application", b =>
                 {
-                    b.Navigation("ApplicationTypeMaps");
-
                     b.Navigation("Authorizations");
 
                     b.Navigation("Tokens");

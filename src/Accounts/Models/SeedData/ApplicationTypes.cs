@@ -27,6 +27,16 @@ namespace CommunAxiom.Accounts.Models.SeedData
 
                 ctxt.SaveChanges();
             }
+
+            if (!ApplicationTypes.Any(x => x.Name == ApplicationType.ORCHESTRATOR))
+            {
+                ApplicationTypes.Add(new ApplicationType
+                {
+                    Name = ApplicationType.ORCHESTRATOR
+                });
+
+                ctxt.SaveChanges();
+            }
         }
     }
 }

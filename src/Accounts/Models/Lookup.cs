@@ -10,4 +10,10 @@ namespace CommunAxiom.Accounts.Models
         public string Name { get; set; }
         public string Value { get; set; }
     }
+
+    public class Lookup<T>
+    {
+        public string Name { get; set; }
+        public T Value { get; set; }
+    }
 }
