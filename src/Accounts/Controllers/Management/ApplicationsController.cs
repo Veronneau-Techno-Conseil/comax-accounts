@@ -148,15 +148,15 @@ namespace CommunAxiom.Accounts.Controllers.Management
             //Create the ApplicationTypeMaps & UserApplicationsMap Record
             if (createdApplication != null)
             {
-                var CommonsApp = _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == ApplicationType.SYSTEM).FirstOrDefault();
+                var commonsApp = _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == ApplicationType.SYSTEM).FirstOrDefault();
 
-                var ApplicationTypeMap = new ApplicationTypeMap
+                var applicationTypeMap = new ApplicationTypeMap
                 {
                     ApplicationId = createdApplication.Id,
-                    ApplicationTypeId = CommonsApp.Id
+                    ApplicationTypeId = commonsApp.Id
                 };
 
-                await _context.Set<ApplicationTypeMap>().AddAsync(ApplicationTypeMap);
+                await _context.Set<ApplicationTypeMap>().AddAsync(applicationTypeMap);
                 await _context.SaveChangesAsync();
             }
             TempCache.SetApplicationSecret(createdApplication.Id, secret);
@@ -182,7 +182,6 @@ namespace CommunAxiom.Accounts.Controllers.Management
         [HttpPost]
         public async Task<IActionResult> Edit(AppViewModel model)
         {
-
             var app = await _context.Set<Application>().FirstAsync(x => x.Id == model.ApplicationId);
 
             app.DisplayName = model.DisplayName;
@@ -193,8 +192,6 @@ namespace CommunAxiom.Accounts.Controllers.Management
             await _applicationManager.UpdateAsync(app);    
             await _context.SaveChangesAsync();
 
-            //TODO: This should return a restul view, not the list. you want to display the secret to the client
-            //and explain that the user must keep a local copy safe to use with the application
             return RedirectToAction("Details", new { appId = app.Id, secret = "", showSecret = false });
         }
 

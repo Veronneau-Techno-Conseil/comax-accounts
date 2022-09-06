@@ -1,0 +1,55 @@
+﻿@model CommunAxiom.Accounts.Models.AppNamespace
+@{
+    var buttonText = "Create";
+    if (Model?.Id > 0)
+    {
+        ViewData["Title"] = "Modify the App Namespace";
+        buttonText = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Create a new App Namespace";
+    }
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Index"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-controller="AppNamespace" method="post" role="form">
+                    @if (Model?.Id > 0)
+                    {
+                        <input asp-for="Id" type="hidden" />
+                    }
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="Name" class="label"></label>
+                        <input asp-for="Name" class="input is-primary" />
+                        <span asp-validation-for="Name" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Description" class="label"></label>
+                        <input asp-for="Description" class="input is-primary" />
+                        <span asp-validation-for="Description" class="help is-danger"></span>
+                    </div>
+                     
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

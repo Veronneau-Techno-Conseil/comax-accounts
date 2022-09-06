@@ -10,5 +10,7 @@ namespace CommunAxiom.Accounts.Contracts
         IEnumerable<Lookup> ListAccountTypes(string filter);
 
         IEnumerable<Lookup> ListOIDCPermissions(string filter);
+
+        IEnumerable<Lookup<int>> ListApplicationClaims();
     }
 }
