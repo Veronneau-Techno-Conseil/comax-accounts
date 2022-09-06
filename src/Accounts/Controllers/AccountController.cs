@@ -94,15 +94,10 @@ namespace CommunAxiom.Accounts.Controllers
         // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(int id = 0, string returnUrl = null)
+        public IActionResult Register(string returnUrl = null)
         {
-            var model = new RegisterViewModel
-            {
-                ContactRequestId = id
-            };
-
             ViewData["ReturnUrl"] = returnUrl;
-            return View(model);
+            return View();
         }
 
         //

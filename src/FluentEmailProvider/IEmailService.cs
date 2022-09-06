@@ -7,6 +7,6 @@ namespace FluentEmailProvider
 {
     public interface IEmailService
     {
-        void SendEmail(string email, string templatePath, string message, object model);
+        void SendEmail(string email, string templatePath, object model);
     }
 }

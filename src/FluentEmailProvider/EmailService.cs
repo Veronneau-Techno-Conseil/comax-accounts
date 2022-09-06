@@ -16,7 +16,7 @@ namespace FluentEmailProvider
             _fluentEmail = fluentEmail;
         }
 
-        public async void SendEmail(string email, string templatePath, string message, object model)
+        public async void SendEmail(string email, string templatePath, object model)
         {
             var directory = Directory.GetCurrentDirectory();
 

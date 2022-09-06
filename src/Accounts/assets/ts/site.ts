@@ -21,11 +21,23 @@
     })    
 })();
 
-function openTab(evt: { currentTarget: { className: string; }; }, tabName: string) {
+(function () {
+    $(document).ready((j) => {
+        (<any>$("nav.tabs li.tab")).on("click", function (this: HTMLElement) {
+            const JQ = $(this);
+            openTab(JQ, JQ.attr("x-tabName"));
+        });
+    })
+})();
+
+function openTab(obj: JQuery, tabName: string | undefined) {
     var i, x, tablinks;
 
+    if (tabName == undefined)
+        return;
+
     x = Array.from(document.getElementsByClassName('content-tab') as HTMLCollectionOf<HTMLElement>)
-    
+
     for (i = 0; i < x.length; i++) {
         x[i].style.display = "none";
     }
@@ -36,10 +48,12 @@ function openTab(evt: { currentTarget: { className: string; }; }, tabName: strin
     }
 
     var element = document.getElementById(tabName)
-    
+
     if (element != undefined) {
         element.style.display = "block";
     }
 
-    evt.currentTarget.className += " is-active";
-};
+    obj.addClass("is-active");
+}
+
+
