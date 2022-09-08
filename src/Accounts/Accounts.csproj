@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\FluentEmailProvider\FluentEmailProvider.csproj" />
     <ProjectReference Include="..\SendGridProvider\SendGridProvider.csproj" />
     <ProjectReference Include="..\TwilioSmsProvider\TwilioSmsProvider.csproj" />
   </ItemGroup>

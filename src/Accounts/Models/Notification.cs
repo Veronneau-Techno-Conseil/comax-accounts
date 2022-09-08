@@ -13,5 +13,9 @@
         public ContactMethodType ContactMethodType { get; set; }
 
         public Contact Contact { get; set; }
+
+        public string Email { get; set; }
+
+        public string Phone { get; set; }
     }
 }

@@ -26,6 +26,7 @@ using SendGridProvider;
 using TwilioSmsProvider;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server;
+using FluentEmailProvider;
 using CommunAxiom.Accounts.Business;
 
 namespace CommunAxiom.Accounts
@@ -171,6 +172,14 @@ namespace CommunAxiom.Accounts
             services.AddTransient<ISmsSender, SmsSender>();
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
             services.AddTransient<ClientClaimsProvider>();
+
+            var directory = Directory.GetCurrentDirectory();
+            services
+                .AddFluentEmail("noreply@communaxiom.org")
+                .AddRazorRenderer(directory)
+                .AddSmtpSender("localhost", 25);
+
+            services.AddTransient<IEmailService, EmailService>();
 
             MigrateDb(services);
         }
