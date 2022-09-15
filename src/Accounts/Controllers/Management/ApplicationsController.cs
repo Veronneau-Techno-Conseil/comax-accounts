@@ -34,8 +34,8 @@ namespace CommunAxiom.Accounts.Controllers.Management
         public async Task<IActionResult> Index()
         {
             var values = _context.Set<Models.Application>()
-                .Where(x=>!x.Deleted)
-                .Where(x=>x.UserApplicationMaps == null || !x.UserApplicationMaps.Any())
+                .Where(x => !x.Deleted)
+                .Where(x => x.UserApplicationMaps == null || !x.UserApplicationMaps.Any())
                 .Select(x => new DetailsViewModel
                 {
                     ClientId = x.ClientId,
@@ -51,15 +51,16 @@ namespace CommunAxiom.Accounts.Controllers.Management
         [HttpGet]
         public async Task<IActionResult> Details(string appId, bool showSecret = false)
         {
-            var app = await _context.Set<Application>().FirstAsync(x => x.Id == appId);
+            var app = await _context.Set<Application>().Include(x=>x.ApplicationTypeMaps).FirstAsync(x => x.Id == appId);
             var m = new AppViewModel
             {
-                ApplicationId=app.Id,
+                ApplicationId = app.Id,
                 ClientId = app.ClientId,
-                DisplayName= app.DisplayName,
+                DisplayName = app.DisplayName,
+                ApplicationTypeId = app.ApplicationTypeMaps.FirstOrDefault()?.ApplicationTypeId,
                 Permissions = JsonSerializer.Deserialize<List<string>>(app.Permissions),
-                PostLogoutRedirectURI=app.PostLogoutRedirectUris,
-                RedirectURI=app.RedirectUris
+                PostLogoutRedirectURI = app.PostLogoutRedirectUris,
+                RedirectURI = app.RedirectUris
             };
 
             if (showSecret)
@@ -148,12 +149,12 @@ namespace CommunAxiom.Accounts.Controllers.Management
             //Create the ApplicationTypeMaps & UserApplicationsMap Record
             if (createdApplication != null)
             {
-                var commonsApp = _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == ApplicationType.SYSTEM).FirstOrDefault();
+                var appType = model.ApplicationTypeId ?? _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == ApplicationType.SYSTEM).FirstOrDefault().Id;
 
                 var applicationTypeMap = new ApplicationTypeMap
                 {
                     ApplicationId = createdApplication.Id,
-                    ApplicationTypeId = commonsApp.Id
+                    ApplicationTypeId = appType
                 };
 
                 await _context.Set<ApplicationTypeMap>().AddAsync(applicationTypeMap);
@@ -166,13 +167,14 @@ namespace CommunAxiom.Accounts.Controllers.Management
         [HttpGet]
         public async Task<IActionResult> Edit(string appId)
         {
-            var app = await _context.Set<Application>().FirstAsync(x => x.Id == appId);
+            var app = await _context.Set<Application>().Include(x=>x.ApplicationTypeMaps).FirstAsync(x => x.Id == appId);
             var m = new AppViewModel
             {
                 ApplicationId = app.Id,
                 ClientId = app.ClientId,
                 DisplayName = app.DisplayName,
                 Permissions = JsonSerializer.Deserialize<List<string>>(app.Permissions),
+                ApplicationTypeId = app.ApplicationTypeMaps.FirstOrDefault()?.ApplicationTypeId,
                 PostLogoutRedirectURI = app.PostLogoutRedirectUris,
                 RedirectURI = app.RedirectUris
             };
@@ -182,14 +184,42 @@ namespace CommunAxiom.Accounts.Controllers.Management
         [HttpPost]
         public async Task<IActionResult> Edit(AppViewModel model)
         {
-            var app = await _context.Set<Application>().FirstAsync(x => x.Id == model.ApplicationId);
+            var app = await _context.Set<Application>().Include(x=>x.ApplicationTypeMaps).FirstAsync(x => x.Id == model.ApplicationId);
 
             app.DisplayName = model.DisplayName;
-            app.RedirectUris = JsonSerializer.Serialize(new[]{model.RedirectURI});
-            app.PostLogoutRedirectUris = JsonSerializer.Serialize(new[]{model.PostLogoutRedirectURI});
+
+            
+            app.RedirectUris = string.IsNullOrEmpty(model.RedirectURI) ? null : JsonSerializer.Serialize(new[] { model.RedirectURI });    
+            app.PostLogoutRedirectUris = string.IsNullOrWhiteSpace(model.PostLogoutRedirectURI) ? null : JsonSerializer.Serialize(new[] { model.PostLogoutRedirectURI });
+
             app.Permissions = JsonSerializer.Serialize(model.Permissions.ToArray());
 
-            await _applicationManager.UpdateAsync(app);    
+            if (model.ApplicationTypeId != null)
+            {
+                var typeMap = app.ApplicationTypeMaps?.FirstOrDefault();
+                if (typeMap != null)
+                    typeMap.ApplicationTypeId = model.ApplicationTypeId.Value;
+                else
+                {
+                    typeMap = new ApplicationTypeMap
+                    {
+                        ApplicationId = model.ApplicationId,
+                        ApplicationTypeId = model.ApplicationTypeId.Value,
+                    };
+                    _context.Set<ApplicationTypeMap>().Add(typeMap);
+                }
+            }
+            else
+            {
+                if(app.ApplicationTypeMaps != null && app.ApplicationTypeMaps.Count > 0)
+                {
+                    var arr = app.ApplicationTypeMaps.ToArray();
+                    app.ApplicationTypeMaps.Clear();
+                    _context.Set<ApplicationTypeMap>().RemoveRange(arr);
+                }
+            }
+
+            await _applicationManager.UpdateAsync(app);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Details", new { appId = app.Id, secret = "", showSecret = false });
@@ -198,12 +228,13 @@ namespace CommunAxiom.Accounts.Controllers.Management
         [HttpGet]
         public async Task<IActionResult> Delete(string appId)
         {
-            var app = await _context.Set<Application>().FirstAsync(x => x.Id == appId);
+            var app = await _context.Set<Application>().Include(x => x.ApplicationTypeMaps).FirstAsync(x => x.Id == appId);
             var m = new AppViewModel
             {
                 ApplicationId = app.Id,
                 ClientId = app.ClientId,
                 DisplayName = app.DisplayName,
+                ApplicationTypeId = app.ApplicationTypeMaps.FirstOrDefault().ApplicationTypeId,
                 Permissions = JsonSerializer.Deserialize<List<string>>(app.Permissions),
                 PostLogoutRedirectURI = app.PostLogoutRedirectUris,
                 RedirectURI = app.RedirectUris

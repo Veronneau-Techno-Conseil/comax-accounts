@@ -435,6 +435,20 @@ namespace CommunAxiom.Accounts.Controllers
                 claimsPrincipal.SetScopes(request.GetScopes());
                 return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
+            else if (request.IsPasswordGrantType())
+            {
+                if (!string.IsNullOrWhiteSpace(_configuration["Prod"]) && bool.TryParse(_configuration["Prod"], out var prod) && prod)
+                    return Unauthorized("The specified grant type is not supported.");
+
+                var user = await _signInManager.UserManager.FindByNameAsync(request.Username);
+                var result = await _signInManager.UserManager.CheckPasswordAsync(user, request.Password);
+                if (result)
+                {
+                    var cp = await _signInManager.ClaimsFactory.CreateAsync(user);
+                    return SignIn(cp, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                }
+                return Unauthorized("Wrong username or password.");
+            }
 
             throw new InvalidOperationException("The specified grant type is not supported.");
         }

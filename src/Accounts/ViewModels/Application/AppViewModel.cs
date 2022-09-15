@@ -19,6 +19,7 @@ namespace CommunAxiom.Accounts.ViewModels.Application
         public List<string> Permissions { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public int? ApplicationTypeId { get; set; }
 
     }
 }
