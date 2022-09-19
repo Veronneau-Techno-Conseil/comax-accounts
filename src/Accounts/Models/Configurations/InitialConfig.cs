@@ -17,7 +17,7 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<User>()
                 .Property(x => x.AccountTypeId)
                 .IsRequired();
-
+            
             //This was added to set composite keys for the ApplicationTypeMaps and UserApplicationMap
             builder.Entity<ApplicationTypeMap>()
                 .HasKey(x => new { x.ApplicationId, x.ApplicationTypeId });
@@ -48,6 +48,14 @@ namespace CommunAxiom.Accounts.Models.Configurations
             builder.Entity<Notification>()
                 .Property(x => x.ContactId)
                 .IsRequired();
+
+            builder.Entity<ContactRequest>()
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            builder.Entity<Contact>()
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
 
         }
 

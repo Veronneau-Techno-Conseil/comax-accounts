@@ -258,6 +258,11 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("CreationStatusId")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("PrimaryAccountId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -311,6 +316,11 @@ namespace CommunAxiom.Accounts.Migrations
 
                     b.Property<int>("IdProviderId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("NotificationId")
                         .HasColumnType("integer");
@@ -462,7 +472,13 @@ namespace CommunAxiom.Accounts.Migrations
                     b.Property<int>("ContactMethodTypeId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
                     b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

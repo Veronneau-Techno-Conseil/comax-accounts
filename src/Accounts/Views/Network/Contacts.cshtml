@@ -2,7 +2,11 @@
 @{
     ViewData["Title"] = "Contacts";
 }
-
+<style>
+    tr:hover {
+        background-color: #D6D6CE !important;
+    }
+</style>
 <div class="columns is-variable is-5">
     <div class="column is-3">
         <div class="columns">
@@ -44,15 +48,22 @@
                 <div class="card has-background-white">
                     <div class="card-content">
                         <div class="columns">
-                            <div class="column is-12">
+                            <div class="column is-11">
                                 <h5>Contacts</h5>
+                            </div>
+                            <div class="column is-1">
+                                <center>
+                                    <a asp-controller="Network" asp-area="" asp-action="ContactRequest">
+                                        <img class="image icon" src="~/Images/Add.png" />
+                                    </a>
+                                </center>
                             </div>
                         </div>
                         @{
                             var contactsArray = Model.Contacts.ToArray();
                             double count = contactsArray.Count();
 
-                            if (count == 100)
+                            if (count == 0)
                             {
                                 <div class="columns">
                                     <div class="column is-12">
@@ -76,8 +87,16 @@
                                                     <center>
                                                         <div style="border: 1px solid #D6D6CE">
                                                             <div class="m-0" style="background-color:#D6D6CE;">
-                                                                <br />
-                                                                &nbsp;
+                                                                <table>
+                                                                    <tr>
+                                                                        <td align="right">
+                                                                            <form asp-controller="Network" asp-action="DeleteContact" method="post" role="form">
+                                                                                <input type="hidden" id="user + @contactsArray[j].Id" name="Id" value="@contactsArray[j].Id" />
+                                                                                <button style="border:none; background-color:#D6D6CE" type="submit" id="@contactsArray[j].Id" value="@contactsArray[j].Id"><img class="image icon" src="~/Images/Delete.png" /></button>
+                                                                            </form>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
                                                             </div>
                                                         </div>
                                                         <div class="m-0 has-background-light">
@@ -91,7 +110,7 @@
                                                                     <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
                                                                 }
                                                             </figure>
-                                                            
+
                                                             <label class="is-size-7">@Html.DisplayFor(contactItem => contactsArray[j].User.UserName)</label>
                                                         </div>
                                                     </center>
@@ -102,7 +121,7 @@
                                                 <div class="column is-4">
                                                     &nbsp;
                                                 </div>
-                                                                                                
+
                                             }
                                             contactCount++;
                                         }

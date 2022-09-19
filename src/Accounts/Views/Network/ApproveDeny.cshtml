@@ -1,0 +1,36 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Network.ManageViewModel
+@{
+    ViewData["Title"] = "Approve";
+}
+<div class="level">
+    <div class="level-item">
+        <div class="card w-50">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        Contact list addition requested:
+                    </p>
+                </div>
+            </div>
+            <div class="card-content">
+                <label class="label">@Model.ContactRequest.Contact.PrimaryAccount.UserName has requested to add you as a contact.</label>
+                <br />
+                <div class="columns">
+                    <div class="column is-12">
+                        <form id="approve-form" asp-controller="Network" asp-action="Approve" method="post" role="form">
+                            <input type="hidden" id="@Model.ContactRequest.Id" name="Id" value="@Model.ContactRequest.Id" />
+                            <button class="button is-link" style="width:125px;">Approve</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="columns">
+                    <div class="column is-12">
+                        <form id="approve-form" asp-controller="Network" asp-action="Deny" method="post" role="form">
+                            <input type="hidden" id="@Model.ContactRequest.Id" name="Id" value="@Model.ContactRequest.Id" />
+                            <button class="button is-link" style="width:125px;">Deny</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

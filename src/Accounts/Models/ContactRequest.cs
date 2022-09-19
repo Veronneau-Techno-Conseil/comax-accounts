@@ -10,6 +10,8 @@ namespace CommunAxiom.Accounts.Models
         public int NotificationId { get; set; }
         public int ContactStatusId { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public DateTime DateSent { get; set; }
 
         public Contact Contact { get; set; }

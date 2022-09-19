@@ -1,7 +1,11 @@
-﻿@model CommunAxiom.Accounts.ViewModels.Application.AppViewModel
+﻿@using CommunAxiom.Accounts.Contracts
+@model CommunAxiom.Accounts.ViewModels.Application.AppViewModel
+@inject ILookupStore lookupStore
 @{
     ViewData["Title"] = "Application Details";
     bool showSecret = TempData.ContainsKey("showSecret") ? (bool)TempData["showSecret"] : false;
+    var applicationType = lookupStore.ListApplicationTypes().FirstOrDefault(x => Model.ApplicationTypeId != null && x.Value == Model.ApplicationTypeId)?.Name;
+
 }
 
 <div class="level">
@@ -29,6 +33,11 @@
                 <div class="field">
                     <label asp-for="RedirectURI" class="label"></label>
                     <span class="is-primary">@Model.RedirectURI</span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="ApplicationTypeId" class="label"></label>
+                    <span class="input is-primary">@applicationType</span>
                 </div>
                 <div class="field">
                     <label asp-for="ClientId" class="label"></label>

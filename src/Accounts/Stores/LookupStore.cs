@@ -49,5 +49,14 @@ namespace CommunAxiom.Accounts.Stores
 
             return res.Select(x => new Lookup<int> { Name = x.name, Value = x.value });
         }
+
+        public IEnumerable<Lookup<int>> ListApplicationTypes()
+        {
+            var res =
+                    (from at in _accountsDbContext.Set<ApplicationType>()
+                     select new { value = at.Id, name = $"{at.Name}" }).ToList();
+
+            return res.Select(x => new Lookup<int> { Name = x.name, Value = x.value });
+        }
     }
 }

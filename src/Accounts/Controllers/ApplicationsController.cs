@@ -15,6 +15,8 @@ using OpenIddict.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using CommunAxiom.Accounts.Contracts;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -26,14 +28,16 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly UserManager<User> _userManager;
         private readonly AccountsDbContext _context;
         private readonly ITempData _tempCache;
+        private readonly IConfiguration _configuration;
 
-        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context, ITempData tempData)
+        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context, ITempData tempData, IConfiguration configuration)
         {
             _applicationManager = ApplicationManager;
             _serviceProvider = serviceProvider;
             _userManager = userManager;
             _context = context;
             _tempCache = tempData;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -57,6 +61,31 @@ namespace CommunAxiom.Accounts.Controllers
                 while (_applicationManager.FindByClientIdAsync(RandomWord).Result == null);
             }
 
+            var permissions = new List<string>
+                {
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.RefreshToken,
+                    Permissions.GrantTypes.DeviceCode,
+                    Permissions.GrantTypes.ClientCredentials,
+
+                    Permissions.Endpoints.Device,
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Introspection,
+                    Permissions.Endpoints.Logout,
+                    Permissions.Endpoints.Token,
+
+                    Permissions.Scopes.Email,
+                    Permissions.Scopes.Profile,
+                    Permissions.Scopes.Roles,
+
+                    Permissions.ResponseTypes.CodeIdTokenToken,
+                    Permissions.ResponseTypes.Code
+                };
+
+
+            if (string.IsNullOrWhiteSpace(_configuration["Prod"]) || !bool.TryParse(_configuration["Prod"], out var prod) || !prod)
+                permissions.Add(Permissions.GrantTypes.Password);
+
             //Create the application
             //var application = new OpenIddictApplicationDescriptor
             var application = new Application
@@ -72,25 +101,7 @@ namespace CommunAxiom.Accounts.Controllers
                 }),
                 Type = ClientTypes.Confidential,
                 ConsentType = ConsentTypes.Explicit,
-                Permissions = JsonSerializer.Serialize(new[]
-                {
-                    Permissions.GrantTypes.AuthorizationCode,
-                    Permissions.GrantTypes.RefreshToken,
-                    Permissions.GrantTypes.DeviceCode,
-                    Permissions.GrantTypes.ClientCredentials,
-
-                    Permissions.Endpoints.Device,
-                    Permissions.Endpoints.Authorization,
-                    Permissions.Endpoints.Logout,
-                    Permissions.Endpoints.Token,
-                    
-                    Permissions.Scopes.Email,
-                    Permissions.Scopes.Profile,
-                    Permissions.Scopes.Roles,
-                    
-                    Permissions.ResponseTypes.CodeIdTokenToken,
-                    Permissions.ResponseTypes.Code
-                }),
+                Permissions = JsonSerializer.Serialize(permissions.ToArray()),
                 PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
                 {
                     model.PostLogoutRedirectURI
