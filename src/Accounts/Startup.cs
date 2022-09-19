@@ -28,6 +28,9 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server;
 using FluentEmailProvider;
 using CommunAxiom.Accounts.Business;
+using static OpenIddict.Server.OpenIddictServerEvents;
+using static OpenIddict.Server.OpenIddictServerHandlers.Introspection;
+using OpenIddict.Abstractions;
 
 namespace CommunAxiom.Accounts
 {
@@ -149,6 +152,19 @@ namespace CommunAxiom.Accounts
                            .EnableVerificationEndpointPassthrough()
                            .EnableStatusCodePagesIntegration()
                            .DisableTransportSecurityRequirement(); // During development, you can disable the HTTPS requirement.
+
+                    options.AddEventHandler<HandleIntrospectionRequestContext>(builder =>
+                    {
+                        builder.UseInlineHandler(context =>
+                        {
+                            context.Claims[OpenIddictConstants.Claims.Name] = context.Principal.FindFirst(OpenIddictConstants.Claims.Name)?.Value;
+                            context.Claims[OpenIddictConstants.Claims.Email] = context.Principal.FindFirst(OpenIddictConstants.Claims.Email)?.Value;
+                            context.Claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] = context.Principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+                            return default;
+                        });
+
+                        builder.SetOrder(AttachApplicationClaims.Descriptor.Order + 1_000);
+                    });
                 })
 
                 // Register the OpenIddict validation components.

@@ -70,6 +70,7 @@ namespace CommunAxiom.Accounts.Controllers
 
                     Permissions.Endpoints.Device,
                     Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Introspection,
                     Permissions.Endpoints.Logout,
                     Permissions.Endpoints.Token,
 
