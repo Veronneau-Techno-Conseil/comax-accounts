@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accounts", "Accounts\Accounts.csproj", "{1898B475-4E2D-4958-ACB5-43496398B155}"
 EndProject
@@ -16,10 +16,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OIDCClient", "OIDCClient\OIDCClient.csproj", "{87012043-619B-48EE-8608-C53C028485F5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestClient", "TestClient\TestClient.csproj", "{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsApi", "ContactsApi\ContactsApi.csproj", "{9DA0B963-5CCE-4A69-BD85-BCB13166B668}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseFramework", "DatabaseFramework\DatabaseFramework.csproj", "{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentEmailProvider", "FluentEmailProvider\FluentEmailProvider.csproj", "{85868313-F008-4D4C-8326-890B903491AE}"
 EndProject
@@ -105,30 +101,6 @@ Global
 		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|x64.Build.0 = Release|Any CPU
 		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|x86.ActiveCfg = Release|Any CPU
 		{C0EBBE95-3CA7-46BC-8C68-782E8D412BF1}.Release|x86.Build.0 = Release|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Debug|x64.Build.0 = Debug|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Debug|x86.Build.0 = Debug|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Release|x64.ActiveCfg = Release|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Release|x64.Build.0 = Release|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Release|x86.ActiveCfg = Release|Any CPU
-		{9DA0B963-5CCE-4A69-BD85-BCB13166B668}.Release|x86.Build.0 = Release|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Debug|x64.Build.0 = Debug|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Debug|x86.Build.0 = Debug|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Release|x64.ActiveCfg = Release|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Release|x64.Build.0 = Release|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Release|x86.ActiveCfg = Release|Any CPU
-		{2BB2305F-6CBC-4066-9574-09AD0A2BC6A3}.Release|x86.Build.0 = Release|Any CPU
 		{85868313-F008-4D4C-8326-890B903491AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{85868313-F008-4D4C-8326-890B903491AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85868313-F008-4D4C-8326-890B903491AE}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -141,7 +113,6 @@ Global
 		{85868313-F008-4D4C-8326-890B903491AE}.Release|x64.Build.0 = Release|Any CPU
 		{85868313-F008-4D4C-8326-890B903491AE}.Release|x86.ActiveCfg = Release|Any CPU
 		{85868313-F008-4D4C-8326-890B903491AE}.Release|x86.Build.0 = Release|Any CPU
-
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
