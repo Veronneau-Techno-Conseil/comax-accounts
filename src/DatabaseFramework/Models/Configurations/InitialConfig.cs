@@ -50,6 +50,14 @@ namespace DatabaseFramework.Models.Configurations
                 .Property(x => x.ContactId)
                 .IsRequired();
 
+            builder.Entity<ContactRequest>()
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            builder.Entity<Contact>()
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
         }
 
         public void SetupRelationships(ModelBuilder builder)

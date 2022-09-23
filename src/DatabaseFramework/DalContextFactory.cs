@@ -1,4 +1,4 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -8,14 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CommunAxiom.Accounts
+namespace DatabaseFramework
 {
     public class DALContextFactory : IDesignTimeDbContextFactory<AccountsDbContext>
     {
         public AccountsDbContext CreateDbContext(string[] args)
         {
             var sc = new ServiceCollection();
-            var ob = new DbContextOptionsBuilder<Models.AccountsDbContext>();
+            var ob = new DbContextOptionsBuilder<AccountsDbContext>();
             var cb = new ConfigurationBuilder();
             cb.AddJsonFile("./appsettings.json");
             sc.AddSingleton<IConfiguration>(cb.Build());

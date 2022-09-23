@@ -1,6 +1,6 @@
 ﻿using DatabaseFramework.Models;
 
-namespace CommunAxiom.Accounts.Models.SeedData
+namespace DatabaseFramework.Models.SeedData
 {
     public class Applications
     {

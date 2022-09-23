@@ -1,4 +1,4 @@
-﻿namespace CommunAxiom.Accounts.Constants
+﻿namespace CommunAxiom.Accounts.Contracts.Constants
 {
     public static class Claims
     {

@@ -1,10 +1,11 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Constants = CommunAxiom.Accounts.Contracts.Constants;
 
 namespace CommunAxiom.Accounts.Controllers.Management
 {
@@ -12,9 +13,9 @@ namespace CommunAxiom.Accounts.Controllers.Management
     [Authorize(Policy = Constants.Management.APP_MANAGEMENT_POLICY)]
     public class AppNamespaceController : Controller
     {
-        private Models.AccountsDbContext _context;
+        private AccountsDbContext _context;
 
-        public AppNamespaceController(Models.AccountsDbContext context)
+        public AppNamespaceController(AccountsDbContext context)
         {
             _context = context;
         }

@@ -8,8 +8,6 @@ using CommunAxiom.Accounts.AppModels;
 using CommunAxiom.Accounts.Cache;
 using CommunAxiom.Accounts.Contracts;
 using CommunAxiom.Accounts.Helpers;
-using CommunAxiom.Accounts.Models;
-using CommunAxiom.Accounts.Models.SeedData;
 using CommunAxiom.Accounts.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +29,10 @@ using CommunAxiom.Accounts.Business;
 using static OpenIddict.Server.OpenIddictServerEvents;
 using static OpenIddict.Server.OpenIddictServerHandlers.Introspection;
 using OpenIddict.Abstractions;
+using DatabaseFramework.Models;
+using Models = DatabaseFramework.Models;
+using DatabaseFramework;
+using DatabaseFramework.Models.SeedData;
 
 namespace CommunAxiom.Accounts
 {

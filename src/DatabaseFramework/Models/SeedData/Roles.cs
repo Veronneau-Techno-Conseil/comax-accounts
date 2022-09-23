@@ -1,6 +1,7 @@
 ﻿using DatabaseFramework.Models;
 using System;
 using System.Linq;
+using Constants = CommunAxiom.Accounts.Contracts.Constants;
 namespace DatabaseFramework.Models.SeedData
 {
     public static class Roles
