@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CommunAxiom.Accounts.Models;
 using CommunAxiom.Accounts.ViewModels.Application;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using CommunAxiom.Accounts.Contracts;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using DatabaseFramework.Models;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -149,7 +149,7 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpGet]
         public IActionResult Manage()
         {
-            var ownedApps = _context.Set<Models.UserApplicationMap>().Include(x=>x.User).Include(x=>x.Application)
+            var ownedApps = _context.Set<DatabaseFramework.Models.UserApplicationMap>().Include(x=>x.User).Include(x=>x.Application)
                         .Where(x => x.User.UserName == User.Identity.Name && !x.Application.Deleted)
                         .Select(x=>x.Application).ToList();
             

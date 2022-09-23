@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using CommunAxiom.Accounts.AppModels;
 using CommunAxiom.Accounts.Contracts;
 using CommunAxiom.Accounts.Helpers;
-using CommunAxiom.Accounts.Models;
+using DatabaseFramework.Models;
 using CommunAxiom.Accounts.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

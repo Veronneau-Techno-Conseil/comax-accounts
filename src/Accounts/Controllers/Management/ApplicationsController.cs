@@ -7,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using RandomDataGenerator.Randomizers;
 using RandomDataGenerator.FieldOptions;
 using OpenIddict.Core;
-using CommunAxiom.Accounts.Models;
 using System;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Text.Json;
 using System.Collections.Generic;
 using CommunAxiom.Accounts.Contracts;
+using Constants = CommunAxiom.Accounts.Contracts.Constants;
+using DatabaseFramework.Models;
 
 namespace CommunAxiom.Accounts.Controllers.Management
 {
@@ -21,9 +22,9 @@ namespace CommunAxiom.Accounts.Controllers.Management
     public class ApplicationsController : Controller
     {
         private readonly OpenIddictApplicationManager<Application> _applicationManager;
-        private Models.AccountsDbContext _context;
+        private AccountsDbContext _context;
         private ITempData TempCache { get; }
-        public ApplicationsController(Models.AccountsDbContext accountsDbContext, OpenIddictApplicationManager<Application> applicationManager, ITempData tempData)
+        public ApplicationsController(AccountsDbContext accountsDbContext, OpenIddictApplicationManager<Application> applicationManager, ITempData tempData)
         {
             _context = accountsDbContext;
             _applicationManager = applicationManager;
@@ -33,7 +34,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var values = _context.Set<Models.Application>()
+            var values = _context.Set<Application>()
                 .Where(x => !x.Deleted)
                 .Where(x => x.UserApplicationMaps == null || !x.UserApplicationMaps.Any())
                 .Select(x => new DetailsViewModel

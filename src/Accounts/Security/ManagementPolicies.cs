@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
-using CommunAxiom.Accounts.Constants;
+using CommunAxiom.Accounts.Contracts.Constants;
 
 namespace CommunAxiom.Accounts.Security
 {

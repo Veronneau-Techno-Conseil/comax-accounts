@@ -36,9 +36,9 @@ namespace CommunAxiom.Accounts.Cache
             if (!this.loaded || (this.loadedDate.Add(this.timeSpan) - DateTime.Now < new TimeSpan(0,0,30)))
             {
                 var scope = serviceProvider.CreateScope();
-                using (var ctxt = scope.ServiceProvider.GetService<Models.AccountsDbContext>())
+                using (var ctxt = scope.ServiceProvider.GetService<DatabaseFramework.Models.AccountsDbContext>())
                 {
-                    var lst =  ctxt.Set<Models.AccountType>().ToList();
+                    var lst =  ctxt.Set<DatabaseFramework.Models.AccountType>().ToList();
                     foreach(var item in lst)
                     {
                         this.cache.Add(new CacheItem($"Code_{item.Code}", item.Id), this.cacheItemPolicy);

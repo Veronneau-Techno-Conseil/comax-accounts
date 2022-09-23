@@ -1,4 +1,4 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace CommunAxiom.Accounts.ViewModels.Account
