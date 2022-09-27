@@ -30,7 +30,7 @@ namespace CommunAxiom.Accounts.Business
         {
             var app = await _accountsDbContext.Set<Models.Application>().Where(x => x.ClientId == clientId).Include(x => x.ApplicationTypeMaps).ThenInclude(x => x.ApplicationType).FirstAsync();
 
-            var claims = await _accountsDbContext.Set<Models.AppClaimAssignment>().Include(x => x.ApplicationType).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
+            var claims = await _accountsDbContext.Set<Models.AppClaimAssignment>().Include(x => x.ApplicationType).Include(x=>x.AppClaim).ThenInclude(x=>x.AppNamespace).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
             var claimsList = new List<System.Security.Claims.Claim>();
 
             claimsList.AddRange(new[]
