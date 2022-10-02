@@ -8,10 +8,6 @@ namespace ContactsApi.Controllers
     [Route("[controller]")]
     public class ContactsController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
         private readonly AccountsDbContext _context;
 
         private readonly ILogger<ContactsController> _logger;
