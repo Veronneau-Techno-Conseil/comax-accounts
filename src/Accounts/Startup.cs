@@ -48,13 +48,12 @@ namespace CommunAxiom.Accounts
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
-
             services.AddHttpClient<ReCaptcha>(x =>
             {
                 x.BaseAddress = new Uri("https://www.google.com/recaptcha/api/siteverify");
             });
-
+            
+            services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
             services.AddDbContext<AccountsDbContext>();
 
             services.AddIdentity<User, IdentityRole>()
@@ -154,7 +153,7 @@ namespace CommunAxiom.Accounts
                            .EnableVerificationEndpointPassthrough()
                            .EnableStatusCodePagesIntegration()
                            .DisableTransportSecurityRequirement(); // During development, you can disable the HTTPS requirement.
-
+                    
                     options.AddEventHandler<HandleIntrospectionRequestContext>(builder =>
                     {
                         builder.UseInlineHandler(context =>
@@ -199,36 +198,10 @@ namespace CommunAxiom.Accounts
 
             services.AddTransient<IEmailService, EmailService>();
 
-            MigrateDb(services);
+            services.MigrateDb();
         }
 
-        static void MigrateDb(IServiceCollection services)
-        {
-            var sp = services.BuildServiceProvider();
-            using var scope = sp.CreateScope();
-
-            var serviceProvider = scope.ServiceProvider;
-
-
-            var dbConf = serviceProvider.GetService<IOptionsMonitor<DbConf>>().CurrentValue;
-
-            if (dbConf.MemoryDb || !dbConf.ShouldMigrate)
-            {
-                return;
-            }
-
-            var context = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
-
-            var dbcontext = serviceProvider.GetService<AccountsDbContext>();
-
-            if (dbConf.ShouldDrop)
-            {
-                dbcontext.Database.EnsureDeleted();
-            }
-            
-            dbcontext.Database.Migrate();
-            Seed.SeedData(dbcontext);
-        }
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)

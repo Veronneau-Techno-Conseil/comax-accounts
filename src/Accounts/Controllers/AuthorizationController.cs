@@ -445,6 +445,14 @@ namespace CommunAxiom.Accounts.Controllers
                 if (result)
                 {
                     var cp = await _signInManager.ClaimsFactory.CreateAsync(user);
+
+
+                    foreach (var claim in cp.Claims)
+                    {
+                        claim.SetDestinations(GetDestinations(claim, cp));
+                    }
+
+                    // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
                     return SignIn(cp, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 }
                 return Unauthorized("Wrong username or password.");

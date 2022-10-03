@@ -1,0 +1,57 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model Models.ApplicationType
+@inject ILookupStore lookupStore
+@{
+    bool edit = false;
+    var buttonText = "Register";
+    if (Model!=null && Model.Id>0)
+    {
+        ViewData["Title"] = "Modify the Application Type";
+        edit = true;
+        buttonText = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Register A New Application Type";
+    }
+
+    var items = Models.Values.OIDCPermissions().Select(x=>new SelectListItem(x.Name, x.Value));
+
+    var applicationTypes = lookupStore.ListApplicationTypes().Select(x=>new SelectListItem(x.Name, x.Value.ToString()));
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Index"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-area="Management" asp-controller="ApplicationType" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                    @if (edit)
+                    {
+                        <input asp-for="Id" type="hidden" />
+                    }
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="Name" class="label"></label>
+                        <input asp-for="Name" class="input is-primary" />
+                        <span asp-validation-for="Name" class="help is-danger"></span>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

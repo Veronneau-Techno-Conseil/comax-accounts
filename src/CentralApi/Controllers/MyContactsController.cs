@@ -1,22 +1,19 @@
 using DatabaseFramework.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ContactsApi.Controllers
+namespace CentralApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ContactsController : ControllerBase
+    public class MyContactsController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
         private readonly AccountsDbContext _context;
 
-        private readonly ILogger<ContactsController> _logger;
+        private readonly ILogger<MyContactsController> _logger;
 
-        public ContactsController(AccountsDbContext context, ILogger<ContactsController> logger)
+        public MyContactsController(AccountsDbContext context, ILogger<MyContactsController> logger)
         {
             _context = context;
             _logger = logger;

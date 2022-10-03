@@ -25,6 +25,14 @@
         });
     });
 })();
+(function () {
+    $(document).ready((j) => {
+        $(".navbar-item.has-dropdown>.navbar-link").on("click", function () {
+            const jq = $(this);
+            jq.parent(".navbar-item.has-dropdown").toggleClass("is-active");
+        });
+    });
+})();
 function openTab(obj, tabName) {
     var i, x, tablinks;
     if (tabName == undefined)

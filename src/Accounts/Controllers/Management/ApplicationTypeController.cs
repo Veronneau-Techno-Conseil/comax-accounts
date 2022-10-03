@@ -18,6 +18,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         {
             _context = context;
         }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -36,6 +37,41 @@ namespace CommunAxiom.Accounts.Controllers.Management
                 aca.AppClaim.ClaimName = claims.FirstOrDefault(x => x.Value == aca.AppClaimId).Name;
             }
             return View("Views/Management/ApplicationType/Details.cshtml", value);
+        }
+
+        [HttpGet]
+        [Route("/management/ApplicationType/Edit/{id}")]
+        public async Task<ActionResult> Edit(int id)
+        {
+            var value = await _context.Set<ApplicationType>().FirstOrDefaultAsync(x => x.Id == id);
+            
+            return View("Views/Management/ApplicationType/Modify.cshtml", value);
+        }
+
+        [HttpPost]
+        [Route("/management/ApplicationType/Edit/{id}")]
+        public async Task<ActionResult> Edit(int id, ApplicationType applicationType)
+        {
+            var value = await _context.Set<ApplicationType>().FirstOrDefaultAsync(x => x.Id == id);
+            value.Name = applicationType.Name;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Route("/management/ApplicationType/Add")]
+        public async Task<ActionResult> Add()
+        {
+            return View("Views/Management/ApplicationType/Modify.cshtml", new ApplicationType());
+        }
+
+        [HttpPost]
+        [Route("/management/ApplicationType/Add")]
+        public async Task<ActionResult> Add(ApplicationType applicationType)
+        {
+            await _context.Set<ApplicationType>().AddAsync(applicationType);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
