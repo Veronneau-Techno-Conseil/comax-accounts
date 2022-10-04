@@ -30,7 +30,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         // GET: AppNamespaceController/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            var value = await _context.Set<AppNamespace>().Include(x=>x.AppClaims).FirstAsync(x=>x.Id == id);
+            var value = await _context.Set<AppNamespace>().Include(x=>x.AppClaims).Include(x=>x.ApplicationType).FirstAsync(x=>x.Id == id);
             return View("Views/Management/AppNamespace/Detail.cshtml", value);
         }
 
@@ -76,6 +76,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
                 var value = await _context.Set<AppNamespace>().FirstAsync(x => x.Id == id);
                 value.Name = ns.Name;
                 value.Description = ns.Description;
+                value.ApplicationTypeId = ns.ApplicationTypeId;
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

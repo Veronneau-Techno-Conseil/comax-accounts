@@ -8,5 +8,7 @@ namespace DatabaseFramework.Models
         public string Name { get; set; }    
         public string Description { get; set; }
         public virtual IList<AppClaim> AppClaims { get; set; }
+        public int? ApplicationTypeId { get; set; }
+        public ApplicationType ApplicationType { get; set; }
     }
 }

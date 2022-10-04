@@ -18,3 +18,26 @@ spec:
   usages:
   - digital signature
   - key encipherment
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "comax-central.certSecretName" . }}
+spec:
+  dnsNames:
+  - {{ include "comax-central.fullSvcName" . }}
+  {{- range .Values.centralIngress.tls }}
+  {{- range .hosts }}
+  - {{ . | quote }}
+  {{- end }}
+  {{- end }}
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: vault-issuer
+  secretName: {{ include "comax-central.certSecretName" . }}
+  usages:
+  - digital signature
+  - key encipherment

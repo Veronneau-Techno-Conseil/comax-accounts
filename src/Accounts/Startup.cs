@@ -61,7 +61,7 @@ namespace CommunAxiom.Accounts
 
             //Allows for loading claims that don't show up in the user
             services.AddScoped<IUserClaimsPrincipalFactory<User>, Security.ClaimsPrincipalFactory>();
-
+            services.AddScoped<Handlers.IntrospectionHandler>();
             services.AddTransient<ILookupStore, LookupStore>();
 
             // Configure Identity to use the same JWT claims as OpenIddict instead
@@ -156,14 +156,8 @@ namespace CommunAxiom.Accounts
                     
                     options.AddEventHandler<HandleIntrospectionRequestContext>(builder =>
                     {
-                        builder.UseInlineHandler(context =>
-                        {
-                            context.Claims[OpenIddictConstants.Claims.Name] = context.Principal.FindFirst(OpenIddictConstants.Claims.Name)?.Value;
-                            context.Claims[OpenIddictConstants.Claims.Email] = context.Principal.FindFirst(OpenIddictConstants.Claims.Email)?.Value;
-                            context.Claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] = context.Principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
-                            return default;
-                        });
-
+                        builder.UseScopedHandler<Handlers.IntrospectionHandler>();
+                        
                         builder.SetOrder(AttachApplicationClaims.Descriptor.Order + 1_000);
                     });
                 })
@@ -189,6 +183,7 @@ namespace CommunAxiom.Accounts
             services.AddTransient<ISmsSender, SmsSender>();
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
             services.AddTransient<ClientClaimsProvider>();
+            services.AddTransient<UserClaimsProvider>();
 
             var directory = Directory.GetCurrentDirectory();
             services

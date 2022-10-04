@@ -32,7 +32,7 @@ namespace CommunAxiom.Accounts
                                 var eccPem = File.ReadAllText("key.pem");
 
                                 var cert = X509Certificate2.CreateFromPem(certPem, eccPem);
-                                def.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(cert.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Pkcs12));
+                                def.ServerCertificate = new X509Certificate2(cert.Export(X509ContentType.Pkcs12));
                             });
                         }
                     })

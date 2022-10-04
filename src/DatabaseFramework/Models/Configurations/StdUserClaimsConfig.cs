@@ -12,7 +12,6 @@ namespace DatabaseFramework.Models.Configurations
             builder.Entity<StdUserClaimAssignment>()
                 .Property(x => x.Id)
                 .UseIdentityColumn();
-
         }
 
         public void SetupRelationships(ModelBuilder builder)
@@ -22,6 +21,11 @@ namespace DatabaseFramework.Models.Configurations
                 .HasOne(x=>x.AppClaim)
                 .WithMany()
                 .HasForeignKey(x=>x.AppClaimId);
+
+            builder.Entity<AppNamespace>()
+                .HasOne(x => x.ApplicationType)
+                .WithMany(x => x.AppNamespaces)
+                .HasForeignKey(x => x.ApplicationTypeId);
 
         }
 

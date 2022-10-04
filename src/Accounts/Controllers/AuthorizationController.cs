@@ -362,7 +362,7 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpPost("~/connect/token"), Produces("application/json")]
-        public async Task<IActionResult> Exchange([FromServices]ClientClaimsProvider clientClaimsProvider)
+        public async Task<IActionResult> Exchange([FromServices]ClientClaimsProvider clientClaimsProvider, [FromServices] UserClaimsProvider userClaimsProvider)
         {
             var request = HttpContext.GetOpenIddictServerRequest() ??
                 throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
@@ -399,6 +399,11 @@ namespace CommunAxiom.Accounts.Controllers
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is no longer allowed to sign in."
                         }));
                 }
+
+                var cls = (await userClaimsProvider.GetClaims(user.Id, this._configuration["BaseAddress"])).ToList();
+                cls.Add(new System.Security.Claims.Claim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User"));
+                foreach (var c in cls)
+                    principal.SetClaim(c.Type, c.Value);
 
                 foreach (var claim in principal.Claims)
                 {
@@ -446,6 +451,11 @@ namespace CommunAxiom.Accounts.Controllers
                 {
                     var cp = await _signInManager.ClaimsFactory.CreateAsync(user);
 
+                    cp.SetClaim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User");
+
+                    var cls = await userClaimsProvider.GetClaims(user.UserName, this._configuration["BaseAddress"]);
+                    foreach (var c in cls)
+                        cp.SetClaim(c.Type, c.Value);
 
                     foreach (var claim in cp.Claims)
                     {

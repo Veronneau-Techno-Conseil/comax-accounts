@@ -1,4 +1,5 @@
-﻿using DatabaseFramework.Models;
+﻿using CommunAxiom.Accounts.Contracts;
+using DatabaseFramework.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,45 +13,53 @@ namespace CommunAxiom.Accounts.Controllers.Management
     public class StdUserClaimAssignmentController : Controller
     {
         private AccountsDbContext _context;
+        private readonly ILookupStore _lookupStore;
 
-        public StdUserClaimAssignmentController(AccountsDbContext context)
+        public StdUserClaimAssignmentController(AccountsDbContext context, ILookupStore lookupStore)
         {
             _context = context;
+            _lookupStore = lookupStore;
         }
 
-        [Route("/management/stduserclaimassigment/{appType}")]
+        [Route("/management/stduserclaimassigment/")]
         public async Task<ActionResult> Index(int appType)
         {
-            var lst = await _context.Set<AppClaimAssignment>().Where(x=>x.ApplicationTypeId == appType).ToListAsync();
-            return View(lst);
+            var claims = _lookupStore.ListApplicationClaims(); 
+            var lst = await _context.Set<StdUserClaimAssignment>().Include(x=>x.AppClaim).ThenInclude(x=>x.AppNamespace).ToListAsync();
+
+            foreach (var item in lst)
+            {
+                item.AppClaim.ClaimName = claims.FirstOrDefault(x => x.Value == item.AppClaimId).Name;
+            }
+
+            return View("Views/Management/StdUserClaimAssignment/Index.cshtml", lst);
         }
 
-        [Route("/management/stduserclaimassigment/{appType}/details/{id}")]
-        public async Task<ActionResult> Details(int appType, int id)
+        [Route("/management/stduserclaimassigment/details/{id}")]
+        public async Task<ActionResult> Details(int id)
         {
-            var o = await _context.Set<AppClaimAssignment>().Include(x=>x.AppClaim).ThenInclude(x=>x.AppNamespace).Include(x=>x.ApplicationType).FirstOrDefaultAsync(x => x.ApplicationTypeId == appType && x.Id == id);
+            var o = await _context.Set<StdUserClaimAssignment>().Include(x=>x.AppClaim).ThenInclude(x=>x.AppNamespace).FirstOrDefaultAsync(x => x.Id == id);
 
             return View("Views/Management/StdUserClaimAssignment/Detail.cshtml", o);
         }
 
-        [Route("/management/stduserclaimassigment/{appType}/create")]
-        public ActionResult Create(int appType)
+        [Route("/management/stduserclaimassigment/create")]
+        public ActionResult Create()
         {
-            return View("Views/Management/StdUserClaimAssignment/Modify.cshtml", new AppClaimAssignment { ApplicationTypeId = appType });
+            return View("Views/Management/StdUserClaimAssignment/Modify.cshtml", new StdUserClaimAssignment());
         }
 
         [HttpPost]
-        [Route("/management/stduserclaimassigment/{appType}/create")]
-        public async Task<ActionResult> Create(int appType, AppClaimAssignment assignment)
+        [Route("/management/stduserclaimassigment/create")]
+        public async Task<ActionResult> Create(StdUserClaimAssignment assignment)
         {
             try
             {
-                assignment.ApplicationTypeId = appType;
-                var set = _context.Set<AppClaimAssignment>();
+                var set = _context.Set<StdUserClaimAssignment>();
                 await set.AddAsync(assignment);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Details", "ApplicationType", new { id = appType });
+                return RedirectToAction("Details", "StdUserClaimAssignment", new { id = assignment.Id });
             }
             catch
             {
@@ -58,30 +67,29 @@ namespace CommunAxiom.Accounts.Controllers.Management
             }
         }
 
-        [Route("/management/stduserclaimassigment/{appType}/edit/{id}")]
-        public async Task<ActionResult> Edit(int appType, int id)
+        [Route("/management/stduserclaimassigment/edit/{id}")]
+        public async Task<ActionResult> Edit(int id)
         {
-            var o = await _context.Set<AppClaimAssignment>().FirstOrDefaultAsync(x => x.ApplicationTypeId == appType && x.Id == id);
+            var o = await _context.Set<StdUserClaimAssignment>().FirstOrDefaultAsync(x => x.Id == id);
             return View("Views/Management/StdUserClaimAssignment/Modify.cshtml", o);
         }
 
         [HttpPost]
-        [Route("/management/stduserclaimassigment/{appType}/edit/{id}")]
-        public async Task<ActionResult> Edit(int appType, int id, AppClaimAssignment assignment)
+        [Route("/management/stduserclaimassigment/edit/{id}")]
+        public async Task<ActionResult> Edit(int id, StdUserClaimAssignment assignment)
         {
             try
             {
-                var value = await _context.Set<AppClaimAssignment>().FirstOrDefaultAsync(x => x.ApplicationTypeId == appType && x.Id == id);
+                var value = await _context.Set<StdUserClaimAssignment>().FirstOrDefaultAsync(x => x.Id == id);
 
                 if (value == null)
                     return NotFound();
 
                 value.AppClaimId = assignment.AppClaimId;
-                value.ApplicationTypeId = appType;
                 value.Value = assignment.Value;
                 
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Details", "ApplicationType", new { id = appType });
+                return RedirectToAction("Details", "StdUserClaimAssignment", new { id = value.Id });
             }
             catch
             {
@@ -89,10 +97,10 @@ namespace CommunAxiom.Accounts.Controllers.Management
             }
         }
 
-        [Route("/management/stduserclaimassigment/{appType}/delete/{id}")]
-        public async Task<ActionResult> Delete(int appType, int id)
+        [Route("/management/stduserclaimassigment/delete/{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            var value = await _context.Set<AppClaimAssignment>().Include(x => x.AppClaim).ThenInclude(x => x.AppNamespace).Include(x => x.ApplicationType).FirstOrDefaultAsync(x => x.ApplicationTypeId == appType && x.Id == id);
+            var value = await _context.Set<StdUserClaimAssignment>().Include(x => x.AppClaim).ThenInclude(x => x.AppNamespace).FirstOrDefaultAsync(x => x.Id == id);
 
             if (value == null)
                 return NotFound();
@@ -101,11 +109,11 @@ namespace CommunAxiom.Accounts.Controllers.Management
         }
 
         [HttpPost]
-        [Route("/management/stduserclaimassigment/{appType}/delete/{id}")]
-        public async Task<ActionResult> Delete(int appType, int id, AppClaimAssignment assignment)
+        [Route("/management/stduserclaimassigment/delete/{id}")]
+        public async Task<ActionResult> Delete(int id, StdUserClaimAssignment assignment)
         {
-            var set = _context.Set<AppClaimAssignment>();
-            var value = await set.FirstOrDefaultAsync(x => x.ApplicationTypeId == appType && x.Id == id);
+            var set = _context.Set<StdUserClaimAssignment>();
+            var value = await set.FirstOrDefaultAsync(x => x.Id == id);
 
             try
             {
@@ -114,7 +122,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
 
                 set.Remove(value);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Details", "ApplicationType", new { id = appType });
+                return RedirectToAction("Index", "StdUserClaimAssignment");
             }
             catch
             {

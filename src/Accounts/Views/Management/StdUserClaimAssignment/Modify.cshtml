@@ -6,12 +6,12 @@
     var action = "Edit";
     if (Model?.Id > 0)
     {
-        ViewData["Title"] = "Modify the App Claim Assignment";
+        ViewData["Title"] = "Modify the User Claim Assignment";
         buttonText = "Save";
     }
     else
     {
-        ViewData["Title"] = "Create a new App Claim Assignment";
+        ViewData["Title"] = "Create a new User Claim Assignment";
         action = "Create";
     }
 
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="card-content">
-                <form asp-area="Management" asp-action="@action" asp-controller="AppClaimAssignment" method="post" role="form">
+                <form asp-area="Management" asp-action="@action" asp-controller="StdUserClaimAssignment" method="post" role="form">
                     @if (Model?.Id > 0)
                     {
                         <input asp-for="Id" type="hidden" />

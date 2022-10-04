@@ -13,5 +13,6 @@ namespace DatabaseFramework.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public List<AppClaimAssignment> AppClaimAssignments { get; set; } = new List<AppClaimAssignment>();
+        public virtual IList<AppNamespace> AppNamespaces { get; set; } = null;
     }
 }
