@@ -1,4 +1,4 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -12,20 +12,20 @@ using System.Threading.Tasks;
 namespace CommunAxiom.Accounts.Stores
 {
     public class ApplicationStore : OpenIddictEntityFrameworkCoreApplicationStore<
-                                                Models.Application,
-                                                Models.Authorization,
-                                                Models.Token,
-                                                Models.AccountsDbContext,
+                                                Application,
+                                                Authorization,
+                                                Token,
+                                                AccountsDbContext,
                                                 string>
 
     {
-        public ApplicationStore(IMemoryCache cache, Models.AccountsDbContext context, IOptionsMonitor<OpenIddictEntityFrameworkCoreOptions> options) :
+        public ApplicationStore(IMemoryCache cache, AccountsDbContext context, IOptionsMonitor<OpenIddictEntityFrameworkCoreOptions> options) :
             base(cache, context, options)
         {
 
         }
 
-        public override ValueTask<long> CountAsync<TResult>(System.Func<IQueryable<Application>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+        public override ValueTask<long> CountAsync<TResult>(System.Func<IQueryable<DatabaseFramework.Models.Application>, IQueryable<TResult>> query, CancellationToken cancellationToken)
         {
             return base.CountAsync(q => query(q.Where(x => x.Deleted != true)), cancellationToken);
         }

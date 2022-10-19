@@ -21,7 +21,6 @@
                 <a asp-controller="Home" asp-area="" class="navbar-item" asp-action="Index" title="Home">
                     Home
                 </a>
-
                 @if (SIManager.IsSignedIn(User))
                 {
                     <a asp-controller="Applications" asp-area="" class="navbar-item" asp-action="Manage">Manage Applications</a>
@@ -29,9 +28,15 @@
                     
                     if(User.HasClaim(Roles.SYS_APP_CLAIM, AccessLevels.ACCESS_LEVEL_ADMIN))
                     {
-                        <a asp-controller="Applications" asp-area="Management" class="navbar-item" asp-action="Index">System Applications</a>
-                        <a asp-controller="AppNamespace" asp-area="Management" class="navbar-item" asp-action="Index">App Namepace</a>
-                        <a asp-controller="ApplicationType" asp-area="Management" class="navbar-item" asp-action="Index">Application Types</a>
+                        <div class="navbar-item has-dropdown">
+                            <a class="navbar-link">Admin</a>
+                            <div class="navbar-dropdown">
+                                <a asp-controller="Applications" asp-area="Management" class="navbar-item" asp-action="Index">System Applications</a>
+                                <a asp-controller="AppNamespace" asp-area="Management" class="navbar-item" asp-action="Index">App Namepace</a>
+                                <a asp-controller="ApplicationType" asp-area="Management" class="navbar-item" asp-action="Index">Application Types</a>
+                                <a asp-controller="StdUserClaimAssignment" asp-area="Management" class="navbar-item" asp-action="Index">User claims</a>
+                            </div>
+                        </div>
                     }
                 }
 

@@ -1,6 +1,10 @@
-﻿@model CommunAxiom.Accounts.Models.AppNamespace
+﻿@using CommunAxiom.Accounts.Contracts
+@model Models.AppNamespace
+@inject ILookupStore lookupStore
 @{
     var buttonText = "Create";
+    var applicationTypes = lookupStore.ListApplicationTypes().Select(x=>new SelectListItem(x.Name, x.Value.ToString()));
+
     if (Model?.Id > 0)
     {
         ViewData["Title"] = "Modify the App Namespace";
@@ -42,7 +46,12 @@
                         <input asp-for="Description" class="input is-primary" />
                         <span asp-validation-for="Description" class="help is-danger"></span>
                     </div>
-                     
+                    <div class="field">
+                        <label asp-for="ApplicationTypeId" class="label"></label>
+                        <select asp-for="ApplicationTypeId" class="input is-primary" asp-items="applicationTypes"></select>
+                        <span asp-validation-for="ApplicationTypeId" class="help is-danger"></span>
+                    </div>
+
                     <div class="field is-grouped">
                         <div class="control">
                             <button type="submit" class="button is-link">@buttonText</button>

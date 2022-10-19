@@ -14,8 +14,7 @@
         <thead>
             <tr>
                 <th><abbr title="Name">Name</abbr></th>
-                <th><abbr title="Description">Description</abbr></th>
-                <th><abbr title=""></abbr></th>
+                <th><abbr title=""><a asp-controller="ApplicationType" asp-area="Management" asp-action="Add"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +24,7 @@
                     <td>@item.Name</td>
                     <td>
                         <a asp-action="Details" asp-area="Management" asp-controller="ApplicationType" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a> 
+                        <a asp-action="Edit" asp-area="Management" asp-controller="ApplicationType" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a> 
                     </td>
                 </tr>
             }

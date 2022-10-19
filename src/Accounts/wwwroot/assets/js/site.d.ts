@@ -1,5 +1,2 @@
-declare function openTab(evt: {
-    currentTarget: {
-        className: string;
-    };
-}, tabName: string): void;
+/// <reference types="jquery" />
+declare function openTab(obj: JQuery, tabName: string | undefined): void;

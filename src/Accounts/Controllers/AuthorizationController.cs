@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CommunAxiom.Accounts.Business;
 using CommunAxiom.Accounts.Helpers;
-using CommunAxiom.Accounts.Models;
+using DatabaseFramework.Models;
 using CommunAxiom.Accounts.Stores;
 using CommunAxiom.Accounts.ViewModels.Authorization;
 using Microsoft.AspNetCore;
@@ -27,7 +27,7 @@ namespace CommunAxiom.Accounts.Controllers
 {
     public class AuthorizationController : Controller
     {
-        private readonly OpenIddictScopeManager<Models.Scope> _scopeManager;
+        private readonly OpenIddictScopeManager<Scope> _scopeManager;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly OpenIddictApplicationManager<Application> _applicationManager;
@@ -35,7 +35,7 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly IConfiguration _configuration;
 
         public AuthorizationController(
-            OpenIddictScopeManager<Models.Scope> scopeManager,
+            OpenIddictScopeManager<Scope> scopeManager,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             OpenIddictApplicationManager<Application> applicationManager,
@@ -362,7 +362,7 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpPost("~/connect/token"), Produces("application/json")]
-        public async Task<IActionResult> Exchange([FromServices]ClientClaimsProvider clientClaimsProvider)
+        public async Task<IActionResult> Exchange([FromServices]ClientClaimsProvider clientClaimsProvider, [FromServices] UserClaimsProvider userClaimsProvider)
         {
             var request = HttpContext.GetOpenIddictServerRequest() ??
                 throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
@@ -399,6 +399,11 @@ namespace CommunAxiom.Accounts.Controllers
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is no longer allowed to sign in."
                         }));
                 }
+
+                var cls = (await userClaimsProvider.GetClaims(user.Id, this._configuration["BaseAddress"])).ToList();
+                cls.Add(new System.Security.Claims.Claim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User"));
+                foreach (var c in cls)
+                    principal.SetClaim(c.Type, c.Value);
 
                 foreach (var claim in principal.Claims)
                 {
@@ -445,6 +450,19 @@ namespace CommunAxiom.Accounts.Controllers
                 if (result)
                 {
                     var cp = await _signInManager.ClaimsFactory.CreateAsync(user);
+
+                    cp.SetClaim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User");
+
+                    var cls = await userClaimsProvider.GetClaims(user.UserName, this._configuration["BaseAddress"]);
+                    foreach (var c in cls)
+                        cp.SetClaim(c.Type, c.Value);
+
+                    foreach (var claim in cp.Claims)
+                    {
+                        claim.SetDestinations(GetDestinations(claim, cp));
+                    }
+
+                    // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
                     return SignIn(cp, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 }
                 return Unauthorized("Wrong username or password.");

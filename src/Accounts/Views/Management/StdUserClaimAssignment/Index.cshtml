@@ -1,0 +1,36 @@
+﻿@model IEnumerable<StdUserClaimAssignment>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="container">
+    <div class="level content">
+        <h1 class="level-item is-4">Std user claim assigments</h1>
+    </div>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th><abbr title="Claim Name">Claim Name</abbr></th>
+                <th><abbr title="Claim Value">Claim Value</abbr></th>
+                <th><abbr title=""><a asp-controller="StdUserClaimAssignment" asp-area="Management" asp-action="Create"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.AppClaim.ClaimName</td>
+                    <td>@item.Value</td>
+                    <td>
+                        <a asp-action="Details" asp-area="Management" asp-controller="StdUserClaimAssignment" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a> 
+                        <a asp-action="Edit" asp-area="Management" asp-controller="StdUserClaimAssignment" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a> 
+                        <a asp-action="Delete" asp-area="Management" asp-controller="StdUserClaimAssignment" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a> 
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

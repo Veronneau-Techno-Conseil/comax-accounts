@@ -1,10 +1,11 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Constants = CommunAxiom.Accounts.Contracts.Constants;
 
 namespace CommunAxiom.Accounts.Controllers.Management
 {
@@ -12,9 +13,9 @@ namespace CommunAxiom.Accounts.Controllers.Management
     [Authorize(Policy = Constants.Management.APP_MANAGEMENT_POLICY)]
     public class AppNamespaceController : Controller
     {
-        private Models.AccountsDbContext _context;
+        private AccountsDbContext _context;
 
-        public AppNamespaceController(Models.AccountsDbContext context)
+        public AppNamespaceController(AccountsDbContext context)
         {
             _context = context;
         }
@@ -29,7 +30,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         // GET: AppNamespaceController/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            var value = await _context.Set<AppNamespace>().Include(x=>x.AppClaims).FirstAsync(x=>x.Id == id);
+            var value = await _context.Set<AppNamespace>().Include(x=>x.AppClaims).Include(x=>x.ApplicationType).FirstAsync(x=>x.Id == id);
             return View("Views/Management/AppNamespace/Detail.cshtml", value);
         }
 
@@ -75,6 +76,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
                 var value = await _context.Set<AppNamespace>().FirstAsync(x => x.Id == id);
                 value.Name = ns.Name;
                 value.Description = ns.Description;
+                value.ApplicationTypeId = ns.ApplicationTypeId;
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

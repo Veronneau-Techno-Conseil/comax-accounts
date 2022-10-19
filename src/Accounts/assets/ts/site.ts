@@ -30,6 +30,17 @@
     })
 })();
 
+(function () {
+    $(document).ready((j) => {
+        (<any>$(".navbar-item.has-dropdown>.navbar-link")).on("click", function (this: HTMLElement) {
+            const jq = $(this);
+            jq.parent(".navbar-item.has-dropdown").toggleClass("is-active");
+        });
+    })
+})();
+
+
+
 function openTab(obj: JQuery, tabName: string | undefined) {
     var i, x, tablinks;
 

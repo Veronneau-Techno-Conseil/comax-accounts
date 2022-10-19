@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using CommunAxiom.Accounts.AppModels;
 using CommunAxiom.Accounts.Contracts;
 using CommunAxiom.Accounts.Helpers;
-using CommunAxiom.Accounts.Models;
+using DatabaseFramework.Models;
 using CommunAxiom.Accounts.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -65,8 +65,7 @@ namespace CommunAxiom.Accounts.Controllers
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                
-                
+
                 if (result.Succeeded)
                 {
                     return RedirectToLocal(returnUrl);

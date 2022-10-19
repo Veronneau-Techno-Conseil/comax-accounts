@@ -1,0 +1,64 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model Models.StdUserClaimAssignment
+@inject ILookupStore _lookupStore
+@{
+    var buttonText = "Create";
+    var action = "Edit";
+    if (Model?.Id > 0)
+    {
+        ViewData["Title"] = "Modify the User Claim Assignment";
+        buttonText = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Create a new User Claim Assignment";
+        action = "Create";
+    }
+
+    var claimsLookup = _lookupStore.ListApplicationClaims().Select(x=>new SelectListItem(x.Name, x.Value.ToString()));
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="StdUserClaimAssignment" asp-route-id="@Model.Id"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-area="Management" asp-action="@action" asp-controller="StdUserClaimAssignment" method="post" role="form">
+                    @if (Model?.Id > 0)
+                    {
+                        <input asp-for="Id" type="hidden" />
+                    }
+
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+
+                    <div class="field">
+                        <label asp-for="AppClaimId" class="label"></label>
+                        <select asp-for="AppClaimId" asp-items="@claimsLookup" class="input is-primary select"></select>
+                        <span asp-validation-for="AppClaimId" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Value" class="label"></label>
+                        <input asp-for="Value" class="input is-primary" />
+                        <span asp-validation-for="Value" class="help is-danger"></span>
+                    </div>
+                     
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
