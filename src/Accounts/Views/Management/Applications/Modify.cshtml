@@ -13,7 +13,7 @@
         ViewData["Title"] = "Register A New Application";
     }
 
-    var items = CommunAxiom.Accounts.Models.Values.OIDCPermissions().Select(x=>new SelectListItem(x.Name, x.Value));
+    var items = Models.Values.OIDCPermissions().Select(x=>new SelectListItem(x.Name, x.Value));
 
     var applicationTypes = lookupStore.ListApplicationTypes().Select(x=>new SelectListItem(x.Name, x.Value.ToString()));
 }

@@ -1,19 +1,19 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Constants = CommunAxiom.Accounts.Contracts.Constants;
 namespace CommunAxiom.Accounts.Controllers.Management
 {
     [Area("management")]
     [Authorize(Policy = Constants.Management.APP_MANAGEMENT_POLICY)]
     public class AppClaimAssignmentController : Controller
     {
-        private Models.AccountsDbContext _context;
+        private AccountsDbContext _context;
 
-        public AppClaimAssignmentController(Models.AccountsDbContext context)
+        public AppClaimAssignmentController(AccountsDbContext context)
         {
             _context = context;
         }

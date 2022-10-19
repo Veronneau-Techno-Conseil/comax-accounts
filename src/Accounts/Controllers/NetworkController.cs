@@ -1,4 +1,4 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using CommunAxiom.Accounts.ViewModels.Network;
 using FluentEmail.Core;
 using FluentEmailProvider;
@@ -16,7 +16,7 @@ namespace CommunAxiom.Accounts.Controllers
     [Authorize]
     public class NetworkController : Controller
     {
-        private readonly Models.AccountsDbContext _context;
+        private readonly AccountsDbContext _context;
         private readonly IEmailService _emailService;
 
         public NetworkController(AccountsDbContext context, IEmailService emailService)
@@ -44,7 +44,7 @@ namespace CommunAxiom.Accounts.Controllers
         {
             var primaryAccount = _context.Set<User>()
                               .Where(x => x.UserName == User.Identity.Name)
-                              .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
+                              .Select(x => new User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
 
             var status = _context.Set<CreationStatus>().AsQueryable().Where(x => x.Name == CreationStatus.PENDING).FirstOrDefault();
 
@@ -70,7 +70,7 @@ namespace CommunAxiom.Accounts.Controllers
             {
                 var user = _context.Set<User>()
                               .Where(x => x.Id == Id)
-                              .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
+                              .Select(x => new User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
 
                 contact = new Contact()
                 {
@@ -167,9 +167,9 @@ namespace CommunAxiom.Accounts.Controllers
         public IActionResult NewGroup()
         {
 
-            var groups = _context.Set<Models.Group>().Include(x => x.Owner)
+            var groups = _context.Set<Group>().Include(x => x.Owner)
                 .Where(x => x.Owner.UserName == User.Identity.Name)
-                .Select(x => new Models.Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name = x.Name }).ToList();
+                .Select(x => new Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name = x.Name }).ToList();
 
             var contactRequests = GetContactRequests();
 
@@ -185,9 +185,9 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpGet]
         public IActionResult Groups()
         {
-            var groups = _context.Set<Models.Group>().Include(x => x.Owner)
+            var groups = _context.Set<Group>().Include(x => x.Owner)
                 .Where(x => x.Owner.UserName == User.Identity.Name)
-                .Select(x => new Models.Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name = x.Name }).ToList();
+                .Select(x => new Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name = x.Name }).ToList();
 
             var contactRequests = GetContactRequests();
 
@@ -231,9 +231,9 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpGet]
         public IActionResult ContactRequest()
         {
-            var users = _context.Set<Models.User>()
+            var users = _context.Set<User>()
                         .Where(x => x.UserName != User.Identity.Name)
-                        .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).ToList();
+                        .Select(x => new User { Id = x.Id, UserName = x.UserName }).ToList();
 
             var contacts = GetContacts();
 
@@ -269,7 +269,7 @@ namespace CommunAxiom.Accounts.Controllers
             {
                 var user = _context.Set<User>()
                               .Where(x => x.UserName == User.Identity.Name)
-                              .Select(x => new Models.User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
+                              .Select(x => new User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
                 contactRequest.Contact.User = user;
                 contactRequest.Contact.UserId = user.Id;
 
@@ -347,7 +347,7 @@ namespace CommunAxiom.Accounts.Controllers
 
         private Contact GetRequestedContact(string PrimaryAccountId, string UserId)
         {
-            return _context.Set<Models.Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
+            return _context.Set<Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
                         .Where(x => x.PrimaryAccount.Id == UserId && x.UserId == PrimaryAccountId)
                         .Select(x => new Contact
                         {
@@ -364,7 +364,7 @@ namespace CommunAxiom.Accounts.Controllers
 
         private List<Contact> GetContacts()
         {
-            return _context.Set<Models.Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
+            return _context.Set<Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
                .Where(x => x.PrimaryAccount.UserName == User.Identity.Name && x.UserId != null && x.IsDeleted == false && x.CreationStatus.Name == CreationStatus.COMPLETE)
                .Select(x => new Contact
                {
@@ -397,9 +397,9 @@ namespace CommunAxiom.Accounts.Controllers
 
         private List<ContactRequest> GetContactRequests()
         {
-            return _context.Set<Models.ContactRequest>().Include(x => x.Contact)
+            return _context.Set<ContactRequest>().Include(x => x.Contact)
                 .Where(x => (x.Contact.PrimaryAccount.UserName == User.Identity.Name || x.Contact.User.UserName == User.Identity.Name) && x.IsDeleted == false && x.ContactStatus.Name.Equals(CreationStatus.PENDING))
-                .Select(x => new Models.ContactRequest
+                .Select(x => new ContactRequest
                 {
                     Id = x.Id,
                     Contact = new Contact

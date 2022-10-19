@@ -1,5 +1,5 @@
 ﻿using CommunAxiom.Accounts.Contracts;
-using CommunAxiom.Accounts.Models;
+using DatabaseFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;

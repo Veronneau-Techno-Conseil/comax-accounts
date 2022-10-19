@@ -8,8 +8,6 @@ using CommunAxiom.Accounts.AppModels;
 using CommunAxiom.Accounts.Cache;
 using CommunAxiom.Accounts.Contracts;
 using CommunAxiom.Accounts.Helpers;
-using CommunAxiom.Accounts.Models;
-using CommunAxiom.Accounts.Models.SeedData;
 using CommunAxiom.Accounts.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +29,10 @@ using CommunAxiom.Accounts.Business;
 using static OpenIddict.Server.OpenIddictServerEvents;
 using static OpenIddict.Server.OpenIddictServerHandlers.Introspection;
 using OpenIddict.Abstractions;
+using DatabaseFramework.Models;
+using Models = DatabaseFramework.Models;
+using DatabaseFramework;
+using DatabaseFramework.Models.SeedData;
 
 namespace CommunAxiom.Accounts
 {
@@ -46,13 +48,12 @@ namespace CommunAxiom.Accounts
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
-
             services.AddHttpClient<ReCaptcha>(x =>
             {
                 x.BaseAddress = new Uri("https://www.google.com/recaptcha/api/siteverify");
             });
-
+            
+            services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
             services.AddDbContext<AccountsDbContext>();
 
             services.AddIdentity<User, IdentityRole>()
@@ -60,7 +61,7 @@ namespace CommunAxiom.Accounts
 
             //Allows for loading claims that don't show up in the user
             services.AddScoped<IUserClaimsPrincipalFactory<User>, Security.ClaimsPrincipalFactory>();
-
+            services.AddScoped<Handlers.IntrospectionHandler>();
             services.AddTransient<ILookupStore, LookupStore>();
 
             // Configure Identity to use the same JWT claims as OpenIddict instead
@@ -152,17 +153,11 @@ namespace CommunAxiom.Accounts
                            .EnableVerificationEndpointPassthrough()
                            .EnableStatusCodePagesIntegration()
                            .DisableTransportSecurityRequirement(); // During development, you can disable the HTTPS requirement.
-
+                    
                     options.AddEventHandler<HandleIntrospectionRequestContext>(builder =>
                     {
-                        builder.UseInlineHandler(context =>
-                        {
-                            context.Claims[OpenIddictConstants.Claims.Name] = context.Principal.FindFirst(OpenIddictConstants.Claims.Name)?.Value;
-                            context.Claims[OpenIddictConstants.Claims.Email] = context.Principal.FindFirst(OpenIddictConstants.Claims.Email)?.Value;
-                            context.Claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] = context.Principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
-                            return default;
-                        });
-
+                        builder.UseScopedHandler<Handlers.IntrospectionHandler>();
+                        
                         builder.SetOrder(AttachApplicationClaims.Descriptor.Order + 1_000);
                     });
                 })
@@ -188,6 +183,7 @@ namespace CommunAxiom.Accounts
             services.AddTransient<ISmsSender, SmsSender>();
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
             services.AddTransient<ClientClaimsProvider>();
+            services.AddTransient<UserClaimsProvider>();
 
             var directory = Directory.GetCurrentDirectory();
             services
@@ -197,36 +193,10 @@ namespace CommunAxiom.Accounts
 
             services.AddTransient<IEmailService, EmailService>();
 
-            MigrateDb(services);
+            services.MigrateDb();
         }
 
-        static void MigrateDb(IServiceCollection services)
-        {
-            var sp = services.BuildServiceProvider();
-            using var scope = sp.CreateScope();
-
-            var serviceProvider = scope.ServiceProvider;
-
-
-            var dbConf = serviceProvider.GetService<IOptionsMonitor<DbConf>>().CurrentValue;
-
-            if (dbConf.MemoryDb || !dbConf.ShouldMigrate)
-            {
-                return;
-            }
-
-            var context = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
-
-            var dbcontext = serviceProvider.GetService<AccountsDbContext>();
-
-            if (dbConf.ShouldDrop)
-            {
-                dbcontext.Database.EnsureDeleted();
-            }
-            
-            dbcontext.Database.Migrate();
-            Seed.SeedData(dbcontext);
-        }
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)

@@ -1,4 +1,4 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 
 namespace CommunAxiom.Accounts.Business
 {
@@ -12,7 +12,8 @@ namespace CommunAxiom.Accounts.Business
                     return $"com://{id}";
                 case ApplicationType.ORCHESTRATOR:
                     return $"orch://{id}";
-                default: return null;
+                default: 
+                    return $"comax://apps/{applictionType}";
             }
         }
 

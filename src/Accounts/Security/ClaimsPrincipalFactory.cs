@@ -1,4 +1,4 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CommunAxiom.Accounts.Security
 {
-    public class ClaimsPrincipalFactory: UserClaimsPrincipalFactory<Models.User>
+    public class ClaimsPrincipalFactory: UserClaimsPrincipalFactory<User>
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        public ClaimsPrincipalFactory(UserManager<Models.User> userManager, IOptions<IdentityOptions> optionsAccessor, RoleManager<IdentityRole> roleManager): base(userManager, optionsAccessor)
+        public ClaimsPrincipalFactory(UserManager<User> userManager, IOptions<IdentityOptions> optionsAccessor, RoleManager<IdentityRole> roleManager): base(userManager, optionsAccessor)
         {
             this._roleManager = roleManager;
         }
