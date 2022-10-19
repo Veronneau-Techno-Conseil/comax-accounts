@@ -45,7 +45,7 @@ pipeline {
                 sh 'echo "Build registry.vtck3s.lan/comax-accounts:${version} pushed to registry \n" >> SUMMARY'
 
                 script {
-                    def centralapi = docker.build("registry.vtck3s.lan/comax-central:latest", "-f ./central.Dockerfile")
+                    def centralapi = docker.build("registry.vtck3s.lan/comax-central:latest", "-f ./central.Dockerfile .")
                     centralapi.push()
                     centralapi.push(patch)
                 }
