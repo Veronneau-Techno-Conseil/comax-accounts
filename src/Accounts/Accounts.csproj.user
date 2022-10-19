@@ -19,8 +19,8 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Update="assets\ts\site.ts">
+    <None Update="assets\ts\site.ts">
       <SubType>Code</SubType>
-    </TypeScriptCompile>
+    </None>
   </ItemGroup>
 </Project>

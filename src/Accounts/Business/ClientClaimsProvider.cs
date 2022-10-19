@@ -8,18 +8,18 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using CommunAxiom.Accounts.Contracts.Constants;
 using Microsoft.Extensions.Configuration;
-using DatabaseFramework.Models;
+using Models = DatabaseFramework.Models;
 
 namespace CommunAxiom.Accounts.Business
 {
     public class ClientClaimsProvider
     {
-        private readonly AccountsDbContext _accountsDbContext;
+        private readonly Models.AccountsDbContext _accountsDbContext;
         private readonly OpenIddictValidationService _validationService;
         private readonly IConfiguration _config;
 
 
-        public ClientClaimsProvider(IConfiguration config, AccountsDbContext accountsDbContext, OpenIddictValidationService validationService)
+        public ClientClaimsProvider(IConfiguration config, Models.AccountsDbContext accountsDbContext, OpenIddictValidationService validationService)
         {
             _accountsDbContext = accountsDbContext;
             _validationService = validationService;
@@ -30,7 +30,7 @@ namespace CommunAxiom.Accounts.Business
         {
             var app = await _accountsDbContext.Set<DatabaseFramework.Models.Application>().Where(x => x.ClientId == clientId).Include(x => x.ApplicationTypeMaps).ThenInclude(x => x.ApplicationType).FirstAsync();
 
-            var claims = await _accountsDbContext.Set<AppClaimAssignment>().Include(x => x.ApplicationType).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
+            var claims = await _accountsDbContext.Set<Models.AppClaimAssignment>().Include(x => x.ApplicationType).Include(x=>x.AppClaim).ThenInclude(x=>x.AppNamespace).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
             var claimsList = new List<System.Security.Claims.Claim>();
 
             claimsList.AddRange(new[]

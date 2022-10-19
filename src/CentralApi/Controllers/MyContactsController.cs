@@ -19,11 +19,12 @@ namespace CentralApi.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet(Name = "GetContacts")]
         public IEnumerable<Contact> Get()
         {
             var contacts = _context.Set<Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
-                .Where(x => x.PrimaryAccount.UserName == "wesley_van_wyk@hotmail.com" && x.UserId != null)
+                .Where(x => x.PrimaryAccount.UserName == this.User.Identity.Name && x.UserId != null)
                 .Select(x => new Contact { Id = x.Id, PrimaryAccount = x.PrimaryAccount, User = x.User, UserId = x.UserId, PrimaryAccountId = x.PrimaryAccountId, CreationStatus = x.CreationStatus, CreationStatusId = x.CreationStatusId }).ToList();
 
             return contacts;
