@@ -110,7 +110,7 @@ Common labels
 */}}
 {{- define "comax-central.labels" -}}
 helm.sh/chart: {{ include "comax-accounts.chart" . }}
-{{ include "comax-accounts.selectorLabels" . }}
+{{ include "comax-central.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
