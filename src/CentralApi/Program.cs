@@ -93,7 +93,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-Console.WriteLine($"Running app on {app.Urls.First()}...");
-
-
 app.Run();
+//app.Run(builder.Configuration["Urls"]);

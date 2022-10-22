@@ -72,12 +72,12 @@ spec:
                 key: CLIENT_SECRET
           livenessProbe:
             httpGet:
-              path: /
+              path: /swagger/index.html
               port: http
               scheme: HTTP
           readinessProbe:
             httpGet:
-              path: /
+              path: /swagger/index.html
               port: http
               scheme: HTTP
           resources:
