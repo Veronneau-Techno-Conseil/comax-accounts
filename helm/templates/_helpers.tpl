@@ -9,7 +9,7 @@ Expand the name of the secret.
 Expand the name of the secret.
 */}}
 {{- define "comax-central.secretName" -}}
-{{- printf "%s-secrets" ( include "comax-accounts.name" . ) -}}
+{{- printf "%s-secrets" ( include "comax-central.name" . ) -}}
 {{- end }}
 
 {{/*
