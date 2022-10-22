@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine($"Using kestrel on {builder.Configuration["Urls"]}...");
 builder.WebHost.UseKestrel(opts =>
  {
      if (builder.Configuration["Urls"].StartsWith("https"))
@@ -22,10 +23,13 @@ builder.WebHost.UseKestrel(opts =>
      }
  });
 
-builder.Services.Configure<DatabaseFramework.DbConf>(x => builder.Configuration.GetSection("DbConfig").Bind(x));
-builder.Services.Configure<OidcConfig>(x => builder.Configuration.GetSection("OIDC").Bind(x));
+Console.WriteLine($"Setting up database context...");
 // Add services to the container.
+builder.Services.Configure<DatabaseFramework.DbConf>(x => builder.Configuration.GetSection("DbConfig").Bind(x));
 builder.Services.AddDbContext<AccountsDbContext>();
+
+Console.WriteLine($"Setting services...");
+builder.Services.Configure<OidcConfig>(x => builder.Configuration.GetSection("OIDC").Bind(x));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -70,24 +74,24 @@ builder.Services.AddAuthorization(opt =>
     });
 });
 
+Console.WriteLine($"Migrate db...");
 builder.Services.MigrateDb();
 
+Console.WriteLine($"Building application...");
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+if (builder.Configuration["Urls"].StartsWith("https"))
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-
-
+Console.WriteLine($"Running app...");
 app.Run();

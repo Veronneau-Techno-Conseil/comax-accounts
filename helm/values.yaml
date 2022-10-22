@@ -28,7 +28,7 @@ central:
   name: "comax-central"
   clientid: ""
   secret: ""
-  serviceAccountName:
+  serviceAccountName: ""
 
 oidc:
   auth: "https://accounts.communaxiom.org/"
