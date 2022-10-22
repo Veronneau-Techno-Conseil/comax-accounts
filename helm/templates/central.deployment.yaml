@@ -61,6 +61,8 @@ spec:
             value: {{ .Values.authKey }}
           - name: Urls
             value: {{ .Values.urls }}
+          - name: ASPNETCORE_URLS
+            value: {{ .Values.urls }}
           - name: OIDC__Authority
             value: {{ .Values.oidc.auth }}
           - name: OIDC__ClientId
