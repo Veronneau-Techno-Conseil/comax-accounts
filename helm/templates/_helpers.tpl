@@ -149,7 +149,7 @@ Create the name of the service account to use
 */}}
 {{- define "comax-central.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "comax-accounts.fullname" .) .Values.central.serviceAccountName }}
+{{- default (include "comax-central.fullname" .) .Values.central.serviceAccountName }}
 {{- else }}
 {{- default "default" .Values.central.serviceAccountName }}
 {{- end }}
