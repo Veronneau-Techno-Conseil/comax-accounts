@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CommunAxiom.Accounts.Business
@@ -24,7 +25,7 @@ namespace CommunAxiom.Accounts.Business
         {
             var claims = new List<System.Security.Claims.Claim>();
 
-            claims.Add(new System.Security.Claims.Claim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User"));
+            claims.Add(new System.Security.Claims.Claim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User", this._config["BaseAddress"], this._config["BaseAddress"]));
 
             var assigments = await _accountsDbContext.Set<StdUserClaimAssignment>().ToListAsync();
             var lookup = _lookupStore.ListApplicationClaims().ToList();
@@ -32,7 +33,7 @@ namespace CommunAxiom.Accounts.Business
             foreach(var a in assigments)
             {
                 var tp = lookup.First(x => x.Value == a.AppClaimId);
-                claims.Add(new System.Security.Claims.Claim(tp.Name, a.Value));
+                claims.Add(new System.Security.Claims.Claim(tp.Name, a.Value,ClaimValueTypes.String, this._config["BaseAddress"], this._config["BaseAddress"]));
             }
 
             return claims;

@@ -24,7 +24,7 @@ namespace CommunAxiom.Accounts.Handlers
 
 
             var ns = await (from app in _dbContext.Set<Application>()
-                         where app.ClientId == context.ClientId
+                         where app.ClientId == context.Request.ClientId
                          join atm in _dbContext.Set<ApplicationTypeMap>() on app.Id equals atm.ApplicationId
                          join at in _dbContext.Set<ApplicationType>() on atm.ApplicationTypeId equals at.Id
                          join an in _dbContext.Set<AppNamespace>() on at.Id equals an.ApplicationTypeId
