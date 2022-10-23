@@ -1,4 +1,5 @@
 ﻿using FluentEmail.Core;
+using Microsoft.Extensions.Configuration;
 using RazorLight;
 using System;
 using System.IO;
@@ -10,13 +11,15 @@ namespace FluentEmailProvider
     {
 
         private IFluentEmail _fluentEmail;
+        private IConfiguration _configuration;
 
-        public EmailService(IFluentEmail fluentEmail)
+        public EmailService(IFluentEmail fluentEmail, IConfiguration configuration)
         {
             _fluentEmail = fluentEmail;
+            _configuration = configuration;
         }
 
-        public async void SendEmail(string email, string templatePath, object model)
+        public async Task SendEmail(string email, string templatePath, object model, string actionType)
         {
             var directory = Directory.GetCurrentDirectory();
 
@@ -27,10 +30,17 @@ namespace FluentEmailProvider
 
             string template = await engine.CompileRenderAsync(templatePath, model);
 
-            await _fluentEmail.To(email)
+            var result = await _fluentEmail.To(email)
                 .Subject("CommunAxiom.org contact request")
+                .SetFrom(_configuration["fluentEmailFrom"])
                 .UsingTemplate(template, model)
+                .Tag(actionType)
                 .SendAsync();
+
+            if (!result.Successful)
+            {
+                throw new Exception(String.Join(" || ", result.ErrorMessages));
+            }
         }
 
     }

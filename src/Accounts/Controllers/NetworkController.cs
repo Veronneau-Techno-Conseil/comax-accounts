@@ -140,7 +140,7 @@ namespace CommunAxiom.Accounts.Controllers
             string templatePath = "./Views/Shared/_EmailLayout.cshtml";
             var model = new { Message = notification.Message, PrimaryAccount = primaryAccount, Procedure = "Please click on the link to login" };
 
-            _emailService.SendEmail(Id == null ? viewModel.Email : contact.User.UserName,templatePath, model);
+            await _emailService.SendEmail(Id == null ? viewModel.Email : contact.User.UserName,templatePath, model, "Contact Request");
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }

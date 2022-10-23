@@ -21,13 +21,17 @@ namespace CentralApi.Controllers
 
         [Authorize]
         [HttpGet(Name = "GetContacts")]
-        public IEnumerable<Contact> Get()
+        public IEnumerable<CommunAxiom.CentralApi.ViewModels.Contact> Get()
         {
-            var contacts = _context.Set<Contact>().Include(x => x.PrimaryAccount).Include(x => x.User)
-                .Where(x => x.PrimaryAccount.UserName == this.User.Identity.Name && x.UserId != null)
+            var contacts = _context.Set<Contact>().Include(x => x.PrimaryAccount).Include(x => x.User).Include(x=>x.CreationStatus)
+                .Where(x => x.PrimaryAccount.UserName == this.User.Identity.Name && x.UserId != null && x.CreationStatus.Name == CreationStatus.COMPLETE)
                 .Select(x => new Contact { Id = x.Id, PrimaryAccount = x.PrimaryAccount, User = x.User, UserId = x.UserId, PrimaryAccountId = x.PrimaryAccountId, CreationStatus = x.CreationStatus, CreationStatusId = x.CreationStatusId }).ToList();
 
-            return contacts;
+            return contacts.Select(x=> new CommunAxiom.CentralApi.ViewModels.Contact
+            {
+                Id = x.UserId,
+                UserName = x.User.UserName
+            });
         }
     }
 }
