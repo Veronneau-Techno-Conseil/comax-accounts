@@ -21,16 +21,25 @@ namespace CentralApi.Controllers
 
         [Authorize]
         [HttpGet(Name = "GetContacts")]
-        public IEnumerable<CommunAxiom.CentralApi.ViewModels.Contact> Get()
+        public async Task<IEnumerable<CommunAxiom.CentralApi.ViewModels.Contact>> Get()
         {
-            var contacts = _context.Set<Contact>().Include(x => x.PrimaryAccount).Include(x => x.User).Include(x=>x.CreationStatus)
+            var contacts = await _context.Set<Contact>().Include(x => x.PrimaryAccount).Include(x => x.User).Include(x=>x.CreationStatus)
                 .Where(x => x.PrimaryAccount.UserName == this.User.Identity.Name && x.UserId != null && x.CreationStatus.Name == CreationStatus.COMPLETE)
-                .Select(x => new Contact { Id = x.Id, PrimaryAccount = x.PrimaryAccount, User = x.User, UserId = x.UserId, PrimaryAccountId = x.PrimaryAccountId, CreationStatus = x.CreationStatus, CreationStatusId = x.CreationStatusId }).ToList();
+                .Select(x=>x.User).ToListAsync();
+
+            var grpContacts = await (from g in _context.Set<Group>()
+                               join gm in _context.Set<GroupMember>() on g.Id equals gm.GroupId
+                               join u in _context.Set<User>() on gm.UserId equals u.Id
+                               select u).Distinct().ToListAsync();
+
+            contacts.AddRange(grpContacts);
+
+            contacts = contacts.DistinctBy(x=>x.Id).ToList();
 
             return contacts.Select(x=> new CommunAxiom.CentralApi.ViewModels.Contact
             {
-                Id = x.UserId,
-                UserName = x.User.UserName
+                Id = x.Id,
+                UserName = x.UserName
             });
         }
     }

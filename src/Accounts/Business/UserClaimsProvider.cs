@@ -1,4 +1,5 @@
 ﻿using CommunAxiom.Accounts.Contracts;
+using CommunAxiom.Accounts.Contracts.Constants;
 using DatabaseFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,11 +22,14 @@ namespace CommunAxiom.Accounts.Business
             _lookupStore = lookupStore;
         }
 
-        public async Task<IEnumerable<System.Security.Claims.Claim>> GetClaims(string userId, string issuer)
+        public async Task<IEnumerable<System.Security.Claims.Claim>> GetClaims(DatabaseFramework.Models.User user, string issuer)
         {
             var claims = new List<System.Security.Claims.Claim>();
 
             claims.Add(new System.Security.Claims.Claim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User", this._config["BaseAddress"], this._config["BaseAddress"]));
+
+            var uri = UriProvider.GetUri("user", user.Id);
+            claims.Add(new System.Security.Claims.Claim(Claims.URI_CLAIM, uri, ClaimValueTypes.String, this._config["BaseAddress"], this._config["BaseAddress"]));
 
             var assigments = await _accountsDbContext.Set<StdUserClaimAssignment>().ToListAsync();
             var lookup = _lookupStore.ListApplicationClaims().ToList();

@@ -400,7 +400,7 @@ namespace CommunAxiom.Accounts.Controllers
                         }));
                 }
 
-                var cls = (await userClaimsProvider.GetClaims(user.Id, this._configuration["BaseAddress"])).ToList();
+                var cls = (await userClaimsProvider.GetClaims(user, this._configuration["BaseAddress"])).ToList();
                 cls.Add(new System.Security.Claims.Claim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User"));
                 foreach (var c in cls)
                     principal.SetClaim(c.Type, c.Value);
@@ -453,7 +453,7 @@ namespace CommunAxiom.Accounts.Controllers
 
                     cp.SetClaim(Contracts.Constants.Claims.PRINCIPAL_TYPE, "User");
 
-                    var cls = await userClaimsProvider.GetClaims(user.UserName, this._configuration["BaseAddress"]);
+                    var cls = await userClaimsProvider.GetClaims(user, this._configuration["BaseAddress"]);
                     foreach (var c in cls)
                         cp.SetClaim(c.Type, c.Value);
 
