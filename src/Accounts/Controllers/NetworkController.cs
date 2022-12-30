@@ -103,6 +103,18 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpGet]
+        public IActionResult AddMembers(int id)
+        {
+            var contacts = GetContacts();
+
+            ManageViewModel model = new ManageViewModel();
+
+            model.Contacts = contacts;
+
+            return View(model);
+        }
+
+        [HttpGet]
         public  IActionResult EditGroup(int id)
         {
             var group = (Group)_context.Set<Group>().Include(x => x.Owner).AsQueryable().Where(x => x.Id == id).FirstOrDefault();
