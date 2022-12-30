@@ -370,6 +370,11 @@ namespace DatabaseFramework.Migrations
                     b.Property<byte[]>("GroupPicture")
                         .HasColumnType("bytea");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 

@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -37,6 +39,117 @@ namespace CommunAxiom.Accounts.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult AddGroup()
+        {
+            var groupOwner = _context.Set<User>()
+                              .Where(x => x.UserName == User.Identity.Name)
+                              .Select(x => new User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
+            
+            GroupViewModel model = new GroupViewModel();
+
+            model.Owner = groupOwner;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddGroup(IFormFile file, GroupViewModel viewModel)
+        {
+            User groupOwner = (User)_context.Set<User>().AsQueryable().Where(x => x.UserName == viewModel.Owner.UserName).FirstOrDefault();
+            Group group = new Group()
+            {
+                Name = viewModel.Name,
+                OwnerId = groupOwner.Id,
+                Owner = groupOwner
+                
+            };
+
+            if (file != null)
+            {
+                using (var dataStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(dataStream);
+                    group.GroupPicture = dataStream.ToArray();
+                }
+                //await _userManager.UpdateAsync(user);
+            }
+
+            _context.Entry(group).State = EntityState.Added;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(NetworkController.Groups), "Network");
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteGroup(int id)
+        {
+            var group = (Group)_context.Set<Group>().Include(x => x.Owner).AsQueryable().Where(x => x.Id == id).FirstOrDefault();
+
+            group.IsDeleted = true;
+            //primaryContact.IsDeleted = true;
+            //secondaryContact.IsDeleted = true;
+
+            _context.Entry(group).State = EntityState.Modified;
+            //_context.Entry(secondaryContact).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(NetworkController.Groups));
+        }
+
+        [HttpGet]
+        public  IActionResult EditGroup(int id)
+        {
+            var group = (Group)_context.Set<Group>().Include(x => x.Owner).AsQueryable().Where(x => x.Id == id).FirstOrDefault();
+            var groupMembers = _context.Set<GroupMemberRole>().Include(x => x.GroupMember).Include(y => y.GroupMember.Group).Include(x => x.GroupMember.User).AsQueryable().Where(x => x.GroupMember.Group.Id == id).ToList();
+
+            GroupViewModel model = new GroupViewModel();
+
+            model.Group = group;
+            model.Owner = group.Owner;
+            model.Name = group.Name;
+            model.GroupPicture = group.GroupPicture;
+            model.OwnerUserName = group.Owner.UserName;
+            model.GroupMembers = groupMembers;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditGroup(IFormFile file, GroupViewModel viewModel)
+        {
+            var group = (Group)_context.Set<Group>().Include(x => x.Owner).Where(x => x.Id == viewModel.Id).FirstOrDefault();
+            User groupOwner = (User)_context.Set<User>().AsQueryable().Where(x => x.UserName == viewModel.OwnerUserName).FirstOrDefault();
+
+            group.Name = viewModel.Name;
+            group.OwnerId = groupOwner.Id;
+            group.Owner = groupOwner;
+            
+
+            if (file != null)
+            {
+                using (var dataStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(dataStream);
+                    group.GroupPicture = dataStream.ToArray();
+                }
+            }
+            else
+            {
+                group.GroupPicture = null;
+            }
+
+            _context.Entry(group).State = EntityState.Modified;
+            
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(NetworkController.Groups));
         }
 
         [HttpPost]
@@ -163,31 +276,12 @@ namespace CommunAxiom.Accounts.Controllers
             return RedirectToAction(nameof(Contacts));
         }
 
-        [HttpPost]
-        public IActionResult NewGroup()
-        {
-
-            var groups = _context.Set<Group>().Include(x => x.Owner)
-                .Where(x => x.Owner.UserName == User.Identity.Name)
-                .Select(x => new Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name = x.Name }).ToList();
-
-            var contactRequests = GetContactRequests();
-
-            var model = new ManageViewModel
-            {
-                Groups = groups,
-                ContactRequests = contactRequests
-            };
-
-            return View("Groups", model);
-        }
-
         [HttpGet]
         public IActionResult Groups()
         {
             var groups = _context.Set<Group>().Include(x => x.Owner)
-                .Where(x => x.Owner.UserName == User.Identity.Name)
-                .Select(x => new Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name = x.Name }).ToList();
+                .Where(x => x.Owner.UserName == User.Identity.Name && x.IsDeleted == false)
+                .Select(x => new Group { Id = x.Id, Owner = x.Owner, OwnerId = x.OwnerId, Name = x.Name, GroupPicture = x.GroupPicture }).ToList();
 
             var contactRequests = GetContactRequests();
 

@@ -3,7 +3,9 @@
     ViewData["Title"] = "Contacts";
 }
 <style>
-    tr:hover {background-color: #D6D6CE !important;}
+    tr:hover {
+        background-color: #D6D6CE !important;
+    }
 </style>
 <div class="columns is-variable is-5">
     <div class="column is-3">
@@ -11,8 +13,8 @@
             <div class="column is-12">
                 @Html.Partial("../Shared/Network/MyNetwork.cshtml");
             </div>
-                                    </div>
-                                    </div>
+        </div>
+    </div>
     <div class="column is-9">
         <div class="columns">
             <div class="column is-12">
@@ -30,24 +32,31 @@
                                         <label class="label">You have @Model.ContactRequests.Count() prending requests</label>
                                     }
                                 </div>
-                                    </div>
+                            </div>
                             <div class="column is-1">
                                 <div class="has-background-white">
                                     @Html.ActionLink("Manage","Requests")
-                                    </div>
                                 </div>
-                                    </div>
-                                    </div>
-                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            </div>
-                <div class="columns">
+        </div>
+        <div class="columns">
             <div class="column is-12">
                 <div class="card has-background-white">
                     <div class="card-content">
                         <div class="columns">
-                            <div class="column is-12">
+                            <div class="column is-11">
                                 <h5>Groups</h5>
+                            </div>
+                            <div class="column is-1">
+                                <center>
+                                    <a asp-controller="Network" asp-area="" asp-action="AddGroup">
+                                        <img class="image icon" src="~/Images/Add.png" />
+                                    </a>
+                                </center>
                             </div>
                         </div>
                         @{
@@ -56,52 +65,89 @@
 
                             if (count == 0)
                             {
-                        <div class="columns">
-                                    <div class="column is-12">
-                                        no groups to display
-                                    </div>
-                                </div>
+                                        <div class="columns">
+                                            <div class="column is-12">
+                                                no groups to display
+                                            </div>
+                                        </div>
                             }
                             else
                             {
                                 int groupsCount = 0;
                                 var rowCount = Math.Round((double)(count / 3), (int)0, MidpointRounding.ToPositiveInfinity);
-                                @for (int i = 0; i < rowCount; i++)
+                                        @for (int i = 0; i < rowCount; i++)
                                 {
                                     var divCount = groupsCount + 3;
-                                    <div class="columns is-variable is-5">
-                                        @for (int j = groupsCount; j < divCount; j++)
+                                            <div class="columns is-variable is-5">
+                                                @for (int j = groupsCount; j < divCount; j++)
                                         {
                                             if (j <= groupsArray.Count() - 1)
                                             {
-                                                <div class="column is-4">
-                                                    <center>
-                                                        <div style="border: 1px solid #D6D6CE">
-                                                            <div class="m-0" style="background-color:#D6D6CE;">
-                                                                <br />
-                                                                &nbsp;
-                            </div>
-                            </div>
-                                                        <div class="m-0 has-background-light">
-                                                            <figure class="image is-64x64" style="margin-bottom: -10px">
-                                                                <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
-                                                            </figure>
-                                                            
-                                                            <label class="is-size-7">@Html.DisplayFor(groupItem => groupsArray[j].Name)</label>
-                        </div>
-                                                    </center>
-                    </div>
+                                                        <div class="column is-4">
+                                                            <center>
+                                                                <div style="border: 1px solid #D6D6CE">
+                                                                    <div class="m-0" style="background-color:#D6D6CE;">
+                                                                        <table>
+                                                                            <tr>
+                                                                                <td width="40%" align="left" style="padding:0px;">
+                                                                                    <table>
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <a asp-controller="Network" asp-route-id="@groupsArray[j].Id" asp-area="" asp-action="EditGroup">
+                                                                                                    <img class="image icon" src="~/Images/Edit.png" />
+                                                                                                </a>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <a asp-controller="Network" asp-route-id="@groupsArray[j].Id" asp-area="" asp-action="EditGroup">
+                                                                                                    <img class="image icon" src="~/Images/Add.png" />
+                                                                                                </a>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+
+                                                                                    <!--<form asp-controller="Network" asp-action="EditGroup" method="get" role="form">
+                                                                                        <input type="hidden" id="user + @groupsArray[j].Id" name="Id" value="@groupsArray[j].Id" />
+                                                                                        <button style="border:none; background-color:#D6D6CE" type="submit" id="@groupsArray[j].Id" value="@groupsArray[j].Id"><img class="image icon" src="~/Images/Edit.png" /></button>
+                                                                                    </form>-->
+                                                                                </td>
+                                                                                <td align="right">
+                                                                                    <form asp-controller="Network" asp-action="DeleteGroup" method="post" role="form">
+                                                                                        <input type="hidden" id="user + @groupsArray[j].Id" name="Id" value="@groupsArray[j].Id" />
+                                                                                        <button style="border:none; background-color:#D6D6CE" type="submit" id="@groupsArray[j].Id" value="@groupsArray[j].Id"><img class="image icon" src="~/Images/Delete.png" /></button>
+                                                                                    </form>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="m-0 has-background-light">
+                                                                    <figure class="image is-64x64" style="margin-bottom: -10px">
+
+                                                                        @if (groupsArray[j].GroupPicture != null)
+                                                                {
+                                                                            <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="data:image/*;base64,@(Convert.ToBase64String(groupsArray[j].GroupPicture))">
+                                                                }
+                                                                else
+                                                                {
+                                                                            <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
+                                                                }
+                                                                    </figure>
+
+                                                                    <label class="is-size-7">@Html.DisplayFor(groupItem => groupsArray[j].Name)</label>
+                                                                </div>
+                                                            </center>
+                                                        </div>
                                             }
                                             else
                                             {
-                                                <div class="column is-4">
-                                                    &nbsp;
-                </div>
-                                                                                                
+                                                        <div class="column is-4">
+                                                            &nbsp;
+                                                        </div>
+
                                             }
                                             groupsCount++;
                                         }
-                        </div>
+                                            </div>
                                 }
                             }
                         }

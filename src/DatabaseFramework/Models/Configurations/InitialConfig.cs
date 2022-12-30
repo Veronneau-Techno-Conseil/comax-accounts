@@ -58,6 +58,10 @@ namespace DatabaseFramework.Models.Configurations
                 .Property(x => x.IsDeleted)
                 .HasDefaultValue(false);
 
+            builder.Entity<Group>()
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
         }
 
         public void SetupRelationships(ModelBuilder builder)
