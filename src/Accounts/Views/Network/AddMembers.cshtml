@@ -24,6 +24,9 @@
                             <div class="column is-12">
                                 <h5>Add Members</h5>
                             </div>
+                            <div class="column is-1">
+                                <a asp-route-returnUrl="@ViewData["ReturnUrl"]"><img src="~/Images/Back.png" class="icon" /></a>
+                            </div>
                         </div>
                         @{
                             var contactsArray = Model.Contacts.ToArray();
@@ -31,64 +34,64 @@
 
                             if (count == 0)
                             {
-                                <div class="columns">
-                                    <div class="column is-12">
-                                        no contacts to display
+                                    <div class="columns">
+                                        <div class="column is-12">
+                                            no contacts to display
+                                        </div>
                                     </div>
-                                </div>
                             }
                             else
                             {
                                 int contactCount = 0;
                                 var rowCount = Math.Round((double)(count / 3), (int)0, MidpointRounding.ToPositiveInfinity);
-                                @for (int i = 0; i < rowCount; i++)
+                                    @for (int i = 0; i < rowCount; i++)
                                 {
                                     var divCount = contactCount + 3;
-                                    <div class="columns is-variable is-5">
-                                        @for (int j = contactCount; j < divCount; j++)
+                                        <div class="columns is-variable is-5">
+                                            @for (int j = contactCount; j < divCount; j++)
                                         {
                                             if (j <= contactsArray.Count() - 1)
                                             {
-                                                <div class="column is-4">
-                                                    <center>
-                                                        <div style="border: 1px solid #D6D6CE">
-                                                            <div class="m-0" style="background-color:#D6D6CE;">
-                                                                <table>
-                                                                    <tr>
-                                                                        <td align="right">
-                                                                            &nbsp;
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
+                                                    <div class="column is-4">
+                                                        <center>
+                                                            <div style="border: 1px solid #D6D6CE">
+                                                                <div class="m-0" style="background-color:#D6D6CE;">
+                                                                    <table>
+                                                                        <tr>
+                                                                            <td align="right">
+                                                                                &nbsp;
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="m-0 has-background-light">
-                                                            <figure class="image is-64x64" style="margin-bottom: -10px">
-                                                                @if (contactsArray[j].User.ProfilePicture != null)
+                                                            <div class="m-0 has-background-light">
+                                                                <figure class="image is-64x64" style="margin-bottom: -10px">
+                                                                    @if (contactsArray[j].User.ProfilePicture != null)
                                                                 {
-                                                                    <img id="profilePicture" class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="data:image/*;base64,@(Convert.ToBase64String(contactsArray[j].User.ProfilePicture))">
+                                                                        <img id="profilePicture" class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="data:image/*;base64,@(Convert.ToBase64String(contactsArray[j].User.ProfilePicture))">
                                                                 }
                                                                 else
                                                                 {
-                                                                    <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
+                                                                        <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
                                                                 }
-                                                            </figure>
+                                                                </figure>
 
-                                                            <label class="is-size-7">@Html.DisplayFor(contactItem => contactsArray[j].User.UserName)</label>
-                                                        </div>
-                                                    </center>
-                                                </div>
+                                                                <label class="is-size-7">@Html.DisplayFor(contactItem => contactsArray[j].User.UserName)</label>
+                                                            </div>
+                                                        </center>
+                                                    </div>
                                             }
                                             else
                                             {
-                                                <div class="column is-4">
-                                                    &nbsp;
-                                                </div>
+                                                    <div class="column is-4">
+                                                        &nbsp;
+                                                    </div>
 
                                             }
                                             contactCount++;
                                         }
-                                    </div>
+                                        </div>
                                 }
                             }
                         }
