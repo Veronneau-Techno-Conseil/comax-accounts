@@ -12,5 +12,6 @@ namespace DatabaseFramework.Models
         public int AccountTypeId { get; set; }
         public AccountType AccountType { get; set; }
         public byte[] ProfilePicture { get; set; }
+        public string DisplayName { get; set; }
     }
 }

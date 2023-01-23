@@ -32,9 +32,9 @@ namespace CommunAxiom.Accounts.Business
         {
             var app = await _accountsDbContext.Set<DatabaseFramework.Models.Application>().Where(x => x.ClientId == clientId).Include(x=>x.UserApplicationMaps).ThenInclude(x=>x.User).Include(x => x.ApplicationTypeMaps).ThenInclude(x => x.ApplicationType).FirstAsync();
 
-            string owner = app.UserApplicationMaps.Any() ?
-                UriProvider.GetUri("user", app.UserApplicationMaps.FirstOrDefault().UserId) :
-                "system";
+
+            var ownerUser = app.UserApplicationMaps.FirstOrDefault().User;
+            string owner = ownerUser == null ? UriProvider.GetUri("user", ownerUser.Id) : "system";
 
             var claims = await _accountsDbContext.Set<Models.AppClaimAssignment>().Include(x => x.ApplicationType).Include(x=>x.AppClaim).ThenInclude(x=>x.AppNamespace).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
             var claimsList = new List<System.Security.Claims.Claim>();
@@ -48,6 +48,9 @@ namespace CommunAxiom.Accounts.Business
                 new System.Security.Claims.Claim(Claims.OWNER_CLAIM, owner, clientId),
                 new System.Security.Claims.Claim(Contracts.Constants.Claims.PRINCIPAL_TYPE, app.ApplicationTypeMaps[0].ApplicationType.Name)
             });
+
+            if (ownerUser != null)
+                claimsList.Add(new System.Security.Claims.Claim(Claims.OWNERUN_CLAIM, ownerUser.DisplayName ?? ownerUser.UserName));
 
             foreach (var claim in claims)
             {

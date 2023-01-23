@@ -31,6 +31,7 @@ namespace CommunAxiom.Accounts.Business
             var uri = UriProvider.GetUri("user", user.Id);
             claims.Add(new Claim(Claims.URI_CLAIM, uri, ClaimValueTypes.String, this._config["BaseAddress"], this._config["BaseAddress"]));
             claims.Add(new Claim(Claims.OWNER_CLAIM, uri, ClaimValueTypes.String, this._config["BaseAddress"], this._config["BaseAddress"]));
+            claims.Add(new Claim(Claims.OWNERUN_CLAIM, user.DisplayName ?? user.UserName, ClaimValueTypes.String, this._config["BaseAddress"], this._config["BaseAddress"]));
 
             var assigments = await _accountsDbContext.Set<StdUserClaimAssignment>().ToListAsync();
             var lookup = _lookupStore.ListApplicationClaims().ToList();

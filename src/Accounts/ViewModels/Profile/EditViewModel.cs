@@ -11,6 +11,7 @@ namespace CommunAxiom.Accounts.ViewModels.Profile
         public string Id { get; set; }
         [Required]
         public string UserName { get; set; }
+        public string DisplayName { get; set; }
         [Required]
         [EmailAddress]
         public string Email { get; set; }
