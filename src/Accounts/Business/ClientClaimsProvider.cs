@@ -30,13 +30,13 @@ namespace CommunAxiom.Accounts.Business
 
         public async Task<ClientClaimsContainer> GetClientDetails(OpenIddictRequest request, string clientId)
         {
-            var app = await _accountsDbContext.Set<DatabaseFramework.Models.Application>().Where(x => x.ClientId == clientId).Include(x=>x.UserApplicationMaps).ThenInclude(x=>x.User).Include(x => x.ApplicationTypeMaps).ThenInclude(x => x.ApplicationType).FirstAsync();
+            var app = await _accountsDbContext.Set<DatabaseFramework.Models.Application>().Where(x => x.ClientId == clientId).Include(x => x.UserApplicationMaps).ThenInclude(x => x.User).Include(x => x.ApplicationTypeMaps).ThenInclude(x => x.ApplicationType).FirstAsync();
 
 
-            var ownerUser = app.UserApplicationMaps.FirstOrDefault().User;
-            string owner = ownerUser == null ? UriProvider.GetUri("user", ownerUser.Id) : "system";
+            var ownerUser = app.UserApplicationMaps.FirstOrDefault()?.User;
+            string owner = ownerUser == null ? "system" : UriProvider.GetUri("user", ownerUser.Id);
 
-            var claims = await _accountsDbContext.Set<Models.AppClaimAssignment>().Include(x => x.ApplicationType).Include(x=>x.AppClaim).ThenInclude(x=>x.AppNamespace).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
+            var claims = await _accountsDbContext.Set<Models.AppClaimAssignment>().Include(x => x.ApplicationType).Include(x => x.AppClaim).ThenInclude(x => x.AppNamespace).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
             var claimsList = new List<System.Security.Claims.Claim>();
 
             claimsList.AddRange(new[]
