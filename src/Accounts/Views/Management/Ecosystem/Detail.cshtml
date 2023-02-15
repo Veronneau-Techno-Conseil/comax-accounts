@@ -1,0 +1,100 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model Ecosystem
+@inject ILookupStore lookupStore
+@{
+    ViewData["Title"] = "Ecosystem Details";
+}
+
+<div class="card w-25" style="margin-bottom: 1em;">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                @ViewData["Title"]
+            </p>
+        </div>
+        <div class="card-header-icon">
+            <a asp-action="Index"><img src="~/Images/Back.png" class="icon" /></a>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="field">
+            <label asp-for="Name" class="label"></label>
+            <span class="is-primary">@Model.Name</span>
+        </div>
+        <div class="field">
+            <label asp-for="Description" class="label"></label>
+            <span class="is-primary">@Model.Description</span>
+        </div>
+
+    </div>
+</div>
+
+<div class="card w-25" style="margin-bottom: 1em;">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                Ecosystem versions
+            </p>
+        </div>
+    </div>
+    <div class="card-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><abbr title="Ver">Version Name</abbr></th>
+                    <th><abbr title="Current">Current</abbr></th>
+                    <!--/management/appclaim/{appNs}/create-->
+                    <th><abbr title=""><a asp-controller="EcosystemVersion" asp-area="Management" asp-action="Add" asp-route-ecosys="@Model.Id"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.EcosystemVersions)
+                {
+                    <tr>
+                        <td>@item.VersionName</td>
+                        <td>@item.Current</td>
+                        <td>
+                            <a asp-action="Details" asp-area="Management" asp-controller="EcosystemVersion" asp-route-ecosys="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon"> </a>
+                            <a asp-action="Edit" asp-area="Management" asp-controller="EcosystemVersion" asp-route-ecosys="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /></a>
+                            <a asp-action="Remove" asp-area="Management" asp-controller="EcosystemVersion" asp-route-ecosys="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon"> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card w-25">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                Application types
+            </p>
+        </div>
+    </div>
+    <div class="card-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><abbr title="Name">Name</abbr></th>
+                    <th><abbr title="Container">Container</abbr></th>
+                    <!--/management/appclaim/{appNs}/create-->
+                    <th><abbr title=""><a asp-controller="EcosystemApplication" asp-area="Management" asp-action="Add" asp-route-ecosys="@Model.Id"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Applications)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.ContainerImage</td>
+                        <td>
+                            <a asp-action="Remove" asp-area="Management" asp-controller="EcosystemApplication" asp-route-ecosys="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

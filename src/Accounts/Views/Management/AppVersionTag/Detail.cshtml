@@ -1,0 +1,74 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model AppVersionTag
+@inject ILookupStore lookupStore
+@{
+    ViewData["Title"] = "Application Version Tag Details";
+}
+
+<div class="card w-25" style="margin-bottom: 1em;">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                @ViewData["Title"]
+            </p>
+        </div>
+        <div class="card-header-icon">
+            <a asp-controller="ApplicationType" asp-action="Details" asp-route-id="@Model.ApplicationTypeId"><img src="~/Images/Back.png" class="icon" /></a>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="field">
+            <label asp-for="ApplicationType" class="label"></label>
+            <span class="is-primary">@Model.ApplicationType.Name</span>
+        </div>
+        <div class="field">
+            <label asp-for="Name" class="label"></label>
+            <span class="is-primary">@Model.Name</span>
+        </div>
+        <div class="field">
+            <label asp-for="CreationDate" class="label"></label>
+            <span class="is-primary">@Model.CreationDate</span>
+        </div>
+        <div class="field">
+            <label asp-for="DeprecationDate" class="label"></label>
+            <span class="is-primary">@Model.DeprecationDate</span>
+        </div>
+    </div>
+</div>
+
+
+<div class="card w-25">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                Application Version Configurations
+            </p>
+        </div>
+    </div>
+    <div class="card-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><abbr title="Key">Configuration Key</abbr></th>
+                    <th><abbr title="Default">DefaultValue</abbr></th>
+                    <!--/management/appclaim/{appNs}/create-->
+                    <th><abbr title=""><a asp-controller="AppVersionConfig" asp-area="Management" asp-action="Add" asp-route-tagid="@Model.Id" asp-route-apptype="@Model.ApplicationTypeId"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AppVersionConfigurations)
+                {
+                    <tr>
+                        <td>@item.ConfigurationKey</td>
+                        <td>@item.DefaultValue</td>
+                        <td>
+                            <a asp-action="Details" asp-area="Management" asp-controller="AppVersionConfig" asp-route-tagid="@item.AppVersionTagId" asp-route-apptype="@Model.ApplicationTypeId" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
+                            <a asp-action="Edit" asp-area="Management" asp-controller="AppVersionConfig" asp-route-tagid="@item.AppVersionTagId" asp-route-apptype="@Model.ApplicationTypeId" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>
+                            <a asp-action="Remove" asp-area="Management" asp-controller="AppVersionConfig" asp-route-tagid="@item.AppVersionTagId" asp-route-apptype="@Model.ApplicationTypeId" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

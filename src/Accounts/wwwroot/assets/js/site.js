@@ -33,6 +33,17 @@
         });
     });
 })();
+(function () {
+    $(document).ready((j) => {
+        ($(".expandable[expands]")).on("click", function () {
+            var attrValue = this.getAttribute("expands");
+            if (attrValue) {
+                const jq = $(attrValue);
+                jq.fadeToggle();
+            }
+        });
+    });
+});
 function openTab(obj, tabName) {
     var i, x, tablinks;
     if (tabName == undefined)

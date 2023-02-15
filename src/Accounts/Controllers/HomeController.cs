@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunAxiom.Accounts.ViewModels.Application;
+using DatabaseFramework;
 using DatabaseFramework.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CommunAxiom.Accounts.Controllers
@@ -14,14 +17,20 @@ namespace CommunAxiom.Accounts.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly AccountsDbContext _accountsDbContext;
+        public HomeController(ILogger<HomeController> logger, AccountsDbContext accountsDbContext)
         {
             _logger = logger;
+            _accountsDbContext = accountsDbContext;
         }
 
         public IActionResult Index()
         {
+         
+            var user = _accountsDbContext.Users.Include(x=>x.ApplicationMaps).FirstOrDefault(x=>x.UserName == this.User.Identity.Name);
+            HomeViewmodel homeViewmodel = new HomeViewmodel();
+            //homeViewmodel.FullName = user.nam
+
             return View();
         }
 

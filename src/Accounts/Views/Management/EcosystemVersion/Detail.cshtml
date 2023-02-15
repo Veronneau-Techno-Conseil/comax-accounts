@@ -1,0 +1,37 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model EcosystemVersion
+@inject ILookupStore lookupStore
+@{
+    ViewData["Title"] = "Ecosystem Version Details";
+}
+
+<div class="card w-25" style="margin-bottom: 1em;">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                @ViewData["Title"]
+            </p>
+        </div>
+        <div class="card-header-icon">
+            <a asp-controller="Ecosystem" asp-action="Details" asp-route-id="@Model.EcosystemId"><img src="~/Images/Back.png" class="icon" /></a>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="field">
+            <label asp-for="VersionName" class="label"></label>
+            <span class="is-primary">@Model.VersionName</span>
+        </div>
+        <div class="field">
+            <label asp-for="CreationDate" class="label"></label>
+            <span class="is-primary">@Model.CreationDate</span>
+        </div>
+        <div class="field">
+            <label asp-for="DeploymentDate" class="label"></label>
+            <span class="is-primary">@Model.DeploymentDate</span>
+        </div>
+        <div class="field">
+            <label asp-for="DeprecationDate" class="label"></label>
+            <span class="is-primary">@Model.DeprecationDate</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model AppVersionTag
+@inject ILookupStore lookupStore
+@{
+    bool isCreate = Model.Id <= 0;
+    var buttonText = "Register";
+    if (!isCreate)
+    {
+        ViewData["Title"] = "Modify the Application Version Tag";
+        buttonText = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Create A New Application Version Tag";
+    }
+
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="ApplicationType" asp-route-id="@Model.ApplicationTypeId" ><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-area="Management" asp-controller="AppVersionTag" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                    @if (!isCreate)
+                    {
+                        <input asp-for="Id" type="hidden" />
+                    }
+                    <input asp-for="ApplicationTypeId" type="hidden" />
+
+                    @if(Model.ApplicationType != null)
+                    {
+                    <p class="title is-4">Application Type: @Model.ApplicationType.Name</p>
+                    }
+
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="Name" class="label"></label>
+                        <input asp-for="Name" class="input is-primary" />
+                        <span asp-validation-for="Name" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="CreationDate" class="label"></label>
+                        <input type="datetime-local" asp-for="CreationDate" class="input is-primary" />
+                        <span asp-validation-for="CreationDate" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="DeprecationDate" class="label"></label>
+                        <input type="datetime-local" asp-for="DeprecationDate" class="input is-primary" />
+                        <span asp-validation-for="DeprecationDate" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

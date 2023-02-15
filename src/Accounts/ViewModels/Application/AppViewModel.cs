@@ -21,5 +21,6 @@ namespace CommunAxiom.Accounts.ViewModels.Application
         public string ClientSecret { get; set; }
         public int? ApplicationTypeId { get; set; }
 
+
     }
 }

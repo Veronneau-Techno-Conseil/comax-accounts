@@ -14,5 +14,11 @@ namespace DatabaseFramework.Models
         public DateTime? DeletedDate { get; set; }
         public List<Models.UserApplicationMap> UserApplicationMaps { get; set; }
         public List<Models.ApplicationTypeMap> ApplicationTypeMaps { get; set; }
+        public List<Models.AppConfiguration> Configurations { get; set; }
+
+        //TODO configure foreign key
+        public int? AppVersionTagId { get; set; }
+        public AppVersionTag AppVersionTag { get; set; }
+
     }
 }

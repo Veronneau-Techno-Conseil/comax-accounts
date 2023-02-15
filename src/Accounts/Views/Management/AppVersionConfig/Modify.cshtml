@@ -1,0 +1,81 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model AppVersionConfiguration
+@inject ILookupStore lookupStore
+@{
+    bool isCreate = Model.Id <= 0;
+    var buttonText = "Register";
+    if (!isCreate)
+    {
+        ViewData["Title"] = "Modify the Application Version Configuration";
+        buttonText = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Create A New Application Version Configuration";
+    }
+
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="AppVersionTag" asp-route-id="@Model.AppVersionTagId" asp-route-apptype="@Model.AppVersionTag.ApplicationTypeId"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-area="Management" asp-controller="AppVersionConfig" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                    @if (!isCreate)
+                    {
+                        <input asp-for="Id" type="hidden" />
+                    }
+                    <input asp-for="AppVersionTagId" type="hidden" />
+
+                    @if (Model.AppVersionTag.ApplicationType != null)
+                    {
+                        <p class="title is-4">Application Type: @Model.AppVersionTag.ApplicationType.Name</p>
+                    }
+
+                    @if (Model.AppVersionTag != null)
+                    {
+                        <p class="title is-5">Application Version Tag: @Model.AppVersionTag.Name</p>
+                    }
+
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="ConfigurationKey" class="label"></label>
+                        <input asp-for="ConfigurationKey" class="input is-primary" />
+                        <span asp-validation-for="ConfigurationKey" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="DefaultValue" class="label"></label>
+                        <input asp-for="DefaultValue" class="input is-primary" />
+                        <span asp-validation-for="DefaultValue" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="ValueGenerator" class="label"></label>
+                        <input asp-for="ValueGenerator" class="input is-primary" />
+                        <span asp-validation-for="ValueGenerator" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <input type="checkbox" asp-for="UserValueMandatory" class="input is-primary switch" />
+                        <label asp-for="UserValueMandatory" class="label"></label>
+                        <span asp-validation-for="UserValueMandatory" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
