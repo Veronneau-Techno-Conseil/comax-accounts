@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunAxiom.Accounts.BusinessLayer.Viewmodels;
 using CommunAxiom.Accounts.ViewModels.Application;
 using DatabaseFramework;
 using DatabaseFramework.Models;
@@ -17,21 +18,74 @@ namespace CommunAxiom.Accounts.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly AccountsDbContext _accountsDbContext;
-        public HomeController(ILogger<HomeController> logger, AccountsDbContext accountsDbContext)
+        private readonly IApplications _applications;
+        private readonly IUsers _users;
+        private readonly IEcosystems _ecosystems;
+        private readonly IAppConfigurations _appConfigurations;
+        public HomeController(ILogger<HomeController> logger, IApplications applications, IUsers users, IEcosystems ecosystems, IAppConfigurations appConfigurations)
         {
             _logger = logger;
-            _accountsDbContext = accountsDbContext;
+            _applications = applications;
+            _users = users;
+            _ecosystems = ecosystems;
+            _appConfigurations = appConfigurations;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-         
-            var user = _accountsDbContext.Users.Include(x=>x.ApplicationMaps).FirstOrDefault(x=>x.UserName == this.User.Identity.Name);
             HomeViewmodel homeViewmodel = new HomeViewmodel();
-            //homeViewmodel.FullName = user.nam
 
-            return View();
+            var app = await _applications.GetUserHostedCommons(this.User.Identity.Name);
+            var user = await _users.GetUser(this.User.Identity.Name);
+
+            homeViewmodel.ManagedAppCreated = app != null;
+            homeViewmodel.FullName = string.IsNullOrWhiteSpace(user.DisplayName) ? user.UserName : user.DisplayName;
+            if (homeViewmodel.ManagedAppCreated)
+            {
+                homeViewmodel.CommonsManagedAppInfo = new ManagedAppInfo()
+                {
+                    ApplicationType = ApplicationType.COMMONS,
+                    Uri = (await _appConfigurations.GetConfiguration(app.Id, AppConfiguration.APP_URI)).Value
+                };
+            }
+
+            return View(homeViewmodel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RegisterManagedCommons()
+        {
+            var exists = (await _applications.GetUserHostedCommons(this.User.Identity.Name)) != null;
+
+            if(exists)
+                return RedirectToAction("Index");
+
+            var rand = new RandomDataGenerator.Randomizers.RandomizerText(new RandomDataGenerator.FieldOptions.FieldOptionsText {
+                UseLetter = true,
+                UseLowercase = true,
+                UseNullValues = false,
+                UseNumber = true,
+                UseSpace = false,
+                UseSpecial = false,
+                UseUppercase = false,
+                ValueAsString = true,
+                Min = 12, Max = 12
+            });
+
+            var siteCode = rand.Generate();
+            var uri = $"https://commons.communaxiom.org/{siteCode}";
+            var loginRedirect = $"{uri}/api/authentication/login";
+
+            var appRes = await _applications.CreateApplication(ApplicationType.COMMONS, "Hosted Common Agent", loginRedirect);
+            var app = await _applications.GetApplication(appRes.ApplicationId, "ApplicationTypeMaps");
+            var ecosys = await _ecosystems.GetByName(Ecosystem.COMMONS);
+
+            var res = await _applications.ConfigureApplication(ecosys.Id, app.ApplicationTypeMaps[0].ApplicationTypeId, app.Id, UserApplicationMap.HostingTypes.Managed, uri);
+
+            if (res.Result.Keys.Any())
+                throw new InvalidOperationException("Should not have leftover configurations on managed software");
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult Privacy()

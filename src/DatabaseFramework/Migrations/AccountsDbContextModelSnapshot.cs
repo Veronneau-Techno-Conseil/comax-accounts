@@ -108,6 +108,9 @@ namespace DatabaseFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("FromSecret")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("text");
@@ -246,6 +249,34 @@ namespace DatabaseFramework.Migrations
                     b.ToTable("AppNamespace", (string)null);
                 });
 
+            modelBuilder.Entity("DatabaseFramework.Models.AppSecret", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ApplicationId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Data")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Encrypted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Hash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("AppSecret");
+                });
+
             modelBuilder.Entity("DatabaseFramework.Models.AppVersionConfiguration", b =>
                 {
                     b.Property<int>("Id")
@@ -265,8 +296,14 @@ namespace DatabaseFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("Sensitive")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("UserValueMandatory")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("ValueGenParameter")
+                        .HasColumnType("text");
 
                     b.Property<string>("ValueGenerator")
                         .HasColumnType("text");
@@ -299,6 +336,9 @@ namespace DatabaseFramework.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<decimal>("SortValue")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -484,6 +524,32 @@ namespace DatabaseFramework.Migrations
                     NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Name"), new[] { "Id", "Description" });
 
                     b.ToTable("Ecosystems", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Description = "Commons client ecosystem including the agent",
+                            Name = "Comax - Commons"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Description = "Orchestrator ecosystem",
+                            Name = "Comax - Orchestrator"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Description = "Accounts and security ecosystem",
+                            Name = "Comax - Accounts"
+                        },
+                        new
+                        {
+                            Id = -4,
+                            Description = "Governance applications including Let's Agree",
+                            Name = "Comax - Governance"
+                        });
                 });
 
             modelBuilder.Entity("DatabaseFramework.Models.EcosystemApplication", b =>
@@ -1138,6 +1204,15 @@ namespace DatabaseFramework.Migrations
                     b.Navigation("ApplicationType");
                 });
 
+            modelBuilder.Entity("DatabaseFramework.Models.AppSecret", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.Application", "Application")
+                        .WithMany("Secrets")
+                        .HasForeignKey("ApplicationId");
+
+                    b.Navigation("Application");
+                });
+
             modelBuilder.Entity("DatabaseFramework.Models.AppVersionConfiguration", b =>
                 {
                     b.HasOne("DatabaseFramework.Models.AppVersionTag", "AppVersionTag")
@@ -1466,6 +1541,8 @@ namespace DatabaseFramework.Migrations
                     b.Navigation("Authorizations");
 
                     b.Navigation("Configurations");
+
+                    b.Navigation("Secrets");
 
                     b.Navigation("Tokens");
 

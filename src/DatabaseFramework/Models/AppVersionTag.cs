@@ -14,6 +14,7 @@ namespace DatabaseFramework.Models
         public string Name { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
         public DateTime? DeprecationDate { get; set; }
+        public decimal SortValue { get; set; }
 
         public virtual IList<EcosystemVersionTag> EcosystemVersionTags { get; set; } = null;
         public virtual IList<AppVersionConfiguration> AppVersionConfigurations { get; set; } = null;

@@ -33,6 +33,7 @@ using DatabaseFramework.Models;
 using Models = DatabaseFramework.Models;
 using DatabaseFramework;
 using DatabaseFramework.Models.SeedData;
+using CommunAxiom.Accounts.BusinessLayer;
 
 namespace CommunAxiom.Accounts
 {
@@ -54,6 +55,7 @@ namespace CommunAxiom.Accounts
             });
 
             services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
+            services.Configure<AuthorityInfo>(x => Configuration.GetSection("AuthInfo").Bind(x));
             services.AddDbContext<AccountsDbContext>();
 
             services.AddIdentity<User, IdentityRole>()
@@ -184,6 +186,8 @@ namespace CommunAxiom.Accounts
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
             services.AddTransient<ClientClaimsProvider>();
             services.AddTransient<UserClaimsProvider>();
+
+            services.SetupBusiness();
 
             var directory = Directory.GetCurrentDirectory();
 

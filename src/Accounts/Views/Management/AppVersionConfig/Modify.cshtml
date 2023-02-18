@@ -64,10 +64,16 @@
                         <span asp-validation-for="ValueGenerator" class="help is-danger"></span>
                     </div>
                     <div class="field">
+                        <label asp-for="ValueGenParameter" class="label"></label>
+                        <input asp-for="ValueGenParameter" class="input is-primary" />
+                        <span asp-validation-for="ValueGenParameter " class="help is-danger"></span>
+                    </div>
+                    <div class="field">
                         <input type="checkbox" asp-for="UserValueMandatory" class="input is-primary switch" />
                         <label asp-for="UserValueMandatory" class="label"></label>
                         <span asp-validation-for="UserValueMandatory" class="help is-danger"></span>
                     </div>
+
 
                     <div class="field is-grouped">
                         <div class="control">

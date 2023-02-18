@@ -59,6 +59,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
             value.DeprecationDate = tag.DeprecationDate;
             value.CreationDate = tag.CreationDate;
             value.ApplicationTypeId = tag.ApplicationTypeId;
+            value.SortValue = tag.SortValue;
             value.Globalize();
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", "ApplicationType", new {area="management", id=apptype});

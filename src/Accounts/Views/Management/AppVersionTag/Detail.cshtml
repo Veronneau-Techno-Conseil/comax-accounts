@@ -26,6 +26,10 @@
             <span class="is-primary">@Model.Name</span>
         </div>
         <div class="field">
+            <label asp-for="SortValue" class="label"></label>
+            <span class="is-primary">@Model.SortValue</span>
+        </div>
+        <div class="field">
             <label asp-for="CreationDate" class="label"></label>
             <span class="is-primary">@Model.CreationDate</span>
         </div>
@@ -51,6 +55,7 @@
                 <tr>
                     <th><abbr title="Key">Configuration Key</abbr></th>
                     <th><abbr title="Default">DefaultValue</abbr></th>
+                    <th><abbr title="Generator">Value Generator</abbr></th>
                     <!--/management/appclaim/{appNs}/create-->
                     <th><abbr title=""><a asp-controller="AppVersionConfig" asp-area="Management" asp-action="Add" asp-route-tagid="@Model.Id" asp-route-apptype="@Model.ApplicationTypeId"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
                 </tr>
@@ -61,6 +66,7 @@
                     <tr>
                         <td>@item.ConfigurationKey</td>
                         <td>@item.DefaultValue</td>
+                        <td>@item.ValueGenerator</td>
                         <td>
                             <a asp-action="Details" asp-area="Management" asp-controller="AppVersionConfig" asp-route-tagid="@item.AppVersionTagId" asp-route-apptype="@Model.ApplicationTypeId" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
                             <a asp-action="Edit" asp-area="Management" asp-controller="AppVersionConfig" asp-route-tagid="@item.AppVersionTagId" asp-route-apptype="@Model.ApplicationTypeId" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>

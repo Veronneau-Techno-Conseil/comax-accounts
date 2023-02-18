@@ -58,5 +58,14 @@ namespace CommunAxiom.Accounts.Stores
 
             return res.Select(x => new Lookup<int> { Name = x.name, Value = x.value });
         }
+
+        public IEnumerable<Lookup<int>> ListAppVersionTags()
+        {
+            var res = (from app in _accountsDbContext.Set<ApplicationType>()
+                       join appver in _accountsDbContext.Set<AppVersionTag>() on app.Id equals appver.ApplicationTypeId
+                       select new { val = appver.Id, name = $"{app.Name} - {appver.Name}" }).ToList();
+
+            return res.Select(x => new Lookup<int> { Name = x.name, Value = x.val });
+        }
     }
 }

@@ -2,7 +2,6 @@
 using DatabaseFramework.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -31,7 +30,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
             return View();
         }
 
-        [Route("/management/ecosystemversion/{ecosys}/add")]
+        [Route("/management/ecosystem/{ecosys}/version/add")]
         public async Task<IActionResult> Add(int ecosys)
         {
             var ev = new EcosystemVersion() { EcosystemId = ecosys };
@@ -45,7 +44,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         }
 
         [HttpPost]
-        [Route("/management/ecosystemversion/{ecosys}/add")]
+        [Route("/management/ecosystem/{ecosys}/version/add")]
         public async Task<IActionResult> Add(int ecosys, EcosystemVersion ecosystemVersion)
         {
             if (ecosystemVersion.EcosystemId != ecosys)
@@ -85,19 +84,22 @@ namespace CommunAxiom.Accounts.Controllers.Management
             return RedirectToAction("Details", "Ecosystem", new { id = ecosys, area = "management" });
         }
 
-        [Route("/management/ecosystemversion/{ecosys}/details/{id}")]
-        public async Task<IActionResult> Details (int ecosys, int id)
+        [Route("/management/ecosystem/{ecosys}/version/details/{id}")]
+        public async Task<IActionResult> Details(int ecosys, int id)
         {
 
             var ev = await _accountsDbContext.Set<EcosystemVersion>()
                 .Include(x => x.Ecosystem)
+                .Include(x=>x.EcosystemVersionTags)
+                .ThenInclude(x=>x.AppVersionTag)
+                .ThenInclude(x=>x.ApplicationType)
                 .FirstOrDefaultAsync(x => x.Id == id && x.EcosystemId == ecosys);
 
             ev.Localize();
             return View("Views/Management/EcosystemVersion/Detail.cshtml", ev);
         }
 
-        [Route("/management/ecosystemversion/{ecosys}/edit/{id}")]
+        [Route("/management/ecosystem/{ecosys}/version/edit/{id}")]
         public async Task<IActionResult> Edit(int ecosys, int id)
         {
 
@@ -110,7 +112,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         }
 
         [HttpPost]
-        [Route("/management/ecosystemversion/{ecosys}/edit/{id}")]
+        [Route("/management/ecosystem/{ecosys}/version/edit/{id}")]
         public async Task<IActionResult> Edit(int ecosys, int id, EcosystemVersion ecosystemVersion)
         {
             if (ecosystemVersion.EcosystemId != ecosys)
@@ -152,7 +154,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
             return RedirectToAction("Detail", "Ecosystem", new { id = ecosys, area = "management" });
         }
 
-        [Route("/management/ecosystemversion/{ecosys}/remove/{id}")]
+        [Route("/management/ecosystem/{ecosys}/version/remove/{id}")]
         public async Task<IActionResult> Remove(int ecosys, int id)
         {
 
@@ -165,12 +167,11 @@ namespace CommunAxiom.Accounts.Controllers.Management
         }
 
         [HttpPost]
-        [Route("/management/ecosystemversion/{ecosys}/remove/{id}")]
+        [Route("/management/ecosystem/{ecosys}/version/remove/{id}")]
         public async Task<IActionResult> Remove(int ecosys, int id, EcosystemVersion ecosystemVersion)
         {
             var evs = _accountsDbContext.Set<EcosystemVersion>();
-            var ev = await evs
-                .FirstOrDefaultAsync(x => x.Id == id && x.EcosystemId == ecosys);
+            var ev = await evs.FirstOrDefaultAsync(x => x.Id == id && x.EcosystemId == ecosys);
 
             if(ev == null)
                 return NotFound();

@@ -15,5 +15,7 @@ namespace CommunAxiom.Accounts.Contracts
         IEnumerable<Lookup<int>> ListApplicationClaims();
 
         IEnumerable<Lookup<int>> ListApplicationTypes();
+
+        IEnumerable<Lookup<int>> ListAppVersionTags();
     }
 }

@@ -15,7 +15,7 @@ namespace DatabaseFramework.Models
         public List<Models.UserApplicationMap> UserApplicationMaps { get; set; }
         public List<Models.ApplicationTypeMap> ApplicationTypeMaps { get; set; }
         public List<Models.AppConfiguration> Configurations { get; set; }
-
+        public virtual IList<Models.AppSecret> Secrets { get; set; }
         //TODO configure foreign key
         public int? AppVersionTagId { get; set; }
         public AppVersionTag AppVersionTag { get; set; }

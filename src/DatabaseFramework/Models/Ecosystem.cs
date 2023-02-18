@@ -8,6 +8,10 @@ namespace DatabaseFramework.Models
 {
     public class Ecosystem
     {
+        public const string COMMONS = "Comax - Commons";
+        public const string ORCHESTRATOR = "Comax - Orchestrator";
+        public const string ACCOUNTS = "Comax - Accounts";
+        public const string GOVERNANCE = "Comax - Governance";
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

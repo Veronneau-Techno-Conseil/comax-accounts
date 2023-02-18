@@ -30,6 +30,10 @@
                     <label asp-for="ClientId" class="label"></label>
                     <span class="is-primary">@Model.ClientId</span>
                 </div>
+                <div class="field">
+                    <label asp-for="HostingType" class="label"></label>
+                    <span class="is-primary">@Model.HostingType</span>
+                </div>
                 @if (Model.ShowSecret)
                 {
                     <div class="field">

@@ -14,6 +14,9 @@ namespace DatabaseFramework.Models
         public string ConfigurationKey { get; set; }
         public string DefaultValue { get; set; }
         public string ValueGenerator { get; set; }
+        public string ValueGenParameter { get; set; }
         public bool UserValueMandatory { get; set; }
+        public bool Sensitive { get; set; } = false;
+
     }
 }

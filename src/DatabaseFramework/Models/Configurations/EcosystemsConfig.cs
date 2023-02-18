@@ -36,6 +36,10 @@ namespace DatabaseFramework.Models.Configurations
                 .IsRequired();
 
             builder.Entity<AppVersionTag>()
+                .Property(x => x.SortValue)
+                .IsRequired();
+
+            builder.Entity<AppVersionTag>()
                 .HasIndex("ApplicationTypeId", "Name")
                 .IsUnique(true)
                 .IncludeProperties("Id", "CreationDate", "DeprecationDate");
@@ -93,6 +97,14 @@ namespace DatabaseFramework.Models.Configurations
                 .HasIndex(x => x.Name)
                 .IsUnique()
                 .IncludeProperties("Id", "Description");
+
+            builder.Entity<Ecosystem>()
+                .HasData(
+                    new Ecosystem { Id = -1, Name = Ecosystem.COMMONS, Description = "Commons client ecosystem including the agent" },
+                    new Ecosystem { Id = -2, Name = Ecosystem.ORCHESTRATOR, Description = "Orchestrator ecosystem" },
+                    new Ecosystem { Id = -3, Name = Ecosystem.ACCOUNTS, Description = "Accounts and security ecosystem" },
+                    new Ecosystem { Id = -4, Name = Ecosystem.GOVERNANCE, Description = "Governance applications including Let's Agree" }
+                );
 
             builder.Entity<EcosystemVersion>()
                 .HasKey(x => x.Id);

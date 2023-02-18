@@ -35,3 +35,38 @@
         </div>
     </div>
 </div>
+
+
+<div class="card w-25">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                Application tags
+            </p>
+        </div>
+    </div>
+    <div class="card-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><abbr title="App Type">Application Type</abbr></th>
+                    <th><abbr title="Version">Version</abbr></th>
+                    <!--/management/appclaim/{appNs}/create-->
+                    <th><abbr title=""><a asp-controller="EcosystemVersionTag" asp-area="Management" asp-action="Add" asp-route-ecosys="@Model.EcosystemId" asp-route-ver="@Model.Id"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.EcosystemVersionTags)
+                {
+                    <tr>
+                        <td>@item.AppVersionTag.ApplicationType.Name</td>
+                        <td>@item.AppVersionTag.Name</td>
+                        <td>
+                            <a asp-action="Remove" asp-area="Management" asp-controller="EcosystemVersionTag" asp-route-ecosys="@Model.EcosystemId" asp-route-ver="@Model.Id" asp-route-id="@item.AppVersionTagId"><img src="~/Images/Delete.png" class="icon" /> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
