@@ -18,13 +18,24 @@ namespace CommunAxiom.Accounts.BusinessLayer
         {
             coll.AddAutoMapper(typeof(Setup).Assembly);
             coll.AddTransient<IApplications, ApplicationsSvc>();
+            coll.AddTransient<IApplicationsReader, ApplicationsReaderSvc>();
             coll.AddTransient<IApplicationTypes, ApplicationTypesSvc>();
             coll.AddTransient<IEcosystems, EcosystemSvc>();
             coll.AddTransient<IUsers, UsersSvc>();
             coll.AddTransient<ISecrets, SecretsSvc>();
             coll.AddTransient<IAppConfigurations, AppConfigurationSvc>();
             coll.AddTransient<AppFactory>();
+        }
 
+        public static void SetupReadBusiness(this IServiceCollection coll)
+        {
+            coll.AddAutoMapper(typeof(Setup).Assembly);
+            coll.AddTransient<IApplicationsReader, ApplicationsReaderSvc>();
+            coll.AddTransient<IApplicationTypes, ApplicationTypesSvc>();
+            coll.AddTransient<IEcosystems, EcosystemSvc>();
+            coll.AddTransient<IUsers, UsersSvc>();
+            coll.AddTransient<ISecrets, SecretsSvc>();
+            coll.AddTransient<IAppConfigurations, AppConfigurationSvc>();
         }
     }
 }

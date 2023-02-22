@@ -68,6 +68,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
             value.ValueGenerator = conf.ValueGenerator;
             value.UserValueMandatory = conf.UserValueMandatory;
             value.ValueGenParameter = conf.ValueGenParameter;
+            value.Sensitive= conf.Sensitive;
             value.Globalize();
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", "AppVersionTag", new { area = "management", id = tagid, apptype = apptype });

@@ -33,9 +33,11 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps
             {
                 AppSecret secret = new AppSecret
                 {
+                    Id = Guid.NewGuid(),
                     Key = key,
                     ApplicationId = applicationId,
                     Data = value,
+                    Hash = "",
                     Encrypted = encrypt
                 };
                 _accountsDbContext.Set<AppSecret>().Add(secret);

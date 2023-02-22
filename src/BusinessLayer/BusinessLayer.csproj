@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\DatabaseFramework\DatabaseFramework.csproj" />
 	  <PackageReference Include="RandomDataGenerator.Net" Version="1.0.13" />
+	  <PackageReference Include="System.Linq.Async" Version="5.1.0" />
   </ItemGroup>
 
 </Project>

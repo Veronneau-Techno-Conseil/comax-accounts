@@ -19,23 +19,25 @@ namespace CommunAxiom.Accounts.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IApplications _applications;
+        private readonly IApplicationsReader _applicationsReader;
         private readonly IUsers _users;
         private readonly IEcosystems _ecosystems;
         private readonly IAppConfigurations _appConfigurations;
-        public HomeController(ILogger<HomeController> logger, IApplications applications, IUsers users, IEcosystems ecosystems, IAppConfigurations appConfigurations)
+        public HomeController(ILogger<HomeController> logger, IApplications applications, IUsers users, IEcosystems ecosystems, IAppConfigurations appConfigurations, IApplicationsReader applicationsReader)
         {
             _logger = logger;
             _applications = applications;
             _users = users;
             _ecosystems = ecosystems;
             _appConfigurations = appConfigurations;
+            _applicationsReader = applicationsReader;
         }
 
         public async Task<IActionResult> Index()
         {
             HomeViewmodel homeViewmodel = new HomeViewmodel();
 
-            var app = await _applications.GetUserHostedCommons(this.User.Identity.Name);
+            var app = await _applicationsReader.GetUserHostedCommons(this.User.Identity.Name);
             var user = await _users.GetUser(this.User.Identity.Name);
 
             homeViewmodel.ManagedAppCreated = app != null;
@@ -55,7 +57,7 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterManagedCommons()
         {
-            var exists = (await _applications.GetUserHostedCommons(this.User.Identity.Name)) != null;
+            var exists = (await _applicationsReader.GetUserHostedCommons(this.User.Identity.Name)) != null;
 
             if(exists)
                 return RedirectToAction("Index");
@@ -77,7 +79,7 @@ namespace CommunAxiom.Accounts.Controllers
             var loginRedirect = $"{uri}/api/authentication/login";
 
             var appRes = await _applications.CreateApplication(ApplicationType.COMMONS, "Hosted Common Agent", loginRedirect);
-            var app = await _applications.GetApplication(appRes.ApplicationId, "ApplicationTypeMaps");
+            var app = await _applicationsReader.GetApplication(appRes.ApplicationId, "ApplicationTypeMaps");
             var ecosys = await _ecosystems.GetByName(Ecosystem.COMMONS);
 
             var res = await _applications.ConfigureApplication(ecosys.Id, app.ApplicationTypeMaps[0].ApplicationTypeId, app.Id, UserApplicationMap.HostingTypes.Managed, uri);

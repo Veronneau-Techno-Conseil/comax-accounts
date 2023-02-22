@@ -10,9 +10,11 @@ namespace DatabaseFramework.Models
     public class AppConfiguration
     {
         public const string APP_URI = "APP_URI";
+        public const string APP_NAMESPACE = "APP_NAMESPACE";
         public const string OIDC_AUTHORITY = "oidcAuthority";
         public const string OIDC_CLIENT_ID = "OidcClientId";
         public const string OIDC_SECRET = "OidcSecret";
+        public const string APP_HASH = "APP_HASH";
 
         public static IEnumerable<string> GetWellKnownConfigs()
         {
@@ -21,7 +23,8 @@ namespace DatabaseFramework.Models
                 APP_URI,
                 OIDC_AUTHORITY,
                 OIDC_CLIENT_ID,
-                OIDC_SECRET
+                OIDC_SECRET,
+                APP_HASH
             };
         }
 

@@ -54,6 +54,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         {
             var value = await _context.Set<ApplicationType>().FirstOrDefaultAsync(x => x.Id == id);
             value.Name = applicationType.Name;
+            value.ContainerImage = applicationType.ContainerImage;
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

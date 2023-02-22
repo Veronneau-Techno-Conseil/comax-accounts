@@ -85,7 +85,7 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps
                     ApplicationId = appConfigurationDetails.ApplicationId,
                     AppVersionConfigurationId = appConfigurationDetails.AppVersionConfigurationId,
                     FromSecret = appConfigurationDetails.FromSecret,
-                    Value = appConfigurationDetails.FromSecret ? null : appConfigurationDetails.Value
+                    Value = appConfigurationDetails.FromSecret ? "Secret" : appConfigurationDetails.Value
                 };
                 await _accountsDbContext.Set<AppConfiguration>().AddAsync(appConfiguration);
                 if (appConfigurationDetails.FromSecret)

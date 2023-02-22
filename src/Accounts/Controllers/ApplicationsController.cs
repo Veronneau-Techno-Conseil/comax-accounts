@@ -31,8 +31,9 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly ITempData _tempCache;
         private readonly IConfiguration _configuration;
         private readonly IApplications _applications;
+        private readonly IApplicationsReader _applicationsReader;
 
-        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context, ITempData tempData, IConfiguration configuration, IApplications applications)
+        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context, ITempData tempData, IConfiguration configuration, IApplications applications, IApplicationsReader applicationsReader)
         {
             _applicationManager = ApplicationManager;
             _serviceProvider = serviceProvider;
@@ -41,6 +42,7 @@ namespace CommunAxiom.Accounts.Controllers
             _tempCache = tempData;
             _configuration = configuration;
             _applications = applications;
+            _applicationsReader = applicationsReader;
         }
 
         [HttpGet]
@@ -76,7 +78,7 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(string id, bool showSecret)
         {
-            var app = await _applications.GetApplication(id, "UserApplicationMaps");
+            var app = await _applicationsReader.GetApplication(id, "UserApplicationMaps");
 
             var appDetails = new DetailsViewModel
             {

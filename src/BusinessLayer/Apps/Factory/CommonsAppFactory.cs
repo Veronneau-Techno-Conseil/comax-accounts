@@ -151,6 +151,7 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps.Factory
             values.Add(AppConfiguration.OIDC_AUTHORITY, _authorityInfo.Authority);
             values.Add(AppConfiguration.OIDC_CLIENT_ID, app.ClientId);
             values.Add(AppConfiguration.OIDC_SECRET, newSecret);
+            values.Add(AppConfiguration.APP_HASH, hash);
 
             var tag = _context.Set<AppVersionTag>();
             var vertag = await tag
