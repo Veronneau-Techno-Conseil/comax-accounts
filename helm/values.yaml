@@ -26,6 +26,8 @@ baseAddress: "https://baseaddress.addr"
 fluentEmailMode: "sg"
 fluentEmailFrom: ""
 sendGridKey: ""
+authority: "https://localhost:5002/"
+metadataUri: "https://localhost:5002/.well-known/openid-configuration"
 
 central:
   name: "comax-central"
