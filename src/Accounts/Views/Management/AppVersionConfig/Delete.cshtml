@@ -1,0 +1,59 @@
+﻿@model AppVersionConfiguration
+@{
+    ViewData["Title"] = "Delete Version Configuration";
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="AppVersionTag" asp-route-id="@Model.AppVersionTagId" asp-route-apptype="@Model.AppVersionTag.ApplicationTypeId"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="field">
+                    <label asp-for="AppVersionTag" class="label"></label>
+                    <span class="is-primary">@Model.AppVersionTag.ApplicationType.Name</span>
+                </div>
+                <div class="field">
+                    <label asp-for="AppVersionTag" class="label"></label>
+                    <span class="is-primary">@Model.AppVersionTag.Name</span>
+                </div>
+                <div class="field">
+                    <label asp-for="ConfigurationKey" class="label"></label>
+                    <span class="is-primary">@Model.ConfigurationKey</span>
+                </div>
+                <div class="field">
+                    <label asp-for="DefaultValue" class="label"></label>
+                    <span class="is-primary">@Model.DefaultValue</span>
+                </div>
+                <div class="field">
+                    <label asp-for="ValueGenerator" class="label"></label>
+                    <span class="is-primary">@Model.ValueGenerator</span>
+                </div>
+                <div class="field">
+                    <label asp-for="UserValueMandatory" class="label"></label>
+                    <span class="is-primary">@Model.UserValueMandatory</span>
+                </div>
+                <div class="field">
+                    <form asp-action="Remove">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="AppVersionTagId" />
+                        <input type="submit" class="button is-link" value="Confirm deletion" />
+                        <a asp-action="Details" asp-controller="AppVersionTag" asp-route-id="@Model.AppVersionTagId" asp-route-apptype="@Model.AppVersionTag.ApplicationTypeId" class="button is-danger">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

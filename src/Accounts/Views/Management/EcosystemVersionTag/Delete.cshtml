@@ -1,0 +1,50 @@
+﻿@using CommunAxiom.Accounts.Contracts;
+@model EcosystemVersionTag
+@inject ILookupStore lookupStore
+@{
+    ViewData["Title"] = "Remove Application";
+    var lu = lookupStore.ListAppVersionTags();
+    var item = lu.FirstOrDefault(x => x.Value == Model.AppVersionTagId);
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="EcosystemVersion" asp-route-ecosys="@Model.EcosystemVersion.EcosystemId" asp-route-id="@Model.EcosystemVersionId"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+
+                @if (Model.EcosystemVersion != null)
+                {
+                    if (Model.EcosystemVersion.Ecosystem != null)
+                    {
+                        <p class="title is-4">Ecosystem: @Model.EcosystemVersion.Ecosystem.Name</p>
+                    }
+                    <p class="title is-5">Ecosystem version: @Model.EcosystemVersion.VersionName</p>
+                }
+                <p class="title is-5">Application tag: @item.Name</p>
+
+                <div class="field">
+                    <form asp-action="Remove">
+                        <input type="hidden" asp-for="EcosystemVersionId" />
+                        <input type="hidden" asp-for="AppVersionTagId" />
+                        <input type="submit" class="button is-link" value="Confirm deletion" />
+                        <a asp-action="Details" asp-controller="EcosystemVersion" asp-route-ecosys="@Model.EcosystemVersion.EcosystemId" asp-route-id="@Model.EcosystemVersionId" class="button is-danger">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

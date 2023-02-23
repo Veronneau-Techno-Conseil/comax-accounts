@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentEmail.SendGrid" Version="3.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
@@ -34,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BusinessLayer\BusinessLayer.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\DatabaseFramework\DatabaseFramework.csproj" />
     <ProjectReference Include="..\FluentEmailProvider\FluentEmailProvider.csproj" />
@@ -43,10 +45,6 @@
 
   <ItemGroup>
     <Resource Include="cert.pem" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Include="assets\ts\site.ts" />
   </ItemGroup>
 
   <ItemGroup>

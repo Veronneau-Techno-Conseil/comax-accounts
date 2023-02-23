@@ -19,9 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestClient", "TestClient\Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentEmailProvider", "FluentEmailProvider\FluentEmailProvider.csproj", "{85868313-F008-4D4C-8326-890B903491AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseFramework", "DatabaseFramework\DatabaseFramework.csproj", "{C3BCD220-80F1-4AF2-904F-985CBD540EA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseFramework", "DatabaseFramework\DatabaseFramework.csproj", "{C3BCD220-80F1-4AF2-904F-985CBD540EA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralApi", "CentralApi\CentralApi.csproj", "{8EA5C3E6-8E76-42B9-9EDE-B391C596462A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CentralApi", "CentralApi\CentralApi.csproj", "{8EA5C3E6-8E76-42B9-9EDE-B391C596462A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLayer", "BusinessLayer\BusinessLayer.csproj", "{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,6 +143,18 @@ Global
 		{8EA5C3E6-8E76-42B9-9EDE-B391C596462A}.Release|x64.Build.0 = Release|Any CPU
 		{8EA5C3E6-8E76-42B9-9EDE-B391C596462A}.Release|x86.ActiveCfg = Release|Any CPU
 		{8EA5C3E6-8E76-42B9-9EDE-B391C596462A}.Release|x86.Build.0 = Release|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Debug|x64.Build.0 = Debug|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Debug|x86.Build.0 = Debug|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Release|x64.ActiveCfg = Release|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Release|x64.Build.0 = Release|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Release|x86.ActiveCfg = Release|Any CPU
+		{D6AF2C70-D2C1-488B-AD9C-A0A6A6D76BE0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

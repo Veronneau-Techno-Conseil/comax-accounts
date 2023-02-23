@@ -23,12 +23,15 @@ captchaSecret: ""
 authCert: "/cert/cert.pem"
 authKey: "/cert/key.pem"
 baseAddress: "https://baseaddress.addr"
+fluentEmailMode: "sg"
+fluentEmailFrom: ""
+sendGridKey: ""
 
 central:
   name: "comax-central"
   clientid: ""
   secret: ""
-  serviceAccountName:
+  serviceAccountName: ""
 
 oidc:
   auth: "https://accounts.communaxiom.org/"

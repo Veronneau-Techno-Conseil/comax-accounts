@@ -9,7 +9,7 @@ Expand the name of the secret.
 Expand the name of the secret.
 */}}
 {{- define "comax-central.secretName" -}}
-{{- printf "%s-secrets" ( include "comax-accounts.name" . ) -}}
+{{- printf "%s-secrets" ( include "comax-central.name" . ) -}}
 {{- end }}
 
 {{/*
@@ -110,7 +110,7 @@ Common labels
 */}}
 {{- define "comax-central.labels" -}}
 helm.sh/chart: {{ include "comax-accounts.chart" . }}
-{{ include "comax-accounts.selectorLabels" . }}
+{{ include "comax-central.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -149,7 +149,7 @@ Create the name of the service account to use
 */}}
 {{- define "comax-central.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "comax-accounts.fullname" .) .Values.central.serviceAccountName }}
+{{- default (include "comax-central.fullname" .) .Values.central.serviceAccountName }}
 {{- else }}
 {{- default "default" .Values.central.serviceAccountName }}
 {{- end }}

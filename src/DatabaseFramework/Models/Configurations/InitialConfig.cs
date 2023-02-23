@@ -58,6 +58,10 @@ namespace DatabaseFramework.Models.Configurations
                 .Property(x => x.IsDeleted)
                 .HasDefaultValue(false);
 
+            builder.Entity<Group>()
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
         }
 
         public void SetupRelationships(ModelBuilder builder)
@@ -79,7 +83,7 @@ namespace DatabaseFramework.Models.Configurations
 
             builder.Entity<UserApplicationMap>()
                 .HasOne(x => x.User)
-                .WithMany()
+                .WithMany(x=>x.ApplicationMaps)
                 .HasForeignKey(x => x.UserId);
 
             builder.Entity<UserApplicationMap>()

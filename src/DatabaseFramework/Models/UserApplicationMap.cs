@@ -14,5 +14,16 @@ namespace DatabaseFramework.Models
         public string ApplicationId { get; set; }
         public Application Application { get; set; }
 
+        public HostingTypes HostingType { get; set; }
+
+        public enum HostingTypes
+        {
+            None = 0,
+            NetworkAppliance = 1,
+            WindowsDesktop = 2,
+            LinuxDesktop = 3,
+            MacDesktop = 4,
+            Managed = 5
+        }
     }
 }

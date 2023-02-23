@@ -14,6 +14,8 @@ namespace CommunAxiom.Accounts.ViewModels.Network
 
         public ContactRequest ContactRequest { get; set; }
 
+        public Group Group { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

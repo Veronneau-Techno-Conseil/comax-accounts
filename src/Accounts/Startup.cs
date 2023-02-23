@@ -33,6 +33,7 @@ using DatabaseFramework.Models;
 using Models = DatabaseFramework.Models;
 using DatabaseFramework;
 using DatabaseFramework.Models.SeedData;
+using CommunAxiom.Accounts.BusinessLayer;
 
 namespace CommunAxiom.Accounts
 {
@@ -52,8 +53,9 @@ namespace CommunAxiom.Accounts
             {
                 x.BaseAddress = new Uri("https://www.google.com/recaptcha/api/siteverify");
             });
-            
+
             services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
+            services.Configure<AuthorityInfo>(x => Configuration.GetSection("AuthInfo").Bind(x));
             services.AddDbContext<AccountsDbContext>();
 
             services.AddIdentity<User, IdentityRole>()
@@ -80,27 +82,27 @@ namespace CommunAxiom.Accounts
                 Security.ManagementPolicies.SetupPolicies(options);
             });
 
-        //.AddGoogle("Google", options =>
-        //{
-        //    options.CallbackPath = "/signin-google";
-        //    options.ClientId = "0000000000000-redacted.apps.googleusercontent.com";
-        //    options.ClientSecret = "redacted";
-        //    options.SignInScheme = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme;
-        //});
+            //.AddGoogle("Google", options =>
+            //{
+            //    options.CallbackPath = "/signin-google";
+            //    options.ClientId = "0000000000000-redacted.apps.googleusercontent.com";
+            //    options.ClientSecret = "redacted";
+            //    options.SignInScheme = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme;
+            //});
 
             services.AddOpenIddict()
                 // Register the OpenIddict core components.
                 .AddCore(options =>
                 {
-                    
+
                     // Configure OpenIddict to use the Entity Framework Core stores and models.
                     // Note: call ReplaceDefaultEntities() to replace the default OpenIddict entities.
                     options.UseEntityFrameworkCore()
                            .ReplaceDefaultEntities<
-                               Models.Application, 
-                               Models.Authorization, 
-                               Models.Scope, 
-                               Models.Token, 
+                               Models.Application,
+                               Models.Authorization,
+                               Models.Scope,
+                               Models.Token,
                                string>()
                            .UseDbContext<AccountsDbContext>();
 
@@ -144,7 +146,7 @@ namespace CommunAxiom.Accounts
                     // Register the signing and encryption credentials.
                     options.AddEncryptionCertificate(cert)
                            .AddSigningCertificate(cert);
-                    
+
                     // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
                     options.UseAspNetCore()
                            .EnableAuthorizationEndpointPassthrough()
@@ -153,11 +155,11 @@ namespace CommunAxiom.Accounts
                            .EnableVerificationEndpointPassthrough()
                            .EnableStatusCodePagesIntegration()
                            .DisableTransportSecurityRequirement(); // During development, you can disable the HTTPS requirement.
-                    
+
                     options.AddEventHandler<HandleIntrospectionRequestContext>(builder =>
                     {
                         builder.UseScopedHandler<Handlers.IntrospectionHandler>();
-                        
+
                         builder.SetOrder(AttachApplicationClaims.Descriptor.Order + 1_000);
                     });
                 })
@@ -185,11 +187,31 @@ namespace CommunAxiom.Accounts
             services.AddTransient<ClientClaimsProvider>();
             services.AddTransient<UserClaimsProvider>();
 
+            services.SetupBusiness();
+
             var directory = Directory.GetCurrentDirectory();
-            services
-                .AddFluentEmail("noreply@communaxiom.org")
-                .AddRazorRenderer(directory)
-                .AddSmtpSender("localhost", 25);
+
+            switch (Configuration["fluentEmailMode"])
+            {
+                case "smtp":
+                    services
+                        .AddFluentEmail("noreply@communaxiom.org")
+                        .AddRazorRenderer(directory)
+                        .AddSmtpSender("localhost", 25);
+                    break;
+                case "test":
+                    services
+                        .AddFluentEmail("noreply@communaxiom.org")
+                        .AddRazorRenderer(directory)
+                        .AddSendGridSender(Configuration["sendGridKey"], true);
+                    break;
+                case "sg":
+                    services
+                        .AddFluentEmail("noreply@communaxiom.org")
+                        .AddRazorRenderer(directory)
+                        .AddSendGridSender(Configuration["sendGridKey"], false);
+                    break;
+            }
 
             services.AddTransient<IEmailService, EmailService>();
 

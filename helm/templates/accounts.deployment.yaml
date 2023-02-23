@@ -67,6 +67,15 @@ spec:
             value: {{ .Values.pubCaptcha }}
           - name: BaseAddress
             value: {{ .Values.baseAddress }}
+          - name: fluentEmailMode
+            value: {{ .Values.fluentEmailMode }}
+          - name: fluentEmailFrom
+            value: {{ .Values.fluentEmailFrom }}
+          - name: sendGridKey
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "comax-accounts.secretName" . }}
+                key: SENDGRIDKEY
           livenessProbe:
             httpGet:
               path: /

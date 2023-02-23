@@ -93,11 +93,45 @@ namespace DatabaseFramework.Migrations
                     b.ToTable("AppClaimAssignment", (string)null);
                 });
 
+            modelBuilder.Entity("DatabaseFramework.Models.AppConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppVersionConfigurationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ApplicationId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("FromSecret")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppVersionConfigurationId");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("AppConfigurations", (string)null);
+                });
+
             modelBuilder.Entity("DatabaseFramework.Models.Application", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
+
+                    b.Property<int?>("AppVersionTagId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ClientId")
                         .HasMaxLength(100)
@@ -148,6 +182,8 @@ namespace DatabaseFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppVersionTagId");
+
                     b.HasIndex("ClientId")
                         .IsUnique();
 
@@ -161,6 +197,9 @@ namespace DatabaseFramework.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContainerImage")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -208,6 +247,107 @@ namespace DatabaseFramework.Migrations
                     b.HasIndex("ApplicationTypeId");
 
                     b.ToTable("AppNamespace", (string)null);
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.AppSecret", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ApplicationId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Data")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Encrypted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Hash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("AppSecret");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.AppVersionConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppVersionTagId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConfigurationKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DefaultValue")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Sensitive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("UserValueMandatory")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ValueGenParameter")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ValueGenerator")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppVersionTagId");
+
+                    b.ToTable("AppVersionConfigurations", (string)null);
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.AppVersionTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Id"), 1L, null, null, null, null, null);
+
+                    b.Property<int>("ApplicationTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeprecationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("SortValue")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationTypeId", "Name")
+                        .IsUnique();
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("ApplicationTypeId", "Name"), new[] { "Id", "CreationDate", "DeprecationDate" });
+
+                    b.ToTable("AppVersionTags", (string)null);
                 });
 
             modelBuilder.Entity("DatabaseFramework.Models.Authorization", b =>
@@ -359,6 +499,136 @@ namespace DatabaseFramework.Migrations
                     b.ToTable("CreationStatus", (string)null);
                 });
 
+            modelBuilder.Entity("DatabaseFramework.Models.Ecosystem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Id"), 1L, null, null, null, null, null);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Name"), new[] { "Id", "Description" });
+
+                    b.ToTable("Ecosystems", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Description = "Commons client ecosystem including the agent",
+                            Name = "Comax - Commons"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Description = "Orchestrator ecosystem",
+                            Name = "Comax - Orchestrator"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Description = "Accounts and security ecosystem",
+                            Name = "Comax - Accounts"
+                        },
+                        new
+                        {
+                            Id = -4,
+                            Description = "Governance applications including Let's Agree",
+                            Name = "Comax - Governance"
+                        });
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.EcosystemApplication", b =>
+                {
+                    b.Property<int>("ApplicationTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EcosystemId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ApplicationTypeId", "EcosystemId");
+
+                    b.HasIndex("EcosystemId");
+
+                    b.ToTable("EcosystemApplications", (string)null);
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.EcosystemVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Id"), 1L, null, null, null, null, null);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Current")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("DeploymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeprecationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EcosystemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PreviousVersionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VersionName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PreviousVersionId")
+                        .IsUnique();
+
+                    b.HasIndex("EcosystemId", "PreviousVersionId")
+                        .IsUnique();
+
+                    b.HasIndex("EcosystemId", "VersionName");
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("EcosystemId", "VersionName"), new[] { "Id", "PreviousVersionId", "Current", "CreationDate", "DeploymentDate", "DeprecationDate" });
+                    NpgsqlIndexBuilderExtensions.HasSortOrder(b.HasIndex("EcosystemId", "VersionName"), new[] { SortOrder.Ascending, SortOrder.Descending });
+
+                    b.ToTable("EcosystemVersions", (string)null);
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.EcosystemVersionTag", b =>
+                {
+                    b.Property<int>("EcosystemVersionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AppVersionTagId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("EcosystemVersionId", "AppVersionTagId");
+
+                    b.HasIndex("AppVersionTagId");
+
+                    b.ToTable("EcosystemVersionTags", (string)null);
+                });
+
             modelBuilder.Entity("DatabaseFramework.Models.Group", b =>
                 {
                     b.Property<int>("Id")
@@ -369,6 +639,11 @@ namespace DatabaseFramework.Migrations
 
                     b.Property<byte[]>("GroupPicture")
                         .HasColumnType("bytea");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -632,6 +907,9 @@ namespace DatabaseFramework.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -693,6 +971,9 @@ namespace DatabaseFramework.Migrations
                 {
                     b.Property<string>("ApplicationId")
                         .HasColumnType("text");
+
+                    b.Property<int>("HostingType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -867,6 +1148,34 @@ namespace DatabaseFramework.Migrations
                     b.Navigation("ApplicationType");
                 });
 
+            modelBuilder.Entity("DatabaseFramework.Models.AppConfiguration", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.AppVersionConfiguration", "AppVersionConfiguration")
+                        .WithMany()
+                        .HasForeignKey("AppVersionConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DatabaseFramework.Models.Application", "Application")
+                        .WithMany("Configurations")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppVersionConfiguration");
+
+                    b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.Application", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.AppVersionTag", "AppVersionTag")
+                        .WithMany()
+                        .HasForeignKey("AppVersionTagId");
+
+                    b.Navigation("AppVersionTag");
+                });
+
             modelBuilder.Entity("DatabaseFramework.Models.ApplicationTypeMap", b =>
                 {
                     b.HasOne("DatabaseFramework.Models.Application", "Application")
@@ -891,6 +1200,37 @@ namespace DatabaseFramework.Migrations
                     b.HasOne("DatabaseFramework.Models.ApplicationType", "ApplicationType")
                         .WithMany("AppNamespaces")
                         .HasForeignKey("ApplicationTypeId");
+
+                    b.Navigation("ApplicationType");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.AppSecret", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.Application", "Application")
+                        .WithMany("Secrets")
+                        .HasForeignKey("ApplicationId");
+
+                    b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.AppVersionConfiguration", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.AppVersionTag", "AppVersionTag")
+                        .WithMany("AppVersionConfigurations")
+                        .HasForeignKey("AppVersionTagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppVersionTag");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.AppVersionTag", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.ApplicationType", "ApplicationType")
+                        .WithMany("AppVersionTags")
+                        .HasForeignKey("ApplicationTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ApplicationType");
                 });
@@ -962,6 +1302,61 @@ namespace DatabaseFramework.Migrations
                     b.Navigation("IdProvider");
 
                     b.Navigation("Notification");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.EcosystemApplication", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.ApplicationType", "ApplicationType")
+                        .WithMany("EcosystemApplications")
+                        .HasForeignKey("ApplicationTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DatabaseFramework.Models.Ecosystem", "Ecosystem")
+                        .WithMany("EcosystemApplications")
+                        .HasForeignKey("EcosystemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationType");
+
+                    b.Navigation("Ecosystem");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.EcosystemVersion", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.Ecosystem", "Ecosystem")
+                        .WithMany("EcosystemVersions")
+                        .HasForeignKey("EcosystemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DatabaseFramework.Models.EcosystemVersion", "PreviousVersion")
+                        .WithOne("NextVersion")
+                        .HasForeignKey("DatabaseFramework.Models.EcosystemVersion", "PreviousVersionId");
+
+                    b.Navigation("Ecosystem");
+
+                    b.Navigation("PreviousVersion");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.EcosystemVersionTag", b =>
+                {
+                    b.HasOne("DatabaseFramework.Models.AppVersionTag", "AppVersionTag")
+                        .WithMany("EcosystemVersionTags")
+                        .HasForeignKey("AppVersionTagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DatabaseFramework.Models.EcosystemVersion", "EcosystemVersion")
+                        .WithMany("EcosystemVersionTags")
+                        .HasForeignKey("EcosystemVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppVersionTag");
+
+                    b.Navigation("EcosystemVersion");
                 });
 
             modelBuilder.Entity("DatabaseFramework.Models.Group", b =>
@@ -1078,7 +1473,7 @@ namespace DatabaseFramework.Migrations
                         .IsRequired();
 
                     b.HasOne("DatabaseFramework.Models.User", "User")
-                        .WithMany()
+                        .WithMany("ApplicationMaps")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1145,6 +1540,10 @@ namespace DatabaseFramework.Migrations
 
                     b.Navigation("Authorizations");
 
+                    b.Navigation("Configurations");
+
+                    b.Navigation("Secrets");
+
                     b.Navigation("Tokens");
 
                     b.Navigation("UserApplicationMaps");
@@ -1155,6 +1554,10 @@ namespace DatabaseFramework.Migrations
                     b.Navigation("AppClaimAssignments");
 
                     b.Navigation("AppNamespaces");
+
+                    b.Navigation("AppVersionTags");
+
+                    b.Navigation("EcosystemApplications");
                 });
 
             modelBuilder.Entity("DatabaseFramework.Models.AppNamespace", b =>
@@ -1162,9 +1565,35 @@ namespace DatabaseFramework.Migrations
                     b.Navigation("AppClaims");
                 });
 
+            modelBuilder.Entity("DatabaseFramework.Models.AppVersionTag", b =>
+                {
+                    b.Navigation("AppVersionConfigurations");
+
+                    b.Navigation("EcosystemVersionTags");
+                });
+
             modelBuilder.Entity("DatabaseFramework.Models.Authorization", b =>
                 {
                     b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.Ecosystem", b =>
+                {
+                    b.Navigation("EcosystemApplications");
+
+                    b.Navigation("EcosystemVersions");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.EcosystemVersion", b =>
+                {
+                    b.Navigation("EcosystemVersionTags");
+
+                    b.Navigation("NextVersion");
+                });
+
+            modelBuilder.Entity("DatabaseFramework.Models.User", b =>
+                {
+                    b.Navigation("ApplicationMaps");
                 });
 #pragma warning restore 612, 618
         }

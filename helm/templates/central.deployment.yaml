@@ -33,7 +33,7 @@ spec:
           secretName: {{ include "comax-central.certSecretName" . }}
 
       containers:
-        - name: {{ .Chart.Name }}
+        - name: comax-central
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.centralRepository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -59,6 +59,10 @@ spec:
             value: {{ .Values.authCert }}
           - name: AuthKey
             value: {{ .Values.authKey }}
+          - name: Urls
+            value: {{ .Values.urls }}
+          - name: ASPNETCORE_URLS
+            value: {{ .Values.urls }}
           - name: OIDC__Authority
             value: {{ .Values.oidc.auth }}
           - name: OIDC__ClientId
@@ -68,16 +72,14 @@ spec:
               secretKeyRef: 
                 name: {{ include "comax-central.secretName" . }}
                 key: CLIENT_SECRET
-          - name: Urls
-            value: {{ .Values.urls }}
           livenessProbe:
             httpGet:
-              path: /
+              path: /swagger/index.html
               port: http
               scheme: HTTP
           readinessProbe:
             httpGet:
-              path: /
+              path: /swagger/index.html
               port: http
               scheme: HTTP
           resources:

@@ -12,5 +12,7 @@
 
         public byte[] GroupPicture { get; set; }
 
+        public bool IsDeleted { get; set; }
+
     }
 }

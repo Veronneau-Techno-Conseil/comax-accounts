@@ -4,16 +4,18 @@ namespace CommunAxiom.Accounts.Business
 {
     public static class UriProvider
     {
-        public static string GetUri(string applictionType, string id)
+        public static string GetUri(string entityType, string id)
         {
-            switch (applictionType)
+            switch (entityType)
             {
                 case ApplicationType.COMMONS:
                     return $"com://{id}";
                 case ApplicationType.ORCHESTRATOR:
                     return $"orch://{id}";
+                case "user":
+                    return $"usr://{id}";
                 default: 
-                    return $"comax://apps/{applictionType}";
+                    return $"comax://apps/{entityType}";
             }
         }
 
