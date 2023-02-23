@@ -17,6 +17,7 @@ using CommunAxiom.Accounts.Contracts;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using DatabaseFramework.Models;
+using CommunAxiom.Accounts.BusinessLayer.Viewmodels;
 
 namespace CommunAxiom.Accounts.Controllers
 {
@@ -29,8 +30,10 @@ namespace CommunAxiom.Accounts.Controllers
         private readonly AccountsDbContext _context;
         private readonly ITempData _tempCache;
         private readonly IConfiguration _configuration;
+        private readonly IApplications _applications;
+        private readonly IApplicationsReader _applicationsReader;
 
-        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context, ITempData tempData, IConfiguration configuration)
+        public ApplicationsController(OpenIddictApplicationManager<Application> ApplicationManager, IServiceProvider serviceProvider, UserManager<User> userManager, AccountsDbContext context, ITempData tempData, IConfiguration configuration, IApplications applications, IApplicationsReader applicationsReader)
         {
             _applicationManager = ApplicationManager;
             _serviceProvider = serviceProvider;
@@ -38,6 +41,8 @@ namespace CommunAxiom.Accounts.Controllers
             _context = context;
             _tempCache = tempData;
             _configuration = configuration;
+            _applications = applications;
+            _applicationsReader = applicationsReader;
         }
 
         [HttpGet]
@@ -49,101 +54,10 @@ namespace CommunAxiom.Accounts.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            //Create the RandomWord
-            var RandomWord = RandomizerFactory.GetRandomizer(new FieldOptionsTextWords { Min = 4, Max = 5 }).Generate().ToString().Replace(" ", "_");
-
-            //Validate its uniqueness in the database
-            var apps = _applicationManager.FindByClientIdAsync(RandomWord).Result;
-            if (apps != null)
-            {
-                do
-                    RandomWord = RandomizerFactory.GetRandomizer(new FieldOptionsTextWords { Min = 4, Max = 5 }).Generate().ToString().Replace(" ", "_");
-                while (_applicationManager.FindByClientIdAsync(RandomWord).Result == null);
-            }
-
-            var permissions = new List<string>
-                {
-                    Permissions.GrantTypes.AuthorizationCode,
-                    Permissions.GrantTypes.RefreshToken,
-                    Permissions.GrantTypes.DeviceCode,
-                    Permissions.GrantTypes.ClientCredentials,
-
-                    Permissions.Endpoints.Device,
-                    Permissions.Endpoints.Authorization,
-                    Permissions.Endpoints.Introspection,
-                    Permissions.Endpoints.Logout,
-                    Permissions.Endpoints.Token,
-
-                    Permissions.Scopes.Email,
-                    Permissions.Scopes.Profile,
-                    Permissions.Scopes.Roles,
-
-                    Permissions.ResponseTypes.CodeIdTokenToken,
-                    Permissions.ResponseTypes.Code
-                };
-
-
-            if (string.IsNullOrWhiteSpace(_configuration["Prod"]) || !bool.TryParse(_configuration["Prod"], out var prod) || !prod)
-                permissions.Add(Permissions.GrantTypes.Password);
-
-            //Create the application
-            //var application = new OpenIddictApplicationDescriptor
-            var application = new Application
-            {
-                Id = Guid.NewGuid().ToString(),
-                ClientId = RandomWord,
-                Deleted = false,
-                DeletedDate = null,
-                DisplayName = model.DisplayName,
-                DisplayNames = Newtonsoft.Json.JsonConvert.SerializeObject(new System.Collections.Generic.Dictionary<string,string>
-                {
-                    { "en-CA", model.DisplayName }
-                }),
-                Type = ClientTypes.Confidential,
-                ConsentType = ConsentTypes.Explicit,
-                Permissions = JsonSerializer.Serialize(permissions.ToArray()),
-                PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
-                {
-                    model.PostLogoutRedirectURI
-                }),
-                RedirectUris = JsonSerializer.Serialize(new[]
-                {
-                    model.RedirectURI
-                }),
-                Requirements = JsonSerializer.Serialize(new[]
-                {
-                    Requirements.Features.ProofKeyForCodeExchange
-                })
-            };
-            var secret = Guid.NewGuid().ToString();
-            await _applicationManager.CreateAsync(application, secret);
-
-            var CreatedApplication = _applicationManager.FindByClientIdAsync(RandomWord).Result;
-
-            //Create the ApplicationTypeMaps & UserApplicationsMap Record
-            if (CreatedApplication != null)
-            {
-                var CommonsApp = _context.Set<ApplicationType>().AsQueryable().Where(x => x.Name == ApplicationType.COMMONS).FirstOrDefault();
-
-                var ApplicationTypeMap = new ApplicationTypeMap
-                {
-                    ApplicationId = CreatedApplication.Id,
-                    ApplicationTypeId = CommonsApp.Id
-                };
-
-                var user = await _userManager.GetUserAsync(HttpContext.User);
-                var UserApplicationMap = new UserApplicationMap
-                {
-                    UserId = user.Id,
-                    ApplicationId = CreatedApplication.Id
-                };
-
-                await _context.Set<ApplicationTypeMap>().AddAsync(ApplicationTypeMap);
-                await _context.Set<UserApplicationMap>().AddAsync(UserApplicationMap);
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToAction("Details", new { Id = CreatedApplication.Id, secret = secret, showSecret = true });
+            var res = await _applications.CreateApplication(ApplicationType.COMMONS, model.DisplayName, model.RedirectURI, model.PostLogoutRedirectURI);
+            
+            _tempCache.SetApplicationSecret(res.ApplicationId, res.Secret);
+            return RedirectToAction("Details", new { Id = res.ApplicationId, showSecret = true });
         }
 
         [HttpGet]
@@ -162,9 +76,9 @@ namespace CommunAxiom.Accounts.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(string Id, bool showSecret)
+        public async Task<IActionResult> Details(string id, bool showSecret)
         {
-            var app = _applicationManager.FindByIdAsync(Id).Result;
+            var app = await _applicationsReader.GetApplication(id, "UserApplicationMaps");
 
             var appDetails = new DetailsViewModel
             {
@@ -173,7 +87,8 @@ namespace CommunAxiom.Accounts.Controllers
                 ClientId = app.ClientId,
                 ShowSecret = showSecret,
                 PostLogoutRedirectURI = app.PostLogoutRedirectUris,
-                RedirectURI = app.RedirectUris
+                RedirectURI = app.RedirectUris,
+                HostingType = app.UserApplicationMaps?[0].HostingType.ToString()
             };
 
             TempData["showSecret"] = true;
@@ -217,7 +132,7 @@ namespace CommunAxiom.Accounts.Controllers
             return View(ApplicationDetails);
         }
 
-            [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Delete(DetailsViewModel model)
         {
             var application = await _applicationManager.FindByIdAsync(model.Id);
@@ -228,7 +143,7 @@ namespace CommunAxiom.Accounts.Controllers
             }
             else
             {
-                await _applicationManager.DeleteAsync(application, default);
+                await _applications.DeleteApplication(model.Id);
                 return RedirectToAction("Manage", "Applications");
             }
         }

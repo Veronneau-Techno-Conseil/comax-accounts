@@ -1,4 +1,5 @@
 using CentralApi;
+using CommunAxiom.Accounts.BusinessLayer;
 using CommunAxiom.CentralApi;
 using DatabaseFramework;
 using DatabaseFramework.Models;
@@ -27,6 +28,7 @@ Console.WriteLine($"Setting up database context...");
 // Add services to the container.
 builder.Services.Configure<DatabaseFramework.DbConf>(x => builder.Configuration.GetSection("DbConfig").Bind(x));
 builder.Services.AddDbContext<AccountsDbContext>();
+builder.Services.SetupReadBusiness();
 
 Console.WriteLine($"Setting services...");
 builder.Services.Configure<OidcConfig>(x => builder.Configuration.GetSection("OIDC").Bind(x));

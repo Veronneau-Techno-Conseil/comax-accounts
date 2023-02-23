@@ -39,6 +39,17 @@
     })
 })();
 
+(function () {
+    $(document).ready((j) => {
+        ($(".expandable[expands]")).on("click", function (this: HTMLElement) {
+            var attrValue = this.getAttribute("expands");
+            if (attrValue) { 
+                const jq = $(attrValue);
+                jq.fadeToggle();
+            }
+        })
+    })
+})
 
 
 function openTab(obj: JQuery, tabName: string | undefined) {

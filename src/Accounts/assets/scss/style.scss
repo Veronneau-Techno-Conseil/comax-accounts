@@ -70,6 +70,8 @@ $input-shadow: none;
 
 @import "../../node_modules/select-picker/dist/picker.css";
 
+@import "../../node_modules/bulma-switch/src/sass/index.sass";
+
 .picker {
     display: flex;
     flex-direction: column;

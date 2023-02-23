@@ -1,0 +1,54 @@
+﻿@model EcosystemVersion
+@{
+    ViewData["Title"] = "Delete Application Claim";
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="Ecosystem" asp-route-id="@Model.EcosystemId"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="field">
+                    <label asp-for="Ecosystem" class="label"></label>
+                    <span class="is-primary">@Model.Ecosystem.Name</span>
+                </div>
+                <div class="field">
+                    <label asp-for="VersionName" class="label"></label>
+                    <span class="is-primary">@Model.VersionName</span>
+                </div>
+                <div class="field">
+                    <label asp-for="CreationDate" class="label"></label>
+                    <span class="is-primary">@Model.CreationDate</span>
+                </div>
+                <div class="field">
+                    <label asp-for="DeploymentDate" class="label"></label>
+                    <span class="is-primary">@Model.DeploymentDate</span>
+                </div>
+                <div class="field">
+                    <label asp-for="DeprecationDate" class="label"></label>
+                    <span class="is-primary">@Model.DeprecationDate</span>
+                </div>
+                <div class="field">
+                    <form asp-action="Remove">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="submit" class="button is-link" value="Confirm deletion" />
+                        <a asp-action="Details" asp-controller="Ecosystem" asp-route-id="@Model.EcosystemId" class="button is-danger">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
