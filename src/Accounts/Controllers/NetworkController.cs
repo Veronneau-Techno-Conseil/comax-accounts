@@ -47,7 +47,7 @@ namespace CommunAxiom.Accounts.Controllers
             var groupOwner = _context.Set<User>()
                               .Where(x => x.UserName == User.Identity.Name)
                               .Select(x => new User { Id = x.Id, UserName = x.UserName }).FirstOrDefault();
-            
+
             GroupViewModel model = new GroupViewModel();
 
             model.Owner = groupOwner;
@@ -64,7 +64,7 @@ namespace CommunAxiom.Accounts.Controllers
                 Name = viewModel.Name,
                 OwnerId = groupOwner.Id,
                 Owner = groupOwner
-                
+
             };
 
             if (file != null)
@@ -85,7 +85,7 @@ namespace CommunAxiom.Accounts.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> DeleteGroup(int id)
         {
             var group = (Group)_context.Set<Group>().Include(x => x.Owner).AsQueryable().Where(x => x.Id == id).FirstOrDefault();
@@ -113,9 +113,40 @@ namespace CommunAxiom.Accounts.Controllers
 
             return View(model);
         }
+        
 
         [HttpGet]
-        public  IActionResult EditGroup(int id)
+        public IActionResult GroupMemberDetail(int id)
+        {
+            var groupMember = _context.Set<GroupMemberRole>().Include(x => x.GroupMember).Include(y => y.GroupMember.Group).Include(x => x.GroupMember.User).Include(x => x.GroupRole).AsQueryable().Where(x => x.GroupMember.Id == id).FirstOrDefault();
+
+            GroupMemberViewModel model = new GroupMemberViewModel();
+
+            model.GroupMemberRole = groupMember;
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult EditGroup(int id)
+        {
+            var group = (Group)_context.Set<Group>().Include(x => x.Owner).AsQueryable().Where(x => x.Id == id).FirstOrDefault();
+            var groupMembers = _context.Set<GroupMemberRole>().Include(x => x.GroupMember).Include(y => y.GroupMember.Group).Include(x => x.GroupMember.User).AsQueryable().Where(x => x.GroupMember.Group.Id == id).ToList();
+
+            GroupViewModel model = new GroupViewModel();
+
+            model.Group = group;
+            model.Owner = group.Owner;
+            model.Name = group.Name;
+            model.GroupPicture = group.GroupPicture;
+            model.OwnerUserName = group.Owner.UserName;
+            model.GroupMembers = groupMembers;
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult GroupDetails(int id)
         {
             var group = (Group)_context.Set<Group>().Include(x => x.Owner).AsQueryable().Where(x => x.Id == id).FirstOrDefault();
             var groupMembers = _context.Set<GroupMemberRole>().Include(x => x.GroupMember).Include(y => y.GroupMember.Group).Include(x => x.GroupMember.User).AsQueryable().Where(x => x.GroupMember.Group.Id == id).ToList();
@@ -141,7 +172,7 @@ namespace CommunAxiom.Accounts.Controllers
             group.Name = viewModel.Name;
             group.OwnerId = groupOwner.Id;
             group.Owner = groupOwner;
-            
+
 
             if (file != null)
             {
@@ -157,7 +188,7 @@ namespace CommunAxiom.Accounts.Controllers
             }
 
             _context.Entry(group).State = EntityState.Modified;
-            
+
 
             await _context.SaveChangesAsync();
 
@@ -257,7 +288,7 @@ namespace CommunAxiom.Accounts.Controllers
 
             notification.Message = "https://localhost:5002/Network/ApproveDeny/" + contactRequest.Id.ToString() + "/";
 
-            
+
 
             _context.Entry(notification).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -265,7 +296,7 @@ namespace CommunAxiom.Accounts.Controllers
             string templatePath = "./Views/Shared/_EmailLayout.cshtml";
             var model = new { Message = notification.Message, PrimaryAccount = primaryAccount, Procedure = "Please click on the link to login" };
 
-            await _emailService.SendEmail(Id == null ? viewModel.Email : contact.User.UserName,templatePath, model, "Contact Request");
+            await _emailService.SendEmail(Id == null ? viewModel.Email : contact.User.UserName, templatePath, model, "Contact Request");
 
             return RedirectToAction(nameof(NetworkController.Requests), "Network");
         }
