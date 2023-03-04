@@ -10,6 +10,7 @@ namespace DatabaseFramework.Models
     public class AppConfiguration
     {
         public const string APP_URI = "APP_URI";
+        public const string APP_AUTH_CALLBACK = "APP_AUTH_CALLBACK";
         public const string APP_NAMESPACE = "APP_NAMESPACE";
         public const string OIDC_AUTHORITY = "oidcAuthority";
         public const string OIDC_CLIENT_ID = "OidcClientId";

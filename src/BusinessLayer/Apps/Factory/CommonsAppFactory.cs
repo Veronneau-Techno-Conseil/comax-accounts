@@ -148,6 +148,8 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps.Factory
 
             Dictionary<string, string> values = new Dictionary<string, string>();
             values.Add(AppConfiguration.APP_URI, url);
+            var loginRedirect = $"{url.TrimEnd('/')}/api/authentication/login";
+            values.Add(AppConfiguration.APP_AUTH_CALLBACK, loginRedirect);
             values.Add(AppConfiguration.OIDC_AUTHORITY, _authorityInfo.Authority);
             values.Add(AppConfiguration.OIDC_CLIENT_ID, app.ClientId);
             values.Add(AppConfiguration.OIDC_SECRET, newSecret);

@@ -128,10 +128,27 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps
             switch (hostingType)
             {
                 case UserApplicationMap.HostingTypes.Managed:
-                    return await _appFactory.ConfigureHostedCommons(app.Id, app.AppVersionTagId.Value, baseUrl);
+                    var res = await _appFactory.ConfigureHostedCommons(app.Id, app.AppVersionTagId.Value, baseUrl);
+                    if (!res.IsError)
+                    {
+                        var config = await this.GetAppConfiguration(app.Id, AppConfiguration.APP_AUTH_CALLBACK);
+                        if (config == null)
+                            throw new InvalidOperationException("APP_AUTH_CALLBACK configuration should not be null");
+                        await this.UpdateCallbackUrls(app.Id, config.Value);
+                    }
+                    return res;
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        public async Task<AppConfiguration?> GetAppConfiguration(string appId, string key)
+        {
+            return await (from app in _accountsDbContext.Set<Application>()
+                   where app.Id == appId
+                   from appConf in _accountsDbContext.Set<AppConfiguration>().Include(x=>x.AppVersionConfiguration)
+                   where appConf.ApplicationId == app.Id && appConf.AppVersionConfiguration.ConfigurationKey == key
+                   select appConf).FirstOrDefaultAsync();
         }
 
         public Task<Application> GetApplication(string appId, params string[] includes)
@@ -158,6 +175,13 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps
 
             var app = await _applicationManager.FindByIdAsync(appId);
             await _applicationManager.DeleteAsync(app);
+        }
+
+        public async Task UpdateCallbackUrls(string appid, params string[] callbackUrls)
+        {
+            var app = await _applicationManager.FindByIdAsync(appid);
+            app.RedirectUris = Newtonsoft.Json.JsonConvert.SerializeObject(callbackUrls);
+            await _applicationManager.UpdateAsync(app);
         }
     }
 }

@@ -15,5 +15,6 @@ namespace CommunAxiom.Accounts.BusinessLayer.Viewmodels
         Task<AppCreationResult> CreateApplication(string applicationType, string displayName, string redirecturi, string postlogout = null);
         Task<OperationResult<MissingConfigs>> ConfigureApplication(int ecosystem, int apptype, string applicationId, UserApplicationMap.HostingTypes hostingType, string baseUrl);
         Task DeleteApplication(string appId);
+        Task UpdateCallbackUrls(string appid, params string[] callbackUrls);
     }
 }

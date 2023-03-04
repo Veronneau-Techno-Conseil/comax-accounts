@@ -38,17 +38,20 @@ namespace CommunAxiom.Accounts.Controllers
             HomeViewmodel homeViewmodel = new HomeViewmodel();
 
             var app = await _applicationsReader.GetUserHostedCommons(this.User.Identity.Name);
-            var user = await _users.GetUser(this.User.Identity.Name);
-
             homeViewmodel.ManagedAppCreated = app != null;
+            var user = await _users.GetUser(this.User.Identity.Name);
             homeViewmodel.FullName = string.IsNullOrWhiteSpace(user.DisplayName) ? user.UserName : user.DisplayName;
-            if (homeViewmodel.ManagedAppCreated)
+            if (app != null)
             {
-                homeViewmodel.CommonsManagedAppInfo = new ManagedAppInfo()
+                var uri = await _appConfigurations.GetConfiguration(app.Id, AppConfiguration.APP_URI);
+                if (homeViewmodel.ManagedAppCreated && uri != null)
                 {
-                    ApplicationType = ApplicationType.COMMONS,
-                    Uri = (await _appConfigurations.GetConfiguration(app.Id, AppConfiguration.APP_URI)).Value
-                };
+                    homeViewmodel.CommonsManagedAppInfo = new ManagedAppInfo()
+                    {
+                        ApplicationType = ApplicationType.COMMONS,
+                        Uri = uri.Value
+                    };
+                }
             }
 
             return View(homeViewmodel);
@@ -62,27 +65,14 @@ namespace CommunAxiom.Accounts.Controllers
             if(exists)
                 return RedirectToAction("Index");
 
-            var rand = new RandomDataGenerator.Randomizers.RandomizerText(new RandomDataGenerator.FieldOptions.FieldOptionsText {
-                UseLetter = true,
-                UseLowercase = true,
-                UseNullValues = false,
-                UseNumber = true,
-                UseSpace = false,
-                UseSpecial = false,
-                UseUppercase = false,
-                ValueAsString = true,
-                Min = 12, Max = 12
-            });
-
-            var siteCode = rand.Generate();
-            var uri = $"https://commons.communaxiom.org/{siteCode}";
+            var uri = $"https://commons.communaxiom.org/";
             var loginRedirect = $"{uri}/api/authentication/login";
 
             var appRes = await _applications.CreateApplication(ApplicationType.COMMONS, "Hosted Common Agent", loginRedirect);
             var app = await _applicationsReader.GetApplication(appRes.ApplicationId, "ApplicationTypeMaps");
             var ecosys = await _ecosystems.GetByName(Ecosystem.COMMONS);
 
-            var res = await _applications.ConfigureApplication(ecosys.Id, app.ApplicationTypeMaps[0].ApplicationTypeId, app.Id, UserApplicationMap.HostingTypes.Managed, uri);
+            var res = await _applications.ConfigureApplication(ecosys.Id, app.ApplicationTypeMaps[0].ApplicationTypeId, app.Id, UserApplicationMap.HostingTypes.Managed, $"https://commons-[HASH].communaxiom.org/");
 
             if (res.Result.Keys.Any())
                 throw new InvalidOperationException("Should not have leftover configurations on managed software");

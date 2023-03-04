@@ -1,0 +1,20 @@
+﻿@model AppVersionTagSource
+@using CommunAxiom.Accounts.Contracts;
+@inject ILookupStore lookupStore
+@{
+    ViewData["Title"] = "Application Version Tag Details";
+    var appTypeId = (int)ViewBag.ApplicationTypeId;
+    var id = (int)ViewBag.Id;
+    var versions = lookupStore.ListAppVersionTags(appTypeId).Select(x => new SelectListItem(x.Name, x.Value.ToString()));
+}
+
+
+<form async-post="1" update-tgt="#cfg_lst" asp-action="PullConfigs" asp-route-apptype="@appTypeId" asp-route-id="@id">
+            <div class="field">
+                <label class="label">Version source</label>
+                <div class="control">
+                    <select asp-for="PullConfigTagId" asp-items="versions" class="select is-primary"></select>
+                    <input type="submit" class="button is-primary" OnClientClick="return false;" value="Synchronize from Version" />
+                </div>
+            </div>            
+        </form>

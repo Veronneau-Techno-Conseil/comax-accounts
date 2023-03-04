@@ -3,6 +3,9 @@
 @inject ILookupStore lookupStore
 @{
     ViewData["Title"] = "Application Version Tag Details";
+    var versions = lookupStore.ListAppVersionTags(Model.ApplicationType.Id).Select(x=> new SelectListItem(x.Name, x.Value.ToString()));
+    ViewBag.ApplicationTypeId = Model.ApplicationTypeId;
+    ViewBag.Id = Model.Id;
 }
 
 <div class="card w-25" style="margin-bottom: 1em;">
@@ -50,31 +53,11 @@
         </div>
     </div>
     <div class="card-content">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th><abbr title="Key">Configuration Key</abbr></th>
-                    <th><abbr title="Default">DefaultValue</abbr></th>
-                    <th><abbr title="Generator">Value Generator</abbr></th>
-                    <!--/management/appclaim/{appNs}/create-->
-                    <th><abbr title=""><a asp-controller="AppVersionConfig" asp-area="Management" asp-action="Add" asp-route-tagid="@Model.Id" asp-route-apptype="@Model.ApplicationTypeId"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.AppVersionConfigurations)
-                {
-                    <tr>
-                        <td>@item.ConfigurationKey</td>
-                        <td>@item.DefaultValue</td>
-                        <td>@item.ValueGenerator</td>
-                        <td>
-                            <a asp-action="Details" asp-area="Management" asp-controller="AppVersionConfig" asp-route-tagid="@item.AppVersionTagId" asp-route-apptype="@Model.ApplicationTypeId" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
-                            <a asp-action="Edit" asp-area="Management" asp-controller="AppVersionConfig" asp-route-tagid="@item.AppVersionTagId" asp-route-apptype="@Model.ApplicationTypeId" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>
-                            <a asp-action="Remove" asp-area="Management" asp-controller="AppVersionConfig" asp-route-tagid="@item.AppVersionTagId" asp-route-apptype="@Model.ApplicationTypeId" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div>
+            @await Html.PartialAsync("CopyFromForm.cshtml", new AppVersionTagSource())
+        </div>
+        <div id="cfg_lst">
+            @await Html.PartialAsync("ListConfig.cshtml", Model)
+        </div>
     </div>
 </div>
