@@ -5,6 +5,7 @@ def patch = ''
 def shouldUninstall = ''
 def deployAction = ''
 def message = ''
+def buildEnvImage = ''
 pipeline {
     agent any
 
@@ -23,6 +24,7 @@ pipeline {
                     version = readFile('VERSION').trim()
                     chartVersion = readFile('./helm/VERSION').trim()
                     patch = version
+                    buildEnvImage = 'vertechcon/comax-buildenv:1.0.1'
                 }
             }
         }
@@ -37,21 +39,25 @@ pipeline {
         }
         stage('Build') {
             steps {
-                script {
-                    def customImage = docker.build("registry.vtck3s.lan/comax-accounts:latest")
-                    customImage.push()
-                    customImage.push(patch)
-                }
-                sh 'echo "Build registry.vtck3s.lan/comax-accounts:${version} pushed to registry \n" >> SUMMARY'
-
-                script {
-                    def centralapi = docker.build("registry.vtck3s.lan/comax-central:latest", "-f ./central.Dockerfile .")
-                    centralapi.push()
-                    centralapi.push(patch)
-                }
-                sh 'echo "Build registry.vtck3s.lan/comax-central:${version} pushed to registry \n" >> SUMMARY'
+                parallel(
+                    accounts: {
+                        script {
+                            def customImage = docker.build("registry.vtck3s.lan/comax-accounts:latest")
+                            customImage.push()
+                            customImage.push(patch)
+                        },
+                        sh 'echo "Build registry.vtck3s.lan/comax-accounts:${version} pushed to registry \n" >> SUMMARY'
+                    },
+                    central: {
+                        script {
+                            def centralapi = docker.build("registry.vtck3s.lan/comax-central:latest", "-f ./central.Dockerfile .")
+                            centralapi.push()
+                            centralapi.push(patch)
+                        }
+                        sh 'echo "Build registry.vtck3s.lan/comax-central:${version} pushed to registry \n" >> SUMMARY'
+                    }
+                )
             }
-
             post {
                 success {
                     script {
@@ -61,6 +67,12 @@ pipeline {
             }
         }
         stage('Prep Helm') {
+            agent {
+                docker {
+                    image "$buildEnvImage"
+                    reuseNode true
+                }
+            }
             steps {
                 sh 'mkdir penv && python3 -m venv ./penv'
                 sh '. penv/bin/activate && pwd && ls -l && pip install -r ./build/requirements.txt && python3 ./build/processchart.py'
@@ -71,6 +83,12 @@ pipeline {
             }
         }
         stage('Helm') {
+            agent {
+                docker {
+                    image "$buildEnvImage"
+                    reuseNode true
+                }
+            }
             when{
                 expression {
                     return chartAction == "DEPLOY"
@@ -97,6 +115,12 @@ pipeline {
             }
         }
         stage('Prepare Application deployment') {
+            agent {
+                docker {
+                    image "$buildEnvImage"
+                    reuseNode true
+                }
+            }
             when{
                 expression {
                     return env.BRANCH_NAME.startsWith('release')
@@ -121,6 +145,12 @@ pipeline {
             }
         }
         stage('Uninstall Application deployment') {
+            agent {
+                docker {
+                    image "$buildEnvImage"
+                    reuseNode true
+                }
+            }
             when{
                 expression {
                     return env.BRANCH_NAME.startsWith('release') && shouldUninstall == 'uninstall'
@@ -133,6 +163,12 @@ pipeline {
             }
         }
         stage('Install Application deployment') {
+            agent {
+                docker {
+                    image "$buildEnvImage"
+                    reuseNode true
+                }
+            }
             when{
                 expression {
                     return env.BRANCH_NAME.startsWith('release') && deployAction != "upgrade"
@@ -146,6 +182,12 @@ pipeline {
             }
         }
         stage('Upgrade Application deployment') {
+            agent {
+                docker {
+                    image "$buildEnvImage"
+                    reuseNode true
+                }
+            }
             when{
                 expression {
                     return env.BRANCH_NAME.startsWith('release') && deployAction == "upgrade"
