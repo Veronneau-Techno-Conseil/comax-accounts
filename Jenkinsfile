@@ -45,7 +45,7 @@ pipeline {
                             def customImage = docker.build("registry.vtck3s.lan/comax-accounts:latest")
                             customImage.push()
                             customImage.push(patch)
-                        },
+                        }
                         sh 'echo "Build registry.vtck3s.lan/comax-accounts:${version} pushed to registry \n" >> SUMMARY'
                     },
                     central: {
