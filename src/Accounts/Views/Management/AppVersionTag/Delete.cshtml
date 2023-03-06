@@ -1,0 +1,51 @@
+﻿@model AppVersionTag
+@{
+    ViewData["Title"] = "Delete Version Tag";
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="ApplicationType" asp-route-id="@Model.ApplicationTypeId"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="field">
+                    <label asp-for="ApplicationType" class="label"></label>
+                    <span class="is-primary">@Model.ApplicationType.Name</span>
+                </div>
+                <div class="field">
+                    <label asp-for="Name" class="label"></label>
+                    <span class="is-primary">@Model.Name</span>
+                </div>
+                <div class="field">
+                    <label asp-for="CreationDate" class="label"></label>
+                    <span class="is-primary">@Model.CreationDate</span>
+                </div>
+                <div class="field">
+                    <label asp-for="DeprecationDate" class="label"></label>
+                    <span class="is-primary">@Model.DeprecationDate</span>
+                </div>
+                <div class="field">
+                    <form asp-action="Remove">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="ApplicationTypeId" />
+                        <input type="submit" class="button is-link" value="Confirm deletion" />
+                        <a asp-action="Details" asp-controller="ApplicationType" asp-route-id="@Model.ApplicationTypeId" class="button is-danger">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

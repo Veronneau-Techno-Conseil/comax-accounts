@@ -1,0 +1,40 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model IEnumerable<Ecosystem>
+@inject ILookupStore lookupStore
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="container">
+    <div class="level content">
+        <h1 class="level-item is-4">Ecosystem Management</h1>
+    </div>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th><abbr title="ID">ID</abbr></th>
+                <th><abbr title="Name">Name</abbr></th>
+                <th><abbr title="DESC">Description</abbr></th>
+                <th><abbr title=""><a asp-controller="Ecosystem" asp-area="Management" asp-action="Add"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>
+                        <a asp-action="Details" asp-area="Management" asp-controller="Ecosystem" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
+                        <a asp-action="Edit" asp-area="Management" asp-controller="Ecosystem" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>
+                        <a asp-action="Delete" asp-area="Management" asp-controller="Ecosystem" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

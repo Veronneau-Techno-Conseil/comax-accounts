@@ -76,6 +76,10 @@ spec:
               secretKeyRef:
                 name: {{ include "comax-accounts.secretName" . }}
                 key: SENDGRIDKEY
+          - name: AuthInfo__Authority
+            value: {{ .Values.authority }}
+          - name: AuthInfo__MetadataUri
+            value: {{ .Values.metadataUri }}
           livenessProbe:
             httpGet:
               path: /

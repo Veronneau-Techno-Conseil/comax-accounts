@@ -85,7 +85,7 @@ namespace CommunAxiom.Accounts.Controllers
 
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> DeleteGroup(int id)
         {
             var group = (Group)_context.Set<Group>().Include(x => x.Owner).AsQueryable().Where(x => x.Id == id).FirstOrDefault();

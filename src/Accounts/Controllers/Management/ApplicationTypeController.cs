@@ -31,7 +31,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         public async Task<ActionResult> Details(int id, [FromServices]ILookupStore lookupStore)
         {
             var claims = lookupStore.ListApplicationClaims(); 
-            var value = await _context.Set<ApplicationType>().Include(x=>x.AppClaimAssignments).ThenInclude(x=>x.AppClaim).FirstOrDefaultAsync(x=>x.Id == id);
+            var value = await _context.Set<ApplicationType>().Include(x=>x.AppVersionTags).Include(x=>x.AppClaimAssignments).ThenInclude(x=>x.AppClaim).FirstOrDefaultAsync(x=>x.Id == id);
             foreach(var aca in value.AppClaimAssignments)
             {
                 aca.AppClaim.ClaimName = claims.FirstOrDefault(x => x.Value == aca.AppClaimId).Name;
@@ -54,6 +54,7 @@ namespace CommunAxiom.Accounts.Controllers.Management
         {
             var value = await _context.Set<ApplicationType>().FirstOrDefaultAsync(x => x.Id == id);
             value.Name = applicationType.Name;
+            value.ContainerImage = applicationType.ContainerImage;
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

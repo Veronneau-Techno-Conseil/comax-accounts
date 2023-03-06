@@ -23,5 +23,8 @@ namespace CommunAxiom.Accounts.ViewModels.Application
         [Display(Name = "Client Secret")]
         public string ClientSecret { get; set; }
         public bool ShowSecret { get; set; }
+
+        [Display(Name = "Hosting Type")]
+        public string HostingType { get; set; }
     }
 }

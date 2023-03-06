@@ -83,7 +83,7 @@ namespace DatabaseFramework.Models.Configurations
 
             builder.Entity<UserApplicationMap>()
                 .HasOne(x => x.User)
-                .WithMany()
+                .WithMany(x=>x.ApplicationMaps)
                 .HasForeignKey(x => x.UserId);
 
             builder.Entity<UserApplicationMap>()

@@ -16,7 +16,8 @@ namespace DatabaseFramework.Models.Configurations
             var arr = new IModelConfig[]{
                 new InitialConfig(),
                 new ApplicationClaimsConfig(),
-                new StdUserClaimsConfig()
+                new StdUserClaimsConfig(),
+                new EcosystemsConfig(),
             };
 
             foreach (var item in arr)

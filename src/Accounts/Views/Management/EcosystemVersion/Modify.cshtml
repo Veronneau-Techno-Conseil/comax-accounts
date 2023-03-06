@@ -1,0 +1,81 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model EcosystemVersion
+@inject ILookupStore lookupStore
+@{
+    bool isCreate = Model.Id <= 0;
+    var buttonText = "Register";
+    if (!isCreate)
+    {
+        ViewData["Title"] = "Modify the Ecosystem Version";
+        buttonText = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Create A New Ecosystem Version";
+    }
+
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="Ecosystem" asp-route-id="@Model.EcosystemId" ><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-area="Management" asp-controller="EcosystemVersion" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                    @if (!isCreate)
+                    {
+                        <input asp-for="Id" type="hidden" />
+                    }
+                    <input asp-for="EcosystemId" type="hidden" />
+
+                    @if(Model.Ecosystem != null)
+                    {
+                    <p class="title is-4">Ecosystem: @Model.Ecosystem.Name</p>
+                    }
+
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="VersionName" class="label"></label>
+                        <input asp-for="VersionName" class="input is-primary" />
+                        <span asp-validation-for="VersionName" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <input type="checkbox" asp-for="Current" class="input is-primary switch" />
+                        <label asp-for="Current" class="label"></label>
+                        <span asp-validation-for="Current" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="DeploymentDate" class="label"></label>
+                        <input type="datetime-local" asp-for="DeploymentDate" class="input is-primary" />
+                        <span asp-validation-for="DeploymentDate" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="DeprecationDate" class="label"></label>
+                        <input type="datetime-local" asp-for="DeprecationDate" class="input is-primary" />
+                        <span asp-validation-for="DeprecationDate" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="CreationDate" class="label"></label>
+                        <input asp-for="CreationDate" class="input is-primary" />
+                        <span asp-validation-for="CreationDate" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
