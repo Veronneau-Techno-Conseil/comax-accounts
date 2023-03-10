@@ -115,10 +115,16 @@
                                                                     <img class="is-rounded is-64x64" style="margin-top:-30px; padding-bottom:-50px" src="https://bulma.io/images/placeholders/128x128.png">
                                                                 }
                                                             </figure>
-                                                            <div style="margin-top:-30px; padding-bottom:-50px">
-                                                                <a asp-action="Details" asp-area="Management" asp-controller="Applications"><img src="~/Images/View.png" class="icon" /> </a>
-                                                                <a asp-action="Edit" asp-area="Management" asp-controller="Applications"><img src="~/Images/Edit.png" class="icon" /> </a>
-                                                                <a asp-action="Delete" asp-area="Management" asp-controller="Applications"><img src="~/Images/Delete.png" class="icon" /> </a>
+                                                            <div style="padding-bottom:-50px">
+                                                                <a asp-action="GroupDetails" asp-controller="Network" asp-route-Id="@groupsArray[j].Id">
+                                                                    <img src="~/Images/View.png" class="icon" />
+                                                                </a>
+                                                                <a asp-controller="Network" asp-action="EditGroup" asp-area="" asp-route-Id="@groupsArray[j].Id">
+                                                                    <img src="~/Images/Edit.png" class="icon" />
+                                                                </a>
+                                                                <a asp-action="DeleteGroup" asp-controller="Network" asp-route-Id="@groupsArray[j].Id">
+                                                                    <img src="~/Images/Delete.png" class="icon" />
+                                                                </a>
                                                             </div>
                                                             <label class="is-size-7">@Html.DisplayFor(groupItem => groupsArray[j].Name)</label>
                                                         </div>

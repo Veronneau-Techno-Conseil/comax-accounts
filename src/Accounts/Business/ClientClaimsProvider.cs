@@ -36,7 +36,7 @@ namespace CommunAxiom.Accounts.Business
             var ownerUser = app.UserApplicationMaps.FirstOrDefault()?.User;
             string owner = ownerUser == null ? "system" : UriProvider.GetUri("user", ownerUser.Id);
 
-            var claims = await _accountsDbContext.Set<Models.AppClaimAssignment>().Include(x => x.ApplicationType).Include(x => x.AppClaim).ThenInclude(x => x.AppNamespace).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
+            var claims = await _accountsDbContext.Set<Models.AppClaimAssignment>().Include(x => x.ApplicationType).Include(x=>x.AppClaim).ThenInclude(x=>x.AppNamespace).Where(x => x.ApplicationTypeId == app.ApplicationTypeMaps[0].ApplicationTypeId).ToListAsync();
             var claimsList = new List<System.Security.Claims.Claim>();
 
             claimsList.AddRange(new[]
