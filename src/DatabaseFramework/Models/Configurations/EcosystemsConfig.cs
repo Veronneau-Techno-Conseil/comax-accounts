@@ -57,7 +57,7 @@ namespace DatabaseFramework.Models.Configurations
 
             builder.Entity<AppVersionConfiguration>()
                 .Property(x => x.DefaultValue)
-                .IsRequired(true);
+                .IsRequired(false);
 
             builder.Entity<AppVersionConfiguration>()
                 .Property(x => x.ValueGenerator)

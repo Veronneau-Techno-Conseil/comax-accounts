@@ -62,6 +62,8 @@
                         <td>@item.AppVersionTag.ApplicationType.Name</td>
                         <td>@item.AppVersionTag.Name</td>
                         <td>
+                            <a asp-action="Details" asp-area="Management" asp-controller="EcosystemVersion" asp-route-ecosys="@Model.EcosystemId" asp-route-ver="@Model.Id" asp-route-id="@item.AppVersionTagId"><img src="~/Images/View.png" class="icon"> </a>
+                            <a asp-action="Edit" asp-area="Management" asp-controller="EcosystemVersion" asp-route-ecosys="@Model.EcosystemId" asp-route-ver="@Model.Id" asp-route-id="@item.AppVersionTagId"><img src="~/Images/Edit.png" class="icon" /></a>
                             <a asp-action="Remove" asp-area="Management" asp-controller="EcosystemVersionTag" asp-route-ecosys="@Model.EcosystemId" asp-route-ver="@Model.Id" asp-route-id="@item.AppVersionTagId"><img src="~/Images/Delete.png" class="icon" /> </a>
                         </td>
                     </tr>

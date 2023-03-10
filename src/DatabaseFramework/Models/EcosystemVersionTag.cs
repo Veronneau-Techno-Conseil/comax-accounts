@@ -14,6 +14,6 @@ namespace DatabaseFramework.Models
         public int AppVersionTagId { get; set; }
         public AppVersionTag AppVersionTag { get; set; }
 
-
+        public List<EcosystemVersionTagConfig> EcosystemConfigs { get; set; }
     }
 }

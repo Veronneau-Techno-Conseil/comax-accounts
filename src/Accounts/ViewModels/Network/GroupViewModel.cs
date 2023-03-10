@@ -18,7 +18,6 @@ namespace CommunAxiom.Accounts.ViewModels.Network
 
         public User Owner { get; set; }
 
-        [Required]
         public string FileName { get; set; }
 
         public Group Group { get; set; }

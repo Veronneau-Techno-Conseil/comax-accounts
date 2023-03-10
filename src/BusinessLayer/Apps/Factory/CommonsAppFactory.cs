@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -124,39 +125,59 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps.Factory
             };
         }
 
+        public async Task<(bool, string)> GenConfig(AppVersionTag appVersionTag, string applicationId, string configurationKey)
+        {
+            var defaultConf = appVersionTag.AppVersionConfigurations.FirstOrDefault(x => x.ConfigurationKey == AppConfiguration.APP_HASH);
+            var appConf = await this._appConfigurations.GetConfiguration(applicationId, AppConfiguration.APP_HASH);
+
+            if (appConf == null || (defaultConf  != null && appConf.Value == defaultConf.DefaultValue))
+                return (true, defaultConf?.DefaultValue);
+            else
+                return (false, appConf.Value);
+        }
+
         public async Task<OperationResult<MissingConfigs>> ConfigureHostedCommons(string applicationId, int applicationVerisonTagId, string baseUrl)
         {
-            var rt = new RandomDataGenerator.Randomizers.RandomizerText(new FieldOptionsText
+            var tag = _context.Set<AppVersionTag>();
+            var vertag = await tag
+                .Include(x => x.AppVersionConfigurations)
+                .FirstOrDefaultAsync(x => x.Id == applicationVerisonTagId);
+
+            var (hashDefault, hash) = await GenConfig(vertag, applicationId, AppConfiguration.APP_HASH);
+
+            if(hashDefault)
             {
-                UseLetter = true,
-                UseLowercase = true,
-                UseNullValues = false,
-                UseNumber = true,
-                UseUppercase = false,
-                UseSpace = false,
-                UseSpecial = false,
-                ValueAsString = true,
-                Min = 12,
-                Max = 12
-            });
+                var rt = new RandomDataGenerator.Randomizers.RandomizerText(new FieldOptionsText
+                {
+                    UseLetter = true,
+                    UseLowercase = true,
+                    UseNullValues = false,
+                    UseNumber = true,
+                    UseUppercase = false,
+                    UseSpace = false,
+                    UseSpecial = false,
+                    ValueAsString = true,
+                    Min = 12,
+                    Max = 12
+                });
 
-            var hash = rt.Generate();
+                hash = rt.Generate();
+            }
+
             var url = baseUrl.Replace("[HASH]", hash);
-
             var app = await _applicationManager.FindByIdAsync(applicationId);
-            var newSecret = await this.RefreshSecret(applicationId);
+
+            var (appSecrDefault, appSecret) = await GenConfig(vertag, applicationId, AppConfiguration.OIDC_SECRET);
+
+            if(appSecrDefault)
+                appSecret = await this.RefreshSecret(applicationId);
 
             Dictionary<string, string> values = new Dictionary<string, string>();
             values.Add(AppConfiguration.APP_URI, url);
             values.Add(AppConfiguration.OIDC_AUTHORITY, _authorityInfo.Authority);
             values.Add(AppConfiguration.OIDC_CLIENT_ID, app.ClientId);
-            values.Add(AppConfiguration.OIDC_SECRET, newSecret);
+            values.Add(AppConfiguration.OIDC_SECRET, appSecret);
             values.Add(AppConfiguration.APP_HASH, hash);
-
-            var tag = _context.Set<AppVersionTag>();
-            var vertag = await tag
-                .Include(x => x.AppVersionConfigurations)
-                .FirstOrDefaultAsync(x => x.Id == applicationVerisonTagId);
 
             var confs = vertag.AppVersionConfigurations.Select(x => new Checklist<AppVersionConfiguration> { Value = x }).ToList();
 
@@ -178,10 +199,11 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps.Factory
                 }
             }
 
+            //TODO merge values with existing
             var leftover = confs.Where(x => !x.Done).ToList();
             foreach (var entry in leftover)
             {
-                if (entry.Value.UserValueMandatory && string.IsNullOrEmpty(entry.Value.ValueGenerator))
+                if (string.IsNullOrEmpty(entry.Value.ValueGenerator))
                     continue;
 
                 try
@@ -193,9 +215,7 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps.Factory
                         AppVersionConfigurationId = entry.Value.Id,
                         FromAppDefault = false,
                         FromSecret = entry.Value.Sensitive,
-                        Value = !string.IsNullOrWhiteSpace(entry.Value.ValueGenerator) ?
-                                        ValueGenFactory.Generate(entry.Value.ValueGenerator, entry.Value.ValueGenParameter) :
-                                        entry.Value.DefaultValue
+                        Value = ValueGenFactory.Generate(entry.Value.ValueGenerator, entry.Value.ValueGenParameter) 
                     });
                 }
                 catch (Exception ex)
@@ -216,7 +236,7 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps.Factory
             {
                 Result = new MissingConfigs
                 {
-                    Keys = leftover.Where(x => !x.Done).Select(x => x.Value.ConfigurationKey).ToArray()
+                    Keys = leftover.Where(x => !x.Done && x.Value.UserValueMandatory).Select(x => x.Value.ConfigurationKey).ToArray()
                 }
             };
         }
