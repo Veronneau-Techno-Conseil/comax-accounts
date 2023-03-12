@@ -43,14 +43,45 @@
     $(document).ready((j) => {
         ($(".expandable[expands]")).on("click", function (this: HTMLElement) {
             var attrValue = this.getAttribute("expands");
-            if (attrValue) { 
+            if (attrValue) {
                 const jq = $(attrValue);
                 jq.fadeToggle();
             }
         })
     })
-})
+})();
 
+(function () {
+    $(document).ready((j) => {
+        $("[async-post] input[type=submit], [async-post] button[type=submit]").on("click", function (this: HTMLElement, e) {
+            e.preventDefault();
+            var input = $(this);
+            var fstForm = input.parents("form").eq(0);
+            var frm = fstForm.get(0);
+            if (!frm)
+                return;
+            var tgtSelector = fstForm.attr("update-tgt");
+            var updateTgt = tgtSelector == undefined ? undefined : $(tgtSelector);
+            var url = fstForm.attr("action");
+
+            var data = new FormData(frm)
+            
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (updateTgt != null) {
+                        updateTgt.html(data);
+                    }
+                }
+            });
+            return false;
+        });
+    })
+})();
 
 function openTab(obj: JQuery, tabName: string | undefined) {
     var i, x, tablinks;

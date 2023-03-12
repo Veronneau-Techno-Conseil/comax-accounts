@@ -44,7 +44,36 @@
             }
         });
     });
-});
+})();
+(function () {
+    $(document).ready((j) => {
+        $("[async-post] input[type=submit], [async-post] button[type=submit]").on("click", function (e) {
+            e.preventDefault();
+            var input = $(this);
+            var fstForm = input.parents("form").eq(0);
+            var frm = fstForm.get(0);
+            if (!frm)
+                return;
+            var tgtSelector = fstForm.attr("update-tgt");
+            var updateTgt = tgtSelector == undefined ? undefined : $(tgtSelector);
+            var url = fstForm.attr("action");
+            var data = new FormData(frm);
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (updateTgt != null) {
+                        updateTgt.html(data);
+                    }
+                }
+            });
+            return false;
+        });
+    });
+})();
 function openTab(obj, tabName) {
     var i, x, tablinks;
     if (tabName == undefined)

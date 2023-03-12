@@ -21,7 +21,8 @@ namespace CommunAxiom.Accounts.Controllers.Management
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        [Route("/management/App/{apptype}/VersionTag/{tagid}/Config")]
+        public async Task<IActionResult> Index(int apptype, int tagid)
         {
             var value = await _context.Set<AppVersionTag>().ToListAsync();
             return View("Views/Management/AppVersionConfig/Index.cshtml", value);

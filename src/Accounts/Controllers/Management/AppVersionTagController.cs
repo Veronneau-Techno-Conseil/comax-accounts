@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using CommunAxiom.Accounts.Contracts;
 using Constants = CommunAxiom.Accounts.Contracts.Constants;
 using CommunAxiom.Accounts.Helpers;
+using CommunAxiom.Accounts.ViewModels.Application;
 
 namespace CommunAxiom.Accounts.Controllers.Management
 {
@@ -115,6 +116,39 @@ namespace CommunAxiom.Accounts.Controllers.Management
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Details", "ApplicationType", new { id = apptype, area = "management" });
+        }
+
+        [HttpPost]
+        [Route("/management/App/{apptype}/VersionTag/pullconfigs/{id}")]
+        public async Task<IActionResult> PullConfigs(int apptype, int id, AppVersionTagSource tagSource)
+        {
+            var avt = _context.Set<AppVersionTag>().Include(x=>x.AppVersionConfigurations);
+            var conf = _context.Set<AppVersionConfiguration>();
+            var src = await avt.FirstOrDefaultAsync(x => x.Id == tagSource.PullConfigTagId && x.ApplicationTypeId == apptype);
+            if(src == null) return NotFound();
+            var tgt = await avt.FirstOrDefaultAsync(x => x.Id == id && x.ApplicationTypeId == apptype);
+            if(tgt == null) return NotFound();
+
+            var tgtList = tgt.AppVersionConfigurations;
+            foreach(var sel in src.AppVersionConfigurations)
+            {
+                if(!tgtList.Any(x=>x.ConfigurationKey == sel.ConfigurationKey))
+                {
+                    conf.Add(new AppVersionConfiguration
+                    {
+                        AppVersionTagId = id,
+                        ConfigurationKey = sel.ConfigurationKey,
+                        DefaultValue = sel.DefaultValue,
+                        Sensitive = sel.Sensitive,
+                        UserValueMandatory = sel.UserValueMandatory,
+                        ValueGenerator = sel.ValueGenerator,
+                        ValueGenParameter = sel.ValueGenParameter,
+                    });
+                }
+            }
+            await _context.SaveChangesAsync();
+            await _context.Entry(tgt).Collection(x=>x.AppVersionConfigurations).LoadAsync();
+            return View("Views/Management/AppVersionTag/ListConfig.cshtml", tgt);
         }
     }
 }
