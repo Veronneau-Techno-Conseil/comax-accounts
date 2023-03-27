@@ -1,0 +1,108 @@
+﻿@model Models.ApplicationType
+@{
+    ViewData["Title"] = "Application Type Detail";
+    
+}
+
+
+<div class="card w-25" style="margin-bottom: 1em;">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                @ViewData["Title"]
+            </p>
+        </div>
+        <div class="card-header-icon">
+            <a asp-action="Index"><img src="~/Images/Back.png" class="icon" /></a>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="field">
+            <label asp-for="Name" class="label"></label>
+            <span class="is-primary">@Model.Name</span>
+        </div>
+        <div class="field">
+            <label asp-for="ContainerImage" class="label"></label>
+            <span class="is-primary">@Model.ContainerImage</span>
+        </div>
+    </div>
+</div>
+
+<div class="card w-25" style="margin-bottom: 1em;">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                Application type claims assigment
+            </p>
+        </div>
+    </div>
+    <div class="card-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><abbr title="Name">Claim Name</abbr></th>
+                    <th><abbr title="Description">Description</abbr></th>
+                    <!--/management/appclaim/{appNs}/create-->
+                    <th><abbr title=""><a asp-controller="AppClaimAssignment" asp-area="Management" asp-action="create" asp-route-appType="@Model.Id" ><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AppClaimAssignments)
+                {
+                    <tr>
+                        <td>@item.AppClaim.ClaimName</td>
+                        <td>@item.Value</td>
+                        <td>
+                            <a asp-action="Details" asp-area="Management" asp-controller="AppClaimAssignment" asp-route-appType="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
+                            <a asp-action="Edit" asp-area="Management" asp-controller="AppClaimAssignment"  asp-route-appType="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>
+                            <a asp-action="Delete" asp-area="Management" asp-controller="AppClaimAssignment"  asp-route-appType="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card w-25">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                Application Version Tags
+            </p>
+        </div>
+    </div>
+    <div class="card-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><abbr title="Name">Version Name</abbr></th>
+                    <th><abbr title="Created">Creation Date</abbr></th>
+                    <th><abbr title="Deprecation">Deprecation Date</abbr></th>
+                    <!--/management/appclaim/{appNs}/create-->
+                    <th><abbr title=""><a asp-controller="AppVersionTag" asp-area="Management" asp-action="Add" asp-route-apptype="@Model.Id"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AppVersionTags)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.CreationDate</td>
+                        <td>@item.DeprecationDate</td>
+                        <td>
+                            <a asp-action="Details" asp-area="Management" asp-controller="AppVersionTag" asp-route-apptype="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/View.png" class="icon" /> </a>
+                            <a asp-action="Edit" asp-area="Management" asp-controller="AppVersionTag" asp-route-apptype="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/Edit.png" class="icon" /> </a>
+                            <a asp-action="Remove" asp-area="Management" asp-controller="AppVersionTag" asp-route-apptype="@Model.Id" asp-route-id="@item.Id"><img src="~/Images/Delete.png" class="icon" /> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+

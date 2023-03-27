@@ -8,8 +8,6 @@ using CommunAxiom.Accounts.AppModels;
 using CommunAxiom.Accounts.Cache;
 using CommunAxiom.Accounts.Contracts;
 using CommunAxiom.Accounts.Helpers;
-using CommunAxiom.Accounts.Models;
-using CommunAxiom.Accounts.Models.SeedData;
 using CommunAxiom.Accounts.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +24,16 @@ using SendGridProvider;
 using TwilioSmsProvider;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server;
+using FluentEmailProvider;
+using CommunAxiom.Accounts.Business;
+using static OpenIddict.Server.OpenIddictServerEvents;
+using static OpenIddict.Server.OpenIddictServerHandlers.Introspection;
+using OpenIddict.Abstractions;
+using DatabaseFramework.Models;
+using Models = DatabaseFramework.Models;
+using DatabaseFramework;
+using DatabaseFramework.Models.SeedData;
+using CommunAxiom.Accounts.BusinessLayer;
 
 namespace CommunAxiom.Accounts
 {
@@ -41,13 +49,13 @@ namespace CommunAxiom.Accounts
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
-
             services.AddHttpClient<ReCaptcha>(x =>
             {
                 x.BaseAddress = new Uri("https://www.google.com/recaptcha/api/siteverify");
             });
 
+            services.Configure<DbConf>(x => Configuration.GetSection("DbConfig").Bind(x));
+            services.Configure<AuthorityInfo>(x => Configuration.GetSection("AuthInfo").Bind(x));
             services.AddDbContext<AccountsDbContext>();
 
             services.AddIdentity<User, IdentityRole>()
@@ -55,7 +63,8 @@ namespace CommunAxiom.Accounts
 
             //Allows for loading claims that don't show up in the user
             services.AddScoped<IUserClaimsPrincipalFactory<User>, Security.ClaimsPrincipalFactory>();
-
+            services.AddScoped<Handlers.IntrospectionHandler>();
+            services.AddTransient<ILookupStore, LookupStore>();
 
             // Configure Identity to use the same JWT claims as OpenIddict instead
             // of the legacy WS-Federation claims it uses by default (ClaimTypes),
@@ -73,27 +82,27 @@ namespace CommunAxiom.Accounts
                 Security.ManagementPolicies.SetupPolicies(options);
             });
 
-        //.AddGoogle("Google", options =>
-        //{
-        //    options.CallbackPath = "/signin-google";
-        //    options.ClientId = "0000000000000-redacted.apps.googleusercontent.com";
-        //    options.ClientSecret = "redacted";
-        //    options.SignInScheme = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme;
-        //});
+            //.AddGoogle("Google", options =>
+            //{
+            //    options.CallbackPath = "/signin-google";
+            //    options.ClientId = "0000000000000-redacted.apps.googleusercontent.com";
+            //    options.ClientSecret = "redacted";
+            //    options.SignInScheme = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme;
+            //});
 
             services.AddOpenIddict()
                 // Register the OpenIddict core components.
                 .AddCore(options =>
                 {
-                    
+
                     // Configure OpenIddict to use the Entity Framework Core stores and models.
                     // Note: call ReplaceDefaultEntities() to replace the default OpenIddict entities.
                     options.UseEntityFrameworkCore()
                            .ReplaceDefaultEntities<
-                               Models.Application, 
-                               Models.Authorization, 
-                               Models.Scope, 
-                               Models.Token, 
+                               Models.Application,
+                               Models.Authorization,
+                               Models.Scope,
+                               Models.Token,
                                string>()
                            .UseDbContext<AccountsDbContext>();
 
@@ -129,7 +138,6 @@ namespace CommunAxiom.Accounts
                     options.AllowClientCredentialsFlow();
                     options.AllowAuthorizationCodeFlow();
 
-                    //TODO: refactor to provision from configuration specific to oidc (not ssl)
                     var certPem = File.ReadAllText(Configuration["AuthCert"]);
                     var eccPem = File.ReadAllText(Configuration["AuthKey"]);
 
@@ -138,7 +146,7 @@ namespace CommunAxiom.Accounts
                     // Register the signing and encryption credentials.
                     options.AddEncryptionCertificate(cert)
                            .AddSigningCertificate(cert);
-                    
+
                     // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
                     options.UseAspNetCore()
                            .EnableAuthorizationEndpointPassthrough()
@@ -147,6 +155,13 @@ namespace CommunAxiom.Accounts
                            .EnableVerificationEndpointPassthrough()
                            .EnableStatusCodePagesIntegration()
                            .DisableTransportSecurityRequirement(); // During development, you can disable the HTTPS requirement.
+
+                    options.AddEventHandler<HandleIntrospectionRequestContext>(builder =>
+                    {
+                        builder.UseScopedHandler<Handlers.IntrospectionHandler>();
+
+                        builder.SetOrder(AttachApplicationClaims.Descriptor.Order + 1_000);
+                    });
                 })
 
                 // Register the OpenIddict validation components.
@@ -169,37 +184,41 @@ namespace CommunAxiom.Accounts
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ISmsSender, SmsSender>();
             services.AddScoped<IAccountTypeCache, AccountTypeCache>();
+            services.AddTransient<ClientClaimsProvider>();
+            services.AddTransient<UserClaimsProvider>();
 
-            MigrateDb(services);
-        }
+            services.SetupBusiness();
 
-        static void MigrateDb(IServiceCollection services)
-        {
-            var sp = services.BuildServiceProvider();
-            using var scope = sp.CreateScope();
+            var directory = Directory.GetCurrentDirectory();
 
-            var serviceProvider = scope.ServiceProvider;
-
-
-            var dbConf = serviceProvider.GetService<IOptionsMonitor<DbConf>>().CurrentValue;
-
-            if (dbConf.MemoryDb || !dbConf.ShouldMigrate)
+            switch (Configuration["fluentEmailMode"])
             {
-                return;
+                case "smtp":
+                    services
+                        .AddFluentEmail("noreply@communaxiom.org")
+                        .AddRazorRenderer(directory)
+                        .AddSmtpSender("localhost", 25);
+                    break;
+                case "test":
+                    services
+                        .AddFluentEmail("noreply@communaxiom.org")
+                        .AddRazorRenderer(directory)
+                        .AddSendGridSender(Configuration["sendGridKey"], true);
+                    break;
+                case "sg":
+                    services
+                        .AddFluentEmail("noreply@communaxiom.org")
+                        .AddRazorRenderer(directory)
+                        .AddSendGridSender(Configuration["sendGridKey"], false);
+                    break;
             }
 
-            var context = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
+            services.AddTransient<IEmailService, EmailService>();
 
-            var dbcontext = serviceProvider.GetService<AccountsDbContext>();
-
-            if (dbConf.ShouldDrop)
-            {
-                dbcontext.Database.EnsureDeleted();
-            }
-            
-            dbcontext.Database.Migrate();
-            Seed.SeedData(dbcontext);
+            services.MigrateDb();
         }
+
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)

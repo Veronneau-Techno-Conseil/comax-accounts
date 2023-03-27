@@ -1,0 +1,52 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model EcosystemApplication
+@inject ILookupStore lookupStore
+@{
+
+    var buttonText = "Add";
+
+    ViewData["Title"] = "Add an application type";
+
+    var applicationTypes = lookupStore.ListApplicationTypes().Select(x => new SelectListItem(x.Name, x.Value.ToString()));
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-controller="Ecosystem" asp-route-id="@Model.EcosystemId"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-area="Management" asp-controller="EcosystemApplication" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                    
+                    <input asp-for="EcosystemId" type="hidden" />
+
+                    @if (Model.Ecosystem != null)
+                    {
+                        <p class="title is-4">Ecosystem: @Model.Ecosystem.Name</p>
+                    }
+
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="ApplicationTypeId" class="label"></label>
+                        <select asp-for="ApplicationTypeId" class="input is-primary" asp-items="applicationTypes"></select>
+                        <span asp-validation-for="ApplicationTypeId" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

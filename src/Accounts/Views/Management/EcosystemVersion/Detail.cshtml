@@ -1,0 +1,72 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model EcosystemVersion
+@inject ILookupStore lookupStore
+@{
+    ViewData["Title"] = "Ecosystem Version Details";
+}
+
+<div class="card w-25" style="margin-bottom: 1em;">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                @ViewData["Title"]
+            </p>
+        </div>
+        <div class="card-header-icon">
+            <a asp-controller="Ecosystem" asp-action="Details" asp-route-id="@Model.EcosystemId"><img src="~/Images/Back.png" class="icon" /></a>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="field">
+            <label asp-for="VersionName" class="label"></label>
+            <span class="is-primary">@Model.VersionName</span>
+        </div>
+        <div class="field">
+            <label asp-for="CreationDate" class="label"></label>
+            <span class="is-primary">@Model.CreationDate</span>
+        </div>
+        <div class="field">
+            <label asp-for="DeploymentDate" class="label"></label>
+            <span class="is-primary">@Model.DeploymentDate</span>
+        </div>
+        <div class="field">
+            <label asp-for="DeprecationDate" class="label"></label>
+            <span class="is-primary">@Model.DeprecationDate</span>
+        </div>
+    </div>
+</div>
+
+
+<div class="card w-25">
+    <div class="card-header">
+        <div class="card-header-title">
+            <p class="title is-4">
+                Application tags
+            </p>
+        </div>
+    </div>
+    <div class="card-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><abbr title="App Type">Application Type</abbr></th>
+                    <th><abbr title="Version">Version</abbr></th>
+                    <!--/management/appclaim/{appNs}/create-->
+                    <th><abbr title=""><a asp-controller="EcosystemVersionTag" asp-area="Management" asp-action="Add" asp-route-ecosys="@Model.EcosystemId" asp-route-ver="@Model.Id"><img class="icon" src="~/Images/Add.png" /></a></abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.EcosystemVersionTags)
+                {
+                    <tr>
+                        <td>@item.AppVersionTag.ApplicationType.Name</td>
+                        <td>@item.AppVersionTag.Name</td>
+                        <td>
+                            <a asp-action="Remove" asp-area="Management" asp-controller="EcosystemVersionTag" asp-route-ecosys="@Model.EcosystemId" asp-route-ver="@Model.Id" asp-route-id="@item.AppVersionTagId"><img src="~/Images/Delete.png" class="icon" /> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

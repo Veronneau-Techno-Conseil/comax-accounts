@@ -1,4 +1,4 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace CommunAxiom.Accounts.ViewModels.Account
@@ -22,6 +22,5 @@ namespace CommunAxiom.Accounts.ViewModels.Account
         public string ConfirmPassword { get; set; }
 
         public string CaptchaResponse { get; set; }
-
     }
 }

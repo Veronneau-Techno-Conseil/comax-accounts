@@ -1,0 +1,191 @@
+﻿@model CommunAxiom.Accounts.ViewModels.Network.ManageViewModel
+@{
+    ViewData["Title"] = "Requests";
+}
+
+@*@section scripts{
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, x, tablinks;
+            x = document.getElementsByClassName("content-tab");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < x.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " is-active";
+        }
+    </script>
+}*@
+
+    <style>
+        tr:hover {
+            background-color: #D6D6CE !important;
+        }
+    </style>
+    <div class="columns is-variable is-5">
+        <div class="column is-3">
+            <div class="columns">
+                <div class="column is-12">
+                    @Html.Partial("../Shared/Network/MyNetwork.cshtml")
+                </div>
+            </div>
+        </div>
+        <div class="column is-9">
+            <div class="columns">
+                <div class="column is-12">
+                    <div class="card has-background-white">
+                        <div class="card-content">
+                            <div class="columns">
+                                <div class="column is-11">
+                                    <h5>Requests</h5>
+                                </div>
+                                <div class="column is-1">
+                                    <center>
+                                        <a asp-controller="Network" asp-area="" asp-action="ContactRequest">
+                                            <img class="image icon" src="~/Images/Add.png" />
+                                        </a>
+                                    </center>
+                                </div>
+                            </div>
+                            <div class="columns">
+                                <div class="column is-12">
+                                    <nav class="tabs is-boxed is-fullwidth is-size-6">
+                                        <div class="container">
+                                            <ul style="margin:0;">
+                                                <li class="tab is-active" x-tabName="Outgoing"><a>Outgoing</a></li>
+                                                <li class="tab" x-tabName="Incoming"><a>Incoming</a></li>
+                                            </ul>
+                                        </div>
+                                    </nav>
+                                    <div class="columns">
+                                        <div class="column is-12">
+                                            <div id="Outgoing" class="content-tab">
+                                                @{
+                                                var outgoingRequests = Model.ContactRequests.Where(x => x.Contact.PrimaryAccount.UserName == User.Identity.Name).OrderByDescending(y => y.DateSent);
+
+                                                if (outgoingRequests.Count() == 0)
+                                                {
+                                                    <table class="table request">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <label class="is-size-6">No requests to display</label>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                                else
+                                                {
+                                                    <table class="table is-hoverable is-striped">
+                                                        <tbody>
+                                                            @foreach (var request in outgoingRequests)
+                                                            {
+                                                                <tr>
+                                                                    <td width="10%" class="is-hidden-mobile">
+                                                                        <label class="is-size-6">@request.Id</label>
+                                                                    </td>
+                                                                    <td width="40%" class="is-hidden-mobile">
+                                                                        @{
+                                                                            var dt = DateTime.SpecifyKind(request.DateSent, DateTimeKind.Utc);
+                                                                        }
+                                                                        <label class="is-size-6">@dt.ToLocalTime()</label>
+                                                                    </td>
+                                                                    <td width="40%">
+                                                                        @{
+                                                                            if(request.Contact.UserId == null)
+                                                                            {
+                                                                                <label class="is-size-7-mobile">@request.Notification.Email</label>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <label class="is-size-7-mobile">@request.Contact.User.UserName</label>
+                                                                            }
+                                                                        }
+                                                                    </td>
+                                                                    <td width="10%" class="has-text-right">
+                                                                        <form asp-controller="Network" asp-action="Cancel" method="post" role="form">
+                                                                            <input type="hidden" id="request + @request.Id" name="Id" value="@request.Id" />
+                                                                            <button type="submit" class="btn is-link">Cancel</button>
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                            }
+                                        </div>
+                                        <div id="Incoming" class="content-tab" style="display:none">
+                                            @{
+                                                var incomingRequests = Model.ContactRequests.Where(x => x.Contact.User.UserName == User.Identity.Name).OrderBy(y => y.DateSent);
+
+                                                if (incomingRequests.Count() == 0)
+                                                {
+                                                    <table class="table is-hoverable">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <label class="is-size-6">No requests to display</label>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                                else
+                                                {
+                                                    <table class="table is-hoverable is-striped">
+                                                        <tbody>
+                                                            @foreach (var request in incomingRequests)
+                                                            {
+                                                                <tr>
+                                                                    <td width="10%" class="is-hidden-mobile">
+                                                                        <label class="is-size-6">@request.Id</label>
+                                                                    </td>
+                                                                    <td width="40%" class="is-hidden-mobile">
+                                                                        @{
+                                                                            var dt = DateTime.SpecifyKind(request.DateSent, DateTimeKind.Utc);
+                                                                        }
+                                                                        <label class="is-size-6">@dt.ToLocalTime()</label>
+                                                                    </td>
+                                                                    <td width="40%">
+                                                                        <label class="is-size-7-mobile">@request.Contact.PrimaryAccount.UserName</label>
+                                                                    </td>
+                                                                    <td width="5%" class="has-text-right">
+                                                                        <form asp-controller="Network" asp-action="Approve" method="post" role="form">
+                                                                            <input type="hidden" id="request + @request.Id" name="Id" value="@request.Id" />
+                                                                            <button type="submit" class="btn is-link">Approve</button>
+                                                                        </form>
+                                                                    </td>
+                                                                    <td width="5%" class="has-text-right">
+                                                                        <form asp-controller="Network" asp-action="Deny" method="post" role="form">
+                                                                            <input type="hidden" id="request + @request.Id" name="Id" value="@request.Id" />
+                                                                            <button type="submit" class="btn is-link">Deny</button>
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

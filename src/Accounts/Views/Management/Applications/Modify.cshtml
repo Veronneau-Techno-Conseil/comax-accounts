@@ -1,4 +1,6 @@
-﻿@model CommunAxiom.Accounts.ViewModels.Application.AppViewModel
+﻿@using CommunAxiom.Accounts.Contracts
+@model CommunAxiom.Accounts.ViewModels.Application.AppViewModel
+@inject ILookupStore lookupStore
 @{
     var buttonText = "Register";
     if (!string.IsNullOrWhiteSpace(Model?.ApplicationId))
@@ -10,8 +12,10 @@
     {
         ViewData["Title"] = "Register A New Application";
     }
-    
-    var items = CommunAxiom.Accounts.Models.Values.OIDCPermissions().Select(x=>new SelectListItem(x.Name, x.Value));
+
+    var items = Models.Values.OIDCPermissions().Select(x=>new SelectListItem(x.Name, x.Value));
+
+    var applicationTypes = lookupStore.ListApplicationTypes().Select(x=>new SelectListItem(x.Name, x.Value.ToString()));
 }
 
 <div class="level">
@@ -28,7 +32,7 @@
                 </div>
             </div>
             <div class="card-content">
-                <form asp-controller="Applications" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                <form asp-area="Management" asp-controller="Applications" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
                     @if (!string.IsNullOrWhiteSpace(Model?.ApplicationId))
                     {
                         <input asp-for="ApplicationId" type="hidden" />
@@ -55,6 +59,11 @@
                         <label asp-for="RedirectURI" class="label"></label>
                         <input asp-for="RedirectURI" class="input is-primary" />
                         <span asp-validation-for="RedirectURI" class="help is-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="ApplicationTypeId" class="label"></label>
+                        <select asp-for="ApplicationTypeId" class="input is-primary" asp-items="applicationTypes"></select>
+                        <span asp-validation-for="ApplicationTypeId" class="help is-danger"></span>
                     </div>
                      <div class="field">
                         <label asp-for="Permissions" class="label"></label>

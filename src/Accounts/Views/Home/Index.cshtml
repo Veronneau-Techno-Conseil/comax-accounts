@@ -1,8 +1,26 @@
-﻿@{
+﻿@model HomeViewmodel
+@{
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">This is the home page. Consider replacing by the content needed</h1>
-    <p>Yup.</p>
-</div>
+<article class="message">
+    <div class="message-header">
+        <p>Welcome, @Model.FullName</p>
+    </div>
+    <div class="message-body">
+        <p>As a pilot project user, you are entitled to a single cloud based instance of the Commons Agent application.</p>
+        <br />
+        @if (!Model.ManagedAppCreated) {
+            <div class="level">
+                <form asp-controller="Home" asp-action="RegisterManagedCommons" class="level-item">
+                    <input type="submit" class="button is-primary" value="Generate my instance" />
+                </form>
+            </div>
+        }
+        else
+        {
+            <p>You can access your instance at the following address</p>
+            <p><a target="_blank" href="@Model.CommonsManagedAppInfo.Uri">@Model.CommonsManagedAppInfo.Uri</a></p>
+        }
+    </div>
+</article>

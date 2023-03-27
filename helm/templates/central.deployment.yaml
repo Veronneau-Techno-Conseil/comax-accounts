@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "comax-central.fullname" . }}
+  labels:
+    {{- include "comax-central.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "comax-central.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "comax-central.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "comax-central.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: certs
+        secret:
+          secretName: {{ include "comax-central.certSecretName" . }}
+
+      containers:
+        - name: comax-central
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.centralRepository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+          - name: certs
+            mountPath: {{ .Values.authCert }}
+            subPath: tls.crt
+          - name: certs
+            mountPath: {{ .Values.authKey }}
+            subPath: tls.key
+          env:
+          - name: DbConfig__ConnectionString
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "comax-central.secretName" . }}
+                key: CONNSTR
+          - name: AuthCert
+            value: {{ .Values.authCert }}
+          - name: AuthKey
+            value: {{ .Values.authKey }}
+          - name: Urls
+            value: {{ .Values.urls }}
+          - name: ASPNETCORE_URLS
+            value: {{ .Values.urls }}
+          - name: OIDC__Authority
+            value: {{ .Values.oidc.auth }}
+          - name: OIDC__ClientId
+            value: {{ .Values.central.clientid }}
+          - name: OIDC__Secret
+            valueFrom:
+              secretKeyRef: 
+                name: {{ include "comax-central.secretName" . }}
+                key: CLIENT_SECRET
+          livenessProbe:
+            httpGet:
+              path: /swagger/index.html
+              port: http
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              path: /swagger/index.html
+              port: http
+              scheme: HTTP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

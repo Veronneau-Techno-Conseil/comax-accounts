@@ -1,4 +1,5 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
+using DatabaseFramework.Models;
 using System.Collections.Generic;
 
 namespace CommunAxiom.Accounts.Contracts
@@ -10,5 +11,11 @@ namespace CommunAxiom.Accounts.Contracts
         IEnumerable<Lookup> ListAccountTypes(string filter);
 
         IEnumerable<Lookup> ListOIDCPermissions(string filter);
+
+        IEnumerable<Lookup<int>> ListApplicationClaims();
+
+        IEnumerable<Lookup<int>> ListApplicationTypes();
+
+        IEnumerable<Lookup<int>> ListAppVersionTags();
     }
 }

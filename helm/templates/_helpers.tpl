@@ -6,10 +6,24 @@ Expand the name of the secret.
 {{- end }}
 
 {{/*
+Expand the name of the secret.
+*/}}
+{{- define "comax-central.secretName" -}}
+{{- printf "%s-secrets" ( include "comax-central.name" . ) -}}
+{{- end }}
+
+{{/*
 Expand the full service name.
 */}}
 {{- define "comax-accounts.fullSvcName" -}}
 {{- printf "%s.%s.svc.cluster.local" ( include "comax-accounts.name" . ) .Release.Namespace -}}
+{{- end }}
+
+{{/*
+Expand the full service name.
+*/}}
+{{- define "comax-central.fullSvcName" -}}
+{{- printf "%s.%s.svc.cluster.local" ( include "comax-central.name" . ) .Release.Namespace -}}
 {{- end }}
 
 {{/*
@@ -20,6 +34,13 @@ Expand the name of the cert secret.
 {{- end }}
 
 {{/*
+Expand the name of the cert secret.
+*/}}
+{{- define "comax-central.certSecretName" -}}
+{{- printf "%s-depltls" ( include "comax-central.name" . ) -}}
+{{- end }}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "comax-accounts.name" -}}
@@ -27,11 +48,18 @@ Expand the name of the chart.
 {{- end }}
 
 {{/*
+Expand the name of the chart.
+*/}}
+{{- define "comax-central.name" -}}
+{{- default .Values.central.name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "comax-accounts.fullname" -}}
+{{- define "comax-accounts.fullname" -}} 
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -41,6 +69,20 @@ If release name contains chart name it will be used as a full name.
 {{- else }}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
 {{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "comax-central.fullname" -}}
+{{- $name := default .Values.central.name }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
 
@@ -64,10 +106,30 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Common labels
+*/}}
+{{- define "comax-central.labels" -}}
+helm.sh/chart: {{ include "comax-accounts.chart" . }}
+{{ include "comax-central.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "comax-accounts.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "comax-accounts.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "comax-central.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "comax-central.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -79,5 +141,16 @@ Create the name of the service account to use
 {{- default (include "comax-accounts.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "comax-central.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "comax-central.fullname" .) .Values.central.serviceAccountName }}
+{{- else }}
+{{- default "default" .Values.central.serviceAccountName }}
 {{- end }}
 {{- end }}

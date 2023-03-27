@@ -1,4 +1,4 @@
-﻿using CommunAxiom.Accounts.Models;
+﻿using DatabaseFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -12,20 +12,20 @@ using System.Threading.Tasks;
 namespace CommunAxiom.Accounts.Stores
 {
     public class ApplicationStore : OpenIddictEntityFrameworkCoreApplicationStore<
-                                                Models.Application,
-                                                Models.Authorization,
-                                                Models.Token,
-                                                Models.AccountsDbContext,
+                                                Application,
+                                                Authorization,
+                                                Token,
+                                                AccountsDbContext,
                                                 string>
 
     {
-        public ApplicationStore(IMemoryCache cache, Models.AccountsDbContext context, IOptionsMonitor<OpenIddictEntityFrameworkCoreOptions> options) :
+        public ApplicationStore(IMemoryCache cache, AccountsDbContext context, IOptionsMonitor<OpenIddictEntityFrameworkCoreOptions> options) :
             base(cache, context, options)
         {
 
         }
 
-        public override ValueTask<long> CountAsync<TResult>(System.Func<IQueryable<Application>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+        public override ValueTask<long> CountAsync<TResult>(System.Func<IQueryable<DatabaseFramework.Models.Application>, IQueryable<TResult>> query, CancellationToken cancellationToken)
         {
             return base.CountAsync(q => query(q.Where(x => x.Deleted != true)), cancellationToken);
         }
@@ -48,9 +48,6 @@ namespace CommunAxiom.Accounts.Stores
 
         public override ValueTask<Application> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            //TODO: add condition to filter out softdeleted
-            //return base.FindByIdAsync(identifier, cancellationToken);
-
             var result = base.FindByIdAsync(identifier, cancellationToken);
             if (result.Result != null)
             {
@@ -65,16 +62,12 @@ namespace CommunAxiom.Accounts.Stores
 
         public override IAsyncEnumerable<Application> FindByPostLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
-            //TODO: Add filter to async enumerable
             return Context.Set<Application>().AsAsyncEnumerable().Where(x => x.PostLogoutRedirectUris.Contains(address));
-            //return base.FindByPostLogoutRedirectUriAsync(address, cancellationToken);
         }
 
         public override IAsyncEnumerable<Application> FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
-            //TODO: Add filter to async enumerable
             return Context.Set<Application>().AsAsyncEnumerable().Where(x => x.RedirectUris.Contains(address));
-            //return base.FindByRedirectUriAsync(address, cancellationToken);
         }
 
         public override IAsyncEnumerable<Application> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -84,7 +77,6 @@ namespace CommunAxiom.Accounts.Stores
 
         public override IAsyncEnumerable<TResult> ListAsync<TState, TResult>(System.Func<IQueryable<Application>, TState, IQueryable<TResult>> query, TState state, CancellationToken cancellationToken)
         {
-            //add filter to query
             return base.ListAsync(query, state, cancellationToken);
         }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using CommunAxiom.Accounts.Models;
+using DatabaseFramework.Models;
 using CommunAxiom.Accounts.ViewModels.Profile;
 using Microsoft.AspNetCore.Http;
 using System.IO;
@@ -43,7 +43,8 @@ namespace CommunAxiom.Accounts.Controllers
                     UserName = user.UserName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
-                    ProfilePicture = user.ProfilePicture
+                    ProfilePicture = user.ProfilePicture,
+                    DisplayName = user.DisplayName
                 };
 
                 return View(model);
@@ -66,6 +67,7 @@ namespace CommunAxiom.Accounts.Controllers
             {
                 user.Email = model.Email;
                 user.PhoneNumber = model.PhoneNumber;
+                user.DisplayName = model.DisplayName;
 
                 var result = await _userManager.UpdateAsync(user);
 

@@ -1,0 +1,57 @@
+﻿@using CommunAxiom.Accounts.Contracts
+@model EcosystemVersionTag
+@inject ILookupStore lookupStore
+@{
+
+    var buttonText = "Add";
+
+    ViewData["Title"] = "Add an Application Tag";
+
+    var lu = lookupStore.ListAppVersionTags();
+    var avs = lu.Select(x => new SelectListItem(x.Name, x.Value.ToString()));
+}
+
+<div class="level">
+    <div class="level-item">
+        <div class="card w-25">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <p class="title is-4">
+                        @ViewData["Title"]
+                    </p>
+                </div>
+                <div class="card-header-icon">
+                    <a asp-action="Details" asp-area="Management" asp-controller="EcosystemVersion" asp-route-ecosys="@Model.EcosystemVersion.EcosystemId" asp-route-id="@Model.EcosystemVersion.Id"><img src="~/Images/Back.png" class="icon" /></a>
+                </div>
+            </div>
+            <div class="card-content">
+                <form asp-area="Management" asp-controller="EcosystemVersionTag" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+
+                    <input asp-for="EcosystemVersionId" type="hidden" />
+
+                    @if (Model.EcosystemVersion != null)
+                    {
+                        if (Model.EcosystemVersion.Ecosystem != null)
+                        {
+                            <p class="title is-4">Ecosystem: @Model.EcosystemVersion.Ecosystem.Name</p>
+                        }
+                        <p class="title is-5">Ecosystem version: @Model.EcosystemVersion.VersionName</p>
+                    }
+
+                    <div asp-validation-summary="All" class="help is-danger"></div>
+                    <div class="field">
+                        <label asp-for="AppVersionTagId" class="label"></label>
+                        <select asp-for="AppVersionTagId" class="input is-primary" asp-items="avs"></select>
+                        <span asp-validation-for="AppVersionTagId" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-link">@buttonText</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -6,6 +6,7 @@ replicaCount: 1
 
 image:
   repository: registry.vtck3s.lan/comax-accounts
+  centralRepository: registry.vtck3s.lan/comax-central
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -22,6 +23,20 @@ captchaSecret: ""
 authCert: "/cert/cert.pem"
 authKey: "/cert/key.pem"
 baseAddress: "https://baseaddress.addr"
+fluentEmailMode: "sg"
+fluentEmailFrom: ""
+sendGridKey: ""
+authority: "https://localhost:5002/"
+metadataUri: "https://localhost:5002/.well-known/openid-configuration"
+
+central:
+  name: "comax-central"
+  clientid: ""
+  secret: ""
+  serviceAccountName: ""
+
+oidc:
+  auth: "https://accounts.communaxiom.org/"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -61,6 +76,20 @@ ingress:
   - hosts:
       - host.domain.com
     secretName: "accountstls"
+
+centralIngress:
+  enabled: true
+  annotations: 
+    cert-manager.io/cluster-issuer: "vault-issuer"
+    ingress.kubernetes.io/protocol: https
+  hosts:
+    - host: host.domain.com
+      paths: 
+        - path: /
+  tls: 
+  - hosts:
+      - host.domain.com
+    secretName: "centraltls"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
