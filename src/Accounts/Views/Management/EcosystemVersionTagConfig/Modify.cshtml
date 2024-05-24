@@ -13,7 +13,7 @@
     {
         ViewData["Title"] = "Create A New Configuration";
     }
-
+    Layout = null;
 }
 
 <div class="modal">
@@ -30,15 +30,20 @@
                     <input asp-for="Id" type="hidden" />
                 }
                 <input asp-for="AppVersionTagId" type="hidden" />
+                <input asp-for="EcosystemVersionId" type="hidden" />
 
-                @if (Model.AppVersionTag.ApplicationType != null)
+                @if (Model.EcosystemVersionTag != null)
                 {
-                    <p class="title is-4">Application Type: @Model.AppVersionTag.ApplicationType.Name</p>
-                }
 
-                @if (Model.AppVersionTag != null)
-                {
-                    <p class="title is-5">Application Version Tag: @Model.AppVersionTag.Name</p>
+                    @if (Model.EcosystemVersionTag.AppVersionTag != null)
+                    {
+                        if (Model.EcosystemVersionTag.AppVersionTag.ApplicationType != null)
+                        {
+                            <p class="title is-4">Application Type: @Model.EcosystemVersionTag.AppVersionTag.ApplicationType.Name</p>
+                        }
+
+                        <p class="title is-5">Application Version Tag: @Model.EcosystemVersionTag.AppVersionTag.Name</p>
+                    }
                 }
 
                 <div asp-validation-summary="All" class="help is-danger"></div>
@@ -77,7 +82,7 @@
 
                 <div class="field is-grouped">
                     <div class="control">
-                        <button type="submit" class="button is-link">@buttonText</button>
+                        <input type="submit" class="button is-primary" OnClientClick="return false;" value="@buttonText" />
                     </div>
                 </div>
             </form>
