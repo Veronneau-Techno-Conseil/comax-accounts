@@ -126,7 +126,8 @@ namespace CommunAxiom.Accounts.Controllers.Management
                 {
                     { "en-CA", model.DisplayName }
                 }),
-                Type = ClientTypes.Confidential,
+                ClientType = ClientTypes.Confidential,
+                ApplicationType = ApplicationTypes.Web,
                 ConsentType = ConsentTypes.Explicit,
                 Permissions = JsonSerializer.Serialize(model.Permissions.ToArray()),
                 PostLogoutRedirectUris = string.IsNullOrEmpty(model.PostLogoutRedirectURI) ? null : JsonSerializer.Serialize(new[]

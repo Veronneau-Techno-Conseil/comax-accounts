@@ -39,7 +39,18 @@ namespace DatabaseFramework.Models
             }
             else
             {
-                opts.UseNpgsql(configs.ConnectionString);
+                switch (configs.Provider)
+                {
+                    case "sqlite":
+                        optionsBuilder.UseSqlite(configs.ConnectionString);
+                        break;
+                    case "postgres":
+                        optionsBuilder.UseNpgsql(configs.ConnectionString);
+                        break;
+                    default:
+                        throw new Exception("Invalid database provider");
+
+                }
             }
         }
 

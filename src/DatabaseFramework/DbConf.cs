@@ -9,6 +9,7 @@ namespace DatabaseFramework
     public class DbConf
     {
         public bool MemoryDb { get; set; }
+        public string Provider { get; set; }
         public string ConnectionString { get; set; }
         public bool ShouldDrop { get; set; }
         public bool ShouldMigrate { get; set; }

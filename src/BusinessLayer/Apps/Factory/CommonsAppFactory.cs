@@ -72,7 +72,8 @@ namespace CommunAxiom.Accounts.BusinessLayer.Apps.Factory
                 {
                     { "en-CA", displayName }
                 }),
-                Type = ClientTypes.Confidential,
+                ClientType = ClientTypes.Confidential,
+                ApplicationType = ApplicationTypes.Web,
                 ConsentType = ConsentTypes.Explicit,
                 Permissions = JsonSerializer.Serialize(permissions.ToArray()),
                 PostLogoutRedirectUris = JsonSerializer.Serialize(new[]
